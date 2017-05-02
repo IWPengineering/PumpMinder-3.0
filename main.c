@@ -1,5 +1,5 @@
 /* 
- * File:   Water42.0.c
+ * File:   PumpMinder-3.0.c
  * Author: Shawn Bordner
  *
  * Created on April 13, 2017

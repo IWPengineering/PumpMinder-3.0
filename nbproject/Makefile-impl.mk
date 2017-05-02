@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=PumpMinder-3.0.X
+PROJECTNAME=PumpMinder-3.0
 
 # Active Configuration
 DEFAULTCONF=default
