@@ -41,6 +41,7 @@ float EEFloatData = 0;  // to be used when trying to write a float to EEProm, ie
 int Day = 0; // Used to keep track of which day (since saved water hours was last read) is currently in progress
 int PrevDay = 0;
 int debugVar = 0;
+int LowBatteryDetected = 0; // =1 when battery voltage drops below minimum
 
 // ****************************************************************************
 /************************* Utility FUNCTIONS ********************************/
@@ -57,11 +58,11 @@ int debugVar = 0;
  ********************************************************************/
 void initAdc(void) 
 {
-    // 10bit conversion
+  
+        // 10bit conversion
     AD1CON1 = 0; // Default to all 0s
     AD1CON1bits.ADON = 0; // Ensure the ADC is turned off before configuration
     AD1CON1bits.FORM = 0; // absolute decimal result, unsigned, right-justified
-    AD1CON1bits.SSRC = 0; // The SAMP bit must be cleared by software
     AD1CON1bits.SSRC = 0x7; // The SAMP bit is cleared after SAMC number (see
     // AD3CON) of TAD clocks after SAMP bit being set
     AD1CON1bits.ASAM = 0; // Sampling begins when the SAMP bit is manually set
@@ -72,15 +73,27 @@ void initAdc(void)
     // scan based upon AD1CSSL
     AD1CON2 = 0;
     // AD3CON
-    // This device needs a minimum of Tad = 600ns.
-    // If Tcy is actually 1/8Mhz = 125ns, so we are using 3Tcy
-    //AD1CON3 = 0x1F02; // Sample time = 31 Tad, Tad = 3Tcy
-    AD1CON3bits.SAMC = 0x1F; // Sample time = 31 Tad (11.6us charge time)
-    AD1CON3bits.ADCS = 0x2; // Tad = 3Tcy
+    // This device needs a minimum of Tad = 600ns. (according to an old note)
+    // Our Tcy is 1/250khz = 4us so we can use Tad = Tcy
+    AD1CON3bits.ADCS = 0; // Tad = Tcy = 4us.  ADCS (conversion clock) = (TAD/TCY)-1
+    // Assume we are going to use abut 12us charge time (IWP says 11.2us)
+    // This would be 3*Tad
+    AD1CON3bits.SAMC = 3; 
+    
     // Conversions are routed through MuxA by default in AD1CON2
+    // So only need to configure the MuxA conversion reference
     AD1CHSbits.CH0NA = 0; // Use Vss as the conversion reference
     AD1CSSL = 0; // No inputs specified since we are not in SCAN mode
     // AD1CON2
+    
+    // Configure the pin for AN5 which is where VWATCH is connected as an analog pin
+    AD1PCFGbits.PCFG5 = 0;  
+    
+    
+    TRISAbits.TRISA3 = 1;  // input
+    
+    // Not sure about this
+    AD1CHSbits.CH0SA = 5; //AN5 is where VWATCH is connected
 }
 
 /*********************************************************************
@@ -121,9 +134,9 @@ int readAdc(int channel) //check with accelerometer
  * TestDate: not tested as of 6/15/2017
  ********************************************************************/
 void CheckBattery(void){
-    double batteryVoltage = 0;
+    
     int batteryLevel = 0;
-     char BatStr[15]; // for DEBUG
+    // char BatStr[15]; // for DEBUG
      
     PORTBbits.RB4 = 1;  // Enable the battery voltage check
     delayMs(10); //Give things time to settle out
@@ -133,15 +146,24 @@ void CheckBattery(void){
     // returned batteryLevel = VWATCH/(3.2V/2^10) or VWATCH/3.125mV
     //    or it can be written batteryLevel = (Vbattery - FET)*106.7
     // so batteryVoltage = (batteryLevel/107)+FET
+    float battVolts = ((float)batteryLevel/107)+0.14; // assume FET = 0.14 based on testing
     
-    batteryVoltage = (batteryLevel/107); //assume FET = 0 for now
+    PORTBbits.RB4 = 0;  // Disable the battery voltage check
+    if(battVolts < 4.0){
+        // turn on LED
+        LowBatteryDetected = 1;
+        
+    }
+    else{
+        LowBatteryDetected = 0;
+        PORTAbits.RA4 = 0;  // turn off LED
+    }
     
     // For DEBUG let's report reading
-   
-    sprintf(BatStr, "%f", batteryVoltage);
-    sendMessage("Battery = ");
-    sendMessage(BatStr);
-    sendMessage("\n");
+    //sprintf(BatStr, "%f", (double)battVolts);
+    //sendMessage("Battery = ");
+    //sendMessage(BatStr);
+    //sendMessage("\n");
     
 }
 

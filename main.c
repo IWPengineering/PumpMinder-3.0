@@ -329,6 +329,21 @@ int main(void)
         TMR1 = 0; // clear timer T1
 
          PORTBbits.RB15 = 1;  // just woke up, sleep duration is time LOW
+          // debugging A/D
+         
+         
+         
+         
+         // Flash Low Battery LED if battery is Low
+         if(LowBatteryDetected){
+             if(PORTAbits.RA4){
+                 PORTAbits.RA4 = 0; // Turn Low Battery LED On
+             }
+             else{
+                 PORTAbits.RA4 = 1;  // Turn Low Battery LED Off
+             }
+             
+         }
          
          // Update the day
          loopCounter++;
@@ -353,6 +368,7 @@ int main(void)
             decimalHour = 0; //reset for the new day
             tickCounter = 0; //reset for the new day
             PrevDay = Day;
+            CheckBattery(); // Once the battery is found to be low, the LED will flash on and off
             
          }
         if (readWaterSensor2()){

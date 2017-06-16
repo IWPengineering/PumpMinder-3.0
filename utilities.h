@@ -49,6 +49,7 @@ extern float EEFloatData; //to be used when trying to write a float to EEProm EE
 extern int Day; // Used to keep track of which day (since saved water hours was last read) is currently in progress
 extern int PrevDay;
 extern int debugVar;  // used during debug to read different values
+extern int LowBatteryDetected; // Set to 1 when battery is less than threshold
 
 
 
