@@ -33,7 +33,24 @@
 
 #include <xc.h> // include processor files - each processor file is guarded.  
 
-void delayMs(int ms);
+// ****************************************************************************
+// *** Constants **************************************************************
+// ****************************************************************************
+
+
+
+
+// ****************************************************************************
+// *** Global Variables *******************************************************
+// ****************************************************************************
+
+extern int MessageBeingTransmitted;  //set to 1 when the UART is sending a message
+extern float EEFloatData; //to be used when trying to write a float to EEProm EEFloatData = 123.456 then pass as &EEFloatData
+extern int Day; // Used to keep track of which day (since saved water hours was last read) is currently in progress
+extern int PrevDay;
+extern int debugVar;  // used during debug to read different values
+
+
 
 typedef enum 
 {
@@ -48,6 +65,27 @@ typedef enum
             ONE_MONTH   = 0b1000,
             ONE_YEAR    = 0b1001
 } sleepLength_t;
+
+
+
+
+// ****************************************************************************
+// *** Functions  *************************************************************
+// ****************************************************************************
+
+void delayMs(int ms);
+void setRTCC(char sec, char min, char hr, char wkday, char date, char month, char year); 
+void ReportHoursOfPumping();
+int getLowerBCDAsDecimal(int bcd);
+int getUpperBCDAsDecimal(int bcd);
+char BcdToDec(char val);
+char DecToBcd(char val);
+int GetRTCCmonth(void);
+int GetRTCCday(void);
+int GetRTCChour(void);
+void CheckBattery(void);
+int readBatteryPin(void); //returns the AD reading on the pin 8 VWATCH
+
 /**
  * void initSleep(void)
  * 
@@ -78,6 +116,15 @@ void sleepForPeriod(sleepLength_t length);
  */
 void resetCheckRemedy(void);
 
+
+void EEProm_Write_Int(int addr, int newData);
+int EEProm_Read_Int(int addr);
+void EEProm_Read_Float(unsigned int ee_addr, void *obj_p);
+void EEProm_Write_Float(unsigned int ee_addr, void *obj_p);
+void sendMessage(char message[160]);
+int stringLength(char *string);
+
+void ClearEEProm(void); // Note, this currently clears 21 consecutive float values in EEPROM, If you want to change that, you must modify the function
 
 #endif	/* UTILITIES_H__ */
 

@@ -6,27 +6,483 @@
  */
 
 
-#include "xc.h"
+/////#include "xc.h"
 #include "utilities.h"
+
+#include <p24Fxxxx.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <math.h>
+#include <xc.h>
+#include <string.h>
+#include <stdbool.h>
+#include <p24F16KA101.h>
+
+
+int __attribute__ ((space(eedata))) eeData; // Global variable located in EEPROM
+
+
+// ****************************************************************************
+// *** Constants **************************************************************
+// ****************************************************************************
+
+
+
+
+
+
+// ****************************************************************************
+// *** Global Variables *******************************************************
+// ****************************************************************************
+
+int MessageBeingTransmitted = 0;  //set to 1 when the UART is sending a message
+float EEFloatData = 0;  // to be used when trying to write a float to EEProm, ie. EEFloatData = 123.456 then pass as &EEFloatData
+int Day = 0; // Used to keep track of which day (since saved water hours was last read) is currently in progress
+int PrevDay = 0;
+int debugVar = 0;
+
+// ****************************************************************************
+/************************* Utility FUNCTIONS ********************************/
+// ****************************************************************************
+
+/*********************************************************************
+ * Function: CheckBattery
+ * Input: none
+ * Output: none
+ * Overview: Checks the voltage on the battery.  If it is lower than MinVoltage
+ *           which is a Global setting, it lights the Low Battery LED
+ * Note: Library
+ * TestDate: not tested as of 6/15/2017
+ ********************************************************************/
+void CheckBattery(void){
+    double batteryVoltage = 0;
+    int batteryLevel = 0;
+     char BatStr[15]; // for DEBUG
+     
+    PORTBbits.RB4 = 1;  // Enable the battery voltage check
+    delayMs(10); //Give things time to settle out
+    
+    batteryLevel = readBatteryPin();
+    // VWATCH = (BatteryVoltage - drop across FET)*10K/30k
+    // returned batteryLevel = VWATCH/(3.2V/2^10) or VWATCH/3.125mV
+    //    or it can be written batteryLevel = (Vbattery - FET)*106.7
+    // so batteryVoltage = (batteryLevel/107)+FET
+    
+    batteryVoltage = (batteryLevel/107); //assume FET = 0 for now
+    
+    // For DEBUG let's report reading
+   
+    sprintf(BatStr, "%f", batteryVoltage);
+    sendMessage("Battery = ");
+    sendMessage(BatStr);
+    sendMessage("\n");
+    
+}
+
+/*********************************************************************
+ * Function: readBatteryPin()
+ * Input: none - assumes we are using pin 8 which is where VWATCH is connected
+ * Output: adcValue
+ * Overview: read the value from the A/D for pin 8 does not convert to voltage
+ * Note: Pic Dependent
+ * TestDate:
+ ********************************************************************/
+int readBatteryPin(void) //check pin 8 
+{
+    AD1CON1bits.ADON = 1; // Turn on ADC
+    AD1CON1bits.SAMP = 1;
+    while (!AD1CON1bits.DONE) 
+    {
+    }
+    // Turn off the ADC, to conserve power
+    AD1CON1bits.ADON = 0;
+    return ADC1BUF0;
+}
+
+//This function converts a BCD to DEC
+//Input: BCD Value
+//Returns: Hex Value
+
+char BcdToDec(char val) {
+    return ((val / 16 * 10) + (val % 16));
+}
+
+
+//This function converts HEX to BCD
+//Input: Hex Value
+//Returns: BCD Value
+
+char DecToBcd(char val) {
+    return ((val / 10 * 16) + (val % 10));
+}
+
+
+/*********************************************************************
+ * Function: getLowerBCDAsDecimal
+ * Input: int bcd
+ * Output: Decimal version of BCD found in (lower byte)
+ * Overview: Returns the decimal value for the lower 8 bits in a 16 bit BCD (Binary Coded Decimal)
+ * Note: Library
+ * TestDate: 06-04-2014
+ ********************************************************************/
+int getLowerBCDAsDecimal(int bcd) //Tested 06-04-2014
+{
+    //Get the tens digit (located in the second nibble from the right)
+    //by shifting off the ones digit and anding
+    int tens = (bcd >> 4) & 0b0000000000001111;
+    //Get the ones digit (located in the first nibble from the right)
+    //by anding (no bit shifting)
+    int ones = bcd & 0b0000000000001111;
+    //Returns the decimal value by multiplying the tens digit by ten
+    //and adding the ones digit
+    return (tens * 10) +ones;
+}
+
+
+/*********************************************************************
+ * Function: getUpperBCDAsDecimal
+ * Input: int bcd
+ * Output: Decimal verision of BCD found in (upper byte)
+ * Overview: Returns the decimal value for the Upper 8 bits in a 16 bit BCD (Binary Coded Decimal)
+ * Note: Library
+ * TestDate: 06-04-2014
+ ********************************************************************/
+int getUpperBCDAsDecimal(int bcd) //Tested 06-04-2014
+{
+    //Get the tens digit (located in the first nibble from the left)
+    //by shifting off the rest and anding
+    int tens = (bcd >> 12) & 0b0000000000001111;
+    //Get the ones digit (located in the second nibble from the left)
+    //by shifting off the rest and anding
+    int ones = (bcd >> 8) & 0b0000000000001111;
+    //Returns the decimal value by multiplying the tens digit by ten
+    //and adding the ones digit
+    return (tens * 10) +ones;
+}
+
+
+/*********************************************************************
+ * Function: setRTCC()
+ * Input: SS MM HH WW DD MM YY
+ * Output: None
+ * Overview: Initializes values for the internal RTCC
+ * Note: 
+ ********************************************************************/
+void setRTCC(char sec, char min, char hr, char wkday, char date, char month, char year){
+ 
+    __builtin_write_RTCWEN(); //does unlock sequence to enable write to RTCC, sets RTCWEN
+    
+    RCFGCALbits.RTCWREN = 1; // Allow user to change RTCC values
+    RCFGCALbits.RTCPTR = 0b11; //Point to the top (year) register
+    
+    RTCVAL = DecToBcd(year); // RTCPTR decrements automatically after this
+    RTCVAL = DecToBcd(date) + (DecToBcd(month) << 8);
+    RTCVAL = DecToBcd(hr) + (DecToBcd(wkday) << 8);
+    RTCVAL = DecToBcd(sec) + (DecToBcd(min) << 8); // = binaryMinuteSecond;
+ 
+    _RTCEN = 1; // = 1; //RTCC module is enabled
+    _RTCWREN = 0; // = 0; // disable writing
+ 
+}
+
+/*********************************************************************
+ * Function: GetRTCCmonth()
+ * Input: None
+ * Output: int value of the month from internal RTCC
+ * Overview: Reads both the current month and day from the internal RTCC
+ *           and returns the month
+ * Note: 
+ ********************************************************************/
+int GetRTCCmonth(void){
+    char value = 0;
+    //Set the pointer to 0b10 so that reading starts at month - day
+    _RTCPTR = 0b10; // decrements with read or write
+    _RTCWREN = 0; //don't want to write, just want to read
+    long binaryMonthDay = RTCVAL; // write month & day to variable
+    value = (binaryMonthDay >> 8) & 0b0000000000011111; 
+    return BcdToDec(value);
+}
+/*********************************************************************
+ * Function: GetRTCCday()
+ * Input: None
+ * Output: int value of the day (date not day of week) from internal RTCC
+ * Overview: Reads both the current month and day from the internal RTCC
+ *           and returns the month
+ * Note: 
+ ********************************************************************/
+int GetRTCCday(void){
+    char value = 0;
+    //Set the pointer to 0b10 so that reading starts at month - day
+    _RTCPTR = 0b10; // decrements with read or write
+    _RTCWREN = 0; //don't want to write, just want to read
+    long binaryMonthDay = RTCVAL; // write month & day to variable
+    value = binaryMonthDay & 0b0000000000111111; 
+    return BcdToDec(value);
+}
+
+/*********************************************************************
+ * Function: GetRTCChour()
+ * Input: None
+ * Output: int value of the current hour from internal RTCC
+ * Overview: Reads both the current month and day from the internal RTCC
+ *           and returns the month
+ * Note: 
+ ********************************************************************/
+int GetRTCChour(void){
+    char value = 0;
+    //Set the pointer to 0b01 so that reading starts at weekday - hours
+    _RTCPTR = 0b01; // decrements with read or write
+    _RTCWREN = 0; //don't want to write, just want to read
+    long binaryWkDayHours = RTCVAL; // write month & day to variable
+    value = binaryWkDayHours & 0b0000000000111111; 
+    return BcdToDec(value);
+}
+
+int stringLength(char *string) {
+    int i = 0;
+    //Checks for the terminating character
+    while (string[i] != '\0') {
+        i++;
+    }
+    return i;
+}
+
+void sendMessage(char message[160]) {
+    int stringIndex = 0;
+    int msg_length = 0;
+   
+    msg_length = stringLength(message);
+    
+  
+
+    while (stringIndex < msg_length) {
+        while (U1STAbits.UTXBF == 1){
+            //do nothing
+        }
+
+        U1TXREG = message[stringIndex];
+        stringIndex++;
+
+    }
+}
+
+
+/**********************************************************************
+ * Function:  ReportHoursOfPumping(void)
+ * Input:  none
+ * Output: none
+ * Overvies: Sends the value of hourCounter and tickCounter most recently saved to EEPROM
+ *           which should be the amount so far today to the RJ45 connection
+ *           the current values are sent first.  Then the values of previous days
+ *           stored in EEPROM are sent until the day reaches zero
+ * TestDate: not tested as of May 29 2017
+ * *********************************************************************/
+void ReportHoursOfPumping(){
+    
+    int hours;
+    int decimalHour;
+    int Dayptr = Day;
+    while(Dayptr >= 0){
+        int EEPROMaddrs = Dayptr*2;
+        hours = EEProm_Read_Int(EEPROMaddrs);
+        EEPROMaddrs++;
+        decimalHour = EEProm_Read_Int(EEPROMaddrs);
+        char hourStr[15];
+        char decimalStr[15];
+        char dayStr[15];
+        sprintf(dayStr, "%d", Dayptr);
+        sprintf(hourStr, "%d", hours);
+        sprintf(decimalStr, "%d", decimalHour);
+            
+        sendMessage("Day ");
+        sendMessage(dayStr);
+        sendMessage(":");
+        sendMessage(hourStr);
+        sendMessage(".");
+        sendMessage(decimalStr);
+        sendMessage("\n");    
+        Dayptr--;
+    }       
+}
+/*********************************************************************
+ * Function: EEProm_Write_Int(int addr, int newData)
+ * Input: addr - the location to write to relative to the start of EEPROM
+ *        newData - - Floating point value to write to EEPROM
+ * Output: none
+ * Overview: The value passed by newData is written to the location in EEPROM
+ *           which is multiplied by 2 to only use addresses with even values
+ *           and is then offset up from the start of EEPROM
+ * Note: Library
+ * TestDate: 12-26-2016
+ ********************************************************************/
+void EEProm_Write_Int(int addr, int newData){
+    unsigned int offset;
+    NVMCON = 0x4004;
+    // Set up a pointer to the EEPROM location to be erased
+    TBLPAG = __builtin_tblpage(&eeData); // Initialize EE Data page pointer
+    offset = __builtin_tbloffset(&eeData) + (2* addr & 0x01ff); // Initizlize lower word of address
+    __builtin_tblwtl(offset, newData); // Write EEPROM data to write latch
+    asm volatile ("disi #5"); // Disable Interrupts For 5 Instructions
+    __builtin_write_NVM(); // Issue Unlock Sequence & Start Write Cycle
+    while(NVMCONbits.WR==1); // Optional: Poll WR bit to wait for
+    // write sequence to complete
+}
+/*********************************************************************
+ * Function: int EEProm_Read_Int(int addr);
+ * Input: addr - the location to read from relative to the start of EEPROM
+ * Output: int value read from EEPROM
+ * Overview: A single int is read from EEPROM start + offset and is returned
+ * Note: Library
+ * TestDate: 12-26-2016
+ ********************************************************************/
+int EEProm_Read_Int(int addr){
+    int data; // Data read from EEPROM
+    unsigned int offset;
+
+    // Set up a pointer to the EEPROM location to be erased
+    TBLPAG = __builtin_tblpage(&eeData); // Initialize EE Data page pointer
+    offset = __builtin_tbloffset(&eeData) + (2* addr & 0x01ff); // Initialize lower word of address
+    data = __builtin_tblrdl(offset); // Write EEPROM data to write latch
+    return data;
+}
+/*********************************************************************
+ * Function: EEProm_Read_Float(unsigned int ee_addr, void *obj_p)
+ * Input: ee_addr - the location to read from relative to the start of EEPROM
+ *                  it is assumed that you are referring to the # of the float 
+ *                  you want to read.  The first is 0, the next is 1 etc.
+ *        *obj_p - the address of the variable to be updated (assumed to be a float)
+ * Output: none
+ * Overview: A single float is read from EEPROM start + offset.  This is done by
+ *           updating the contents of the float address provided, one int at a time
+ * Note: Library
+ * TestDate: 12-26-2016
+ ********************************************************************/
+
+
+void EEProm_Read_Float(unsigned int ee_addr, void *obj_p)
+ {
+     unsigned int *p = obj_p;  //point to the float to be updated
+     unsigned int offset;
+     
+     ee_addr = ee_addr*4;  // floats use 4 address locations
+
+     // Read and update the first half of the float
+    // Set up a pointer to the EEPROM location to be erased
+    TBLPAG = __builtin_tblpage(&eeData); // Initialize EE Data page pointer
+    offset = __builtin_tbloffset(&eeData) + (ee_addr & 0x01ff); // Initialize lower word of address
+    *p = __builtin_tblrdl(offset); // Write EEPROM data to write latch
+      // First half read is complete
+    
+    p++;
+    ee_addr = ee_addr+2;
+      
+    TBLPAG = __builtin_tblpage(&eeData); // Initialize EE Data page pointer
+    offset = __builtin_tbloffset(&eeData) + (ee_addr & 0x01ff); // Initialize lower word of address
+    *p = __builtin_tblrdl(offset); // Write EEPROM data to write latch
+      // second half read is complete
+      
+ }
+/*********************************************************************
+ * Function: EEProm_Write_Float(unsigned int ee_addr, void *obj_p)
+ * Input: ee_addr - the location to write to relative to the start of EEPROM
+ *                  it is assumed that you are referring to the # of the float 
+ *                  you want to write.  The first is 0, the next is 1 etc.
+ *        *obj_p - the address of the variable which contains the float
+ *                  to be written to EEPROM
+ * Output: none
+ * Overview: A single float is written to EEPROM start + offset.  This is done by
+ *           writing the contents of the float address provided, one int at a time
+ * Note: Library
+ * TestDate: 12-26-2016
+ ********************************************************************/
+ void EEProm_Write_Float(unsigned int ee_addr, void *obj_p)
+ {
+    unsigned int *p = obj_p;
+    unsigned int offset;
+    NVMCON = 0x4004;
+    ee_addr = ee_addr*4;  // floats use 4 address locations
+    
+    // Write the first half of the float
+     // Set up a pointer to the EEPROM location to be erased
+    TBLPAG = __builtin_tblpage(&eeData); // Initialize EE Data page pointer
+    offset = __builtin_tbloffset(&eeData) + (ee_addr & 0x01ff); // Initizlize lower word of address
+    __builtin_tblwtl(offset, *p); // Write EEPROM data to write latch
+     asm volatile ("disi #5"); // Disable Interrupts For 5 Instructions
+    __builtin_write_NVM(); // Issue Unlock Sequence & Start Write Cycle
+    while(NVMCONbits.WR==1); // Optional: Poll WR bit to wait for
+    // first half of float write sequence to complete
+    
+    // Write the second half of the float
+    p++;
+    ee_addr = ee_addr + 2;
+    TBLPAG = __builtin_tblpage(&eeData); // Initialize EE Data page pointer
+    offset = __builtin_tbloffset(&eeData) + (ee_addr & 0x01ff); // Initizlize lower word of address
+    __builtin_tblwtl(offset, *p); // Write EEPROM data to write latch
+     asm volatile ("disi #5"); // Disable Interrupts For 5 Instructions
+    __builtin_write_NVM(); // Issue Unlock Sequence & Start Write Cycle
+    while(NVMCONbits.WR==1); // Optional: Poll WR bit to wait for
+    // second half of float write sequence to complete
+    
+ }
+/*********************************************************************
+ * Function: ClearEEProm(void)
+ * Input: none
+ * Output: none
+ * Overview: This function writes a 0 to the first 21 float locations
+ *           in EEProm.  It should be called the first time a board
+ *           is programmed but NOT every time we Initialize since we don't want 
+ *           to lose data saved prior to shutting down because of lost power
+ * Note: Library
+ * TestDate: 1-5-2017
+ ********************************************************************/
+void ClearEEProm(void){
+    EEFloatData = 0;
+    EEProm_Write_Float(0, &EEFloatData);
+    EEProm_Write_Float(1, &EEFloatData);
+    EEProm_Write_Float(2, &EEFloatData);
+    EEProm_Write_Float(3, &EEFloatData);
+    EEProm_Write_Float(4, &EEFloatData);
+    EEProm_Write_Float(5, &EEFloatData);
+    EEProm_Write_Float(6, &EEFloatData);
+    EEProm_Write_Float(7, &EEFloatData);
+    EEProm_Write_Float(8, &EEFloatData);
+    EEProm_Write_Float(9, &EEFloatData);
+    EEProm_Write_Float(10, &EEFloatData);
+    EEProm_Write_Float(11, &EEFloatData);
+    EEProm_Write_Float(12, &EEFloatData);
+    EEProm_Write_Float(13, &EEFloatData);
+    EEProm_Write_Float(14, &EEFloatData);
+    EEProm_Write_Float(15, &EEFloatData);
+    EEProm_Write_Float(16, &EEFloatData);
+    EEProm_Write_Float(17, &EEFloatData);
+    EEProm_Write_Float(18, &EEFloatData);
+    EEProm_Write_Float(19, &EEFloatData); 
+    EEProm_Write_Float(20, &EEFloatData); 
+}
 
 /*********************************************************************
  * Function: delayMs()
  * Input: milliseconds
  * Output: None
  * Overview: Delays the specified number of milliseconds
- * Note: Clock speed dependent
+ * Note: This routine assumes that System clock is 500khz clock  
+ *       500khz/2 = 250khz => 4us period for Timer 2
+ *       Therefor we need to count 250 for each ms
+ *       Actually measuring the time points to the need to have PR = 229 
  * TestDate: 05-20-14
  ********************************************************************/
 void delayMs(volatile int ms) 
 {
-    volatile int myIndex;
+    PR2 = 229;
     while (ms > 0) 
     {
-        myIndex = 0;
-        while (myIndex < 667) 
-        {
-            myIndex++;
+        TMR2 = 0;  //Clear Timer2
+        _T2IF = 0; //Clear Timer2 Interrupt Flag
+        T2CONbits.TON = 1;  //turn on Timer2
+        while(!_T2IF){
         }
+        T2CONbits.TON = 0; // turn off Timer2
         ms--;
     }
 }
