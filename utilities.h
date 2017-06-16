@@ -83,6 +83,11 @@ char DecToBcd(char val);
 int GetRTCCmonth(void);
 int GetRTCCday(void);
 int GetRTCChour(void);
+void sendMessage(char message[160]);
+void initAdc(void);
+int readAdc(int channel) ;
+
+
 void CheckBattery(void);
 int readBatteryPin(void); //returns the AD reading on the pin 8 VWATCH
 

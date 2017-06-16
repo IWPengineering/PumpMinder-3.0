@@ -46,6 +46,71 @@ int debugVar = 0;
 /************************* Utility FUNCTIONS ********************************/
 // ****************************************************************************
 
+
+/*********************************************************************
+ * Function: initAdc()
+ * Input: None
+ * Output: None
+ * Overview: Initializes Analog to Digital Converter
+ * Note: Pic Dependent
+ * TestDate: 06-02-2014
+ ********************************************************************/
+void initAdc(void) 
+{
+    // 10bit conversion
+    AD1CON1 = 0; // Default to all 0s
+    AD1CON1bits.ADON = 0; // Ensure the ADC is turned off before configuration
+    AD1CON1bits.FORM = 0; // absolute decimal result, unsigned, right-justified
+    AD1CON1bits.SSRC = 0; // The SAMP bit must be cleared by software
+    AD1CON1bits.SSRC = 0x7; // The SAMP bit is cleared after SAMC number (see
+    // AD3CON) of TAD clocks after SAMP bit being set
+    AD1CON1bits.ASAM = 0; // Sampling begins when the SAMP bit is manually set
+    AD1CON1bits.SAMP = 0; // Don't Sample yet
+    // Leave AD1CON2 at defaults
+    // Vref High = Vcc Vref Low = Vss
+    // Use AD1CHS (see below) to select which channel to convert, don't
+    // scan based upon AD1CSSL
+    AD1CON2 = 0;
+    // AD3CON
+    // This device needs a minimum of Tad = 600ns.
+    // If Tcy is actually 1/8Mhz = 125ns, so we are using 3Tcy
+    //AD1CON3 = 0x1F02; // Sample time = 31 Tad, Tad = 3Tcy
+    AD1CON3bits.SAMC = 0x1F; // Sample time = 31 Tad (11.6us charge time)
+    AD1CON3bits.ADCS = 0x2; // Tad = 3Tcy
+    // Conversions are routed through MuxA by default in AD1CON2
+    AD1CHSbits.CH0NA = 0; // Use Vss as the conversion reference
+    AD1CSSL = 0; // No inputs specified since we are not in SCAN mode
+    // AD1CON2
+}
+
+/*********************************************************************
+ * Function: readAdc()
+ * Input: channel
+ * Output: adcValue
+ * Overview: check with accelerometer
+ * Note: Pic Dependent
+ * TestDate:
+ ********************************************************************/
+int readAdc(int channel) //check with accelerometer
+{
+    switch (channel) 
+    {
+        case 4:
+            /*ANSBbits.ANSB2 = 1; // AN4 is analog*/
+            TRISBbits.TRISB2 = 1; // AN4 is an input
+            AD1CHSbits.CH0SA = 4; // Connect AN4 as the S/H input
+            break;
+    }
+    AD1CON1bits.ADON = 1; // Turn on ADC
+    AD1CON1bits.SAMP = 1;
+    while (!AD1CON1bits.DONE) 
+    {
+    }
+    // Turn off the ADC, to conserve power
+    AD1CON1bits.ADON = 0;
+    return ADC1BUF0;
+}
+
 /*********************************************************************
  * Function: CheckBattery
  * Input: none
@@ -297,7 +362,7 @@ void ReportHoursOfPumping(){
             
         sendMessage("Day ");
         sendMessage(dayStr);
-        sendMessage(":");
+        sendMessage(" : ");
         sendMessage(hourStr);
         sendMessage(".");
         sendMessage(decimalStr);

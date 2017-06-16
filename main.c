@@ -1,6 +1,7 @@
 /* 
  * File:   PumpMinder-3.0.c
  * Author: Shawn Bordner
+ * And Perfecter: Randy Fish
  *
  * Created on April 13, 2017
  */
@@ -77,39 +78,22 @@ static volatile int buttonFlag = 0; // alerts us that the button has been pushed
 static bool isButtonTicking = false;
 static volatile int buttonTicks = 0;
 
-//prototypes
-void sendMessage(char message[160]);
 
-void initAdc(void); // forward declaration of init adc
-
-
-void _ISR _T1Interrupt( void){
-// The T1 interrupt is used to wake the PIC up from SLEEP.
-
-// Note:  The timer is reset to zero once it matches its Preset value
- 
-_T1IF = 0;  //clear the interrupt flag
-} //T1Interrupt
-
-void ConfigTimerT1WithInt(int num_ms_sleep){
+void ConfigTimerT1NoInt(){
     _T1IP = 4; // confirm interrupt priority is the default value
     TMR1 = 0; // clear the timer
+ 
+    // Configure Timer1 
+    //   As a 16bit counter running from Fosc/2 
+    //   continue running in IDLE, Don't enable yet
+    T1CON = 0x2000; 
+    T1CONbits.TCKPS = 1; // select 1:8 prescale so Timer Clock = 250khz/8 = 31.25khz 
+    // Assume the period register PR1 will be set by the function using Timer1
 
-    // configure Timer1 module to
-    // use LPRC as its clock so it is still running during sleep
-    // set prescale to 1:1
-    // continue running in IDLE mode and start running
-    T1CON = 0x8202;
-
-    // set the period register for num_ms_sleep milliseconds 
-    // Since oscillator = LPRC it is 32khz
-    // so one count every 31.25usec
-    // 
-    PR1 = ((float) num_ms_sleep *1000)/31.25;
-
-// Timer1 Interrupt control bits
-    _T1IF = 0; // clear the interrupt flag, before enabling interrupt
-    _T1IE = 1; // enable the T1 interrupt source
+    // init the Timer1 Interrupt control bits
+    _T1IF = 0; // clear the interrupt flag, this can be used to see if Timer2 got to PR2
+    _T1IE = 0; // disable the T2 interrupt source
+ 
 }
 void ConfigTimerT2NoInt(){
 // Timer 2 is used to measure the HIGH and LOW times from the WPS
@@ -206,56 +190,18 @@ void initialization(void) {
   // I think this assumes use of RTCC to sleep.  We will use Timer 1  initSleep();  // Initialize SLEEP mode
     
     // Timer control (for WPS)
+    ConfigTimerT1NoInt();    // used to control total time for each outer loop
     ConfigTimerT2NoInt();    // used by readWaterSensor to time the WPS_OUT pulse
     
     //void setRTCC(char sec, char min, char hr, char wkday, char date, char month, char year)
     //        internal RTCC expects 0-6 lets call Sunday 0
     setRTCC(0,10,14,5,9,06,17); //Friday June 9 2:10 PM
     // debug RTCC
-    debugVar = GetRTCCmonth();
-    debugVar = GetRTCCday();
-    debugVar = GetRTCChour();
+    //debugVar = GetRTCCmonth();
+    //debugVar = GetRTCCday();
+    //debugVar = GetRTCChour();
 
 
-}
-
-/*********************************************************************
- * Function: readWaterSensor
- * Input: None
- * Output: pulseWidth
- * Overview: RA1 is the water sensor, start at beginning of positive pulse
- * Note: Pic Dependent
- * TestDate: Not tested as of 03-05-2015
- ********************************************************************/
-int readWaterSensor(void) 
-{
-    // WPS_OUT - pin 3 RA1
-    if (PORTAbits.RA1) 
-    {
-        while (PORTAbits.RA1){
-        }; //make sure you start at the beginning of the positive pulse
-    }
-    
-    while (!PORTAbits.RA1) 
-    {
-    }; //wait for rising edge
-    
-    uint32_t prevICTime = TMR1; //get time at start of positive pulse
-    while (PORTAbits.RA1) 
-    {
-    };
-    uint32_t currentICTime = TMR1; //get time at end of positive pulse
-    uint32_t pulseWidth = 0;
-    if (currentICTime >= prevICTime) 
-    {
-        pulseWidth = (currentICTime - prevICTime);
-    } 
-    else 
-    {
-        pulseWidth = (currentICTime - prevICTime + 0x100000000);
-    }
-    //Check if this value is right
-    return (pulseWidth <= pulseWidthThreshold);
 }
 
 /*********************************************************************
@@ -322,70 +268,6 @@ int readWaterSensor2(void) // RB8 is one water sensor
 
 }
 
-/*********************************************************************
- * Function: initAdc()
- * Input: None
- * Output: None
- * Overview: Initializes Analog to Digital Converter
- * Note: Pic Dependent
- * TestDate: 06-02-2014
- ********************************************************************/
-void initAdc(void) 
-{
-    // 10bit conversion
-    AD1CON1 = 0; // Default to all 0s
-    AD1CON1bits.ADON = 0; // Ensure the ADC is turned off before configuration
-    AD1CON1bits.FORM = 0; // absolute decimal result, unsigned, right-justified
-    AD1CON1bits.SSRC = 0; // The SAMP bit must be cleared by software
-    AD1CON1bits.SSRC = 0x7; // The SAMP bit is cleared after SAMC number (see
-    // AD3CON) of TAD clocks after SAMP bit being set
-    AD1CON1bits.ASAM = 0; // Sampling begins when the SAMP bit is manually set
-    AD1CON1bits.SAMP = 0; // Don't Sample yet
-    // Leave AD1CON2 at defaults
-    // Vref High = Vcc Vref Low = Vss
-    // Use AD1CHS (see below) to select which channel to convert, don't
-    // scan based upon AD1CSSL
-    AD1CON2 = 0;
-    // AD3CON
-    // This device needs a minimum of Tad = 600ns.
-    // If Tcy is actually 1/8Mhz = 125ns, so we are using 3Tcy
-    //AD1CON3 = 0x1F02; // Sample time = 31 Tad, Tad = 3Tcy
-    AD1CON3bits.SAMC = 0x1F; // Sample time = 31 Tad (11.6us charge time)
-    AD1CON3bits.ADCS = 0x2; // Tad = 3Tcy
-    // Conversions are routed through MuxA by default in AD1CON2
-    AD1CHSbits.CH0NA = 0; // Use Vss as the conversion reference
-    AD1CSSL = 0; // No inputs specified since we are not in SCAN mode
-    // AD1CON2
-}
-
-/*********************************************************************
- * Function: readAdc()
- * Input: channel
- * Output: adcValue
- * Overview: check with accelerometer
- * Note: Pic Dependent
- * TestDate:
- ********************************************************************/
-int readAdc(int channel) //check with accelerometer
-{
-    switch (channel) 
-    {
-        case 4:
-            /*ANSBbits.ANSB2 = 1; // AN4 is analog*/
-            TRISBbits.TRISB2 = 1; // AN4 is an input
-            AD1CHSbits.CH0SA = 4; // Connect AN4 as the S/H input
-            break;
-    }
-    AD1CON1bits.ADON = 1; // Turn on ADC
-    AD1CON1bits.SAMP = 1;
-    while (!AD1CON1bits.DONE) 
-    {
-    }
-    // Turn off the ADC, to conserve power
-    AD1CON1bits.ADON = 0;
-    return ADC1BUF0;
-}
-
 void __attribute__((__interrupt__, __auto_psv__)) _DefaultInterrupt() 
 { 
     // We should never be here
@@ -403,149 +285,6 @@ void __attribute__((interrupt, auto_psv)) _CNInterrupt(void) { //button interrup
     IFS1bits.CNIF = 0;
 }
 
-static void adjustHours(float hours, int *p_hours, int *p_decimal_hours)
-{
-    hours *= 1.602564;
-    
-    *p_hours = ((int)hours);
-    *p_decimal_hours = (hours * 1000) - (*p_hours * 1000);
-}
-
-/*void hoursToAsciiDisplay(int hours, int decimalHour) 
-{
-    int startLcdView = 0;
-    DisplayTurnOff();
-    unsigned char aryPtr[] = "H: ";
-    DisplayDataAddString(aryPtr, sizeof ("H: "));
-    //    DisplayDataAddCharacter(49); // can we cycle power, or ones mixed up.
-
-    float realHours = (hours * 1000) + decimalHour;
-    realHours /= 1000;
-    
-    int h, dh;
-    adjustHours(realHours, &h, &dh);
-    
-    hours = h;
-    decimalHour = dh;
-    
-    if (hours == 0) 
-    {
-        DisplayDataAddCharacter(48);
-    } 
-    else 
-    {
-        if (startLcdView || (hours / 10000 != 0)) 
-        {
-            DisplayDataAddCharacter(hours / 10000 + 48);
-            startLcdView = 1;
-            hours = hours - ((hours / 10000) * 10000); // moving the decimal point - taking advantage of int rounding
-        }
-        
-        if (startLcdView || hours / 1000 != 0) 
-        {
-            DisplayDataAddCharacter(hours / 1000 + 48);
-            startLcdView = 1;
-            hours = hours - ((hours / 1000) * 1000);
-        }
-        
-        if (startLcdView || hours / 100 != 0) 
-        {
-            DisplayDataAddCharacter(hours / 100 + 48);
-            startLcdView = 1;
-            hours = hours - ((hours / 100) * 100);
-        }
-        
-        if (startLcdView || hours / 10 != 0) 
-        {
-            DisplayDataAddCharacter(hours / 10 + 48);
-            startLcdView = 1;
-            hours = hours - ((hours / 10) * 10);
-        }
-        
-        DisplayDataAddCharacter(hours + 48);
-    }
-    
-    DisplayDataAddCharacter('.');
-    startLcdView = 0;
-    
-    if (decimalHour == 0) 
-    {
-        DisplayDataAddCharacter(48);
-    } 
-    else 
-    {   
-        if (startLcdView || decimalHour / 100 != 0) 
-        {
-            DisplayDataAddCharacter(decimalHour / 100 + 48);
-            startLcdView = 1;
-            decimalHour = decimalHour - ((decimalHour / 100) * 100);
-        }
-        else
-        {
-            DisplayDataAddCharacter(48);
-        }
-        
-        if (startLcdView || decimalHour / 10 != 0) 
-        {
-            DisplayDataAddCharacter(decimalHour / 10 + 48);
-            startLcdView = 1;
-            decimalHour = decimalHour - ((decimalHour / 10) * 10);
-        }
-        else
-        {
-            DisplayDataAddCharacter(48);
-        }
-        
-        DisplayDataAddCharacter(decimalHour + 48);
-    }
-
-    DisplayLoop(15, true);
-}*/
-
-static int countdownPos = 0;
-const unsigned char countdownArray[] = { '5', '5', '4', '4', '3', '3', '2', '2', '1', '1', '0', '0' };
-const unsigned char countdownResetArray[] = "Reset In ";
-/*static void DisplayCountdown(void)
-{
-    DisplayTurnOff();
-    DisplayDataAddString((unsigned char *)&countdownResetArray, sizeof(countdownResetArray));    
-    DisplayDataAddCharacter(countdownArray[countdownPos++]);
-    DisplayLoop(15, true);
-}*/
-
-static void ResetDisplayCountdown(void)
-{
-    countdownPos = 0;
-    buttonTicks = 0;
-}
-
-//int stringLength(char *string) {
-//    int i = 0;
-    //Checks for the terminating character
-//    while (string[i] != '\0') {
-//        i++;
-//    }
-//    return i;
-//}
-
-//void sendMessage(char message[160]) {
-    
-//    int stringIndex = 0;
-    
-
-//    while (stringIndex < stringLength(message)) { 
-//        while (U1STAbits.UTXBF == 1){
-            //do nothing
-//        }
-
-//        U1TXREG = message[stringIndex];
-//        stringIndex++;
-        
-//    }
-    
-    
-    
-//}
 
 
 #define delayTime                   500 // main loop duration (including SLEEP) in milliseconds
@@ -574,13 +313,21 @@ int main(void)
  
      
     TRISBbits.TRISB15 = 0;  // for debug, make unused pin 18 an output
-       
+    
+    _T1IF = 0; //clear interrupt flag
+    TMR1 = 0; // clear timer 
+    T1CONbits.TON = 1;  //turn on Timer1 
+    PR1 = delayTime * 31.25;  // Timer 1 clock = 31.25khz so 31.25 clocks/1ms
+    
     while (1){
-         PORTBbits.RB15 = 0;  // about to go to sleep
+         PORTBbits.RB15 = 0;  // DEBUG about to go to sleep
         //sleepForPeriod(HALF_SECOND);
-   //// DEBUG     Sleep(); //sleep until Timer1 wakes us up every delayTime ms
-        /// delayMs(delayTime);
-         delayMs(500);  // debug
+        // Just wait until Timer1 has gotten to delayTime since last loop start
+         while(!_T1IF){ // just wait until delayTime has gone by
+         }
+        _T1IF = 0; //clear T1 interrupt flag
+        TMR1 = 0; // clear timer T1
+
          PORTBbits.RB15 = 1;  // just woke up, sleep duration is time LOW
          
          // Update the day
@@ -621,7 +368,6 @@ int main(void)
         
         if(isButtonTicking){
             if(PORTAbits.RA6){
-               sendMessage("button held down\n");
                buttonTicks++; 
                if(buttonTicks == (BUTTON_TICK_RESET_THRESHOLD - 3)) // Warn 1.5sec in advance
                { 
