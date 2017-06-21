@@ -195,13 +195,12 @@ void initialization(void) {
     
     //void setRTCC(char sec, char min, char hr, char wkday, char date, char month, char year)
     //        internal RTCC expects 0-6 lets call Sunday 0
-    setRTCC(0,10,14,5,9,06,17); //Friday June 9 2:10 PM
-    // debug RTCC
-    //debugVar = GetRTCCmonth();
-    //debugVar = GetRTCCday();
-    //debugVar = GetRTCChour();
-
-
+    setRTCC(0,0,12,6,17,06,17); //Saturday June 17 12:00 PM
+    CurrentDay = GetRTCCday();
+    PrevDay = CurrentDay;
+    CurrentHour = GetRTCChour();
+    PrevHour = CurrentHour;
+  
 }
 
 /*********************************************************************
@@ -289,9 +288,9 @@ void __attribute__((interrupt, auto_psv)) _CNInterrupt(void) { //button interrup
 
 #define delayTime                   500 // main loop duration (including SLEEP) in milliseconds
 #define msHr                        (uint32_t)3600000
-//#define hourTicks                   (msHr / delayTime)
-#define hourTicks                   5 // simulate 1hr every 2.5sec DEBUG
-#define BUTTON_TICK_COUNTDOWN_THRESHOLD          5
+#define hourTicks                   (msHr / delayTime)
+//#define hourTicks                   5 // simulate 1hr every 2.5sec DEBUG
+//#define BUTTON_TICK_COUNTDOWN_THRESHOLD          5
 #define BUTTON_TICK_RESET_THRESHOLD              10
 
 int main(void)
@@ -301,84 +300,83 @@ int main(void)
     CLKDIVbits.RCDIV = 0b000; 
     
     initialization();
-    sendMessage("Initialization Complete\n");
-
-   // does not work ConfigTimerT1WithInt(delayTime); // used to wake up from SLEEP every delayTime milli-seconds
+    sendMessage("Initialization Complete\r\n");
     
     uint16_t tickCounter = 0;
     uint16_t hourCounter = 0;
-    int dayCounter = 24;
-    int loopCounter = 0;
-    Day = 0;
- 
-     
-    TRISBbits.TRISB15 = 0;  // for debug, make unused pin 18 an output
+//    int dayCounter = 24; // only needed for debug
+//    int loopCounter = 0; // only needed for debug
+    Day = 0;  // This is the number of days since the last reset 
     
+      
     _T1IF = 0; //clear interrupt flag
     TMR1 = 0; // clear timer 
     T1CONbits.TON = 1;  //turn on Timer1 
     PR1 = delayTime * 31.25;  // Timer 1 clock = 31.25khz so 31.25 clocks/1ms
     
     while (1){
-         PORTBbits.RB15 = 0;  // DEBUG about to go to sleep
-        //sleepForPeriod(HALF_SECOND);
         // Just wait until Timer1 has gotten to delayTime since last loop start
          while(!_T1IF){ // just wait until delayTime has gone by
          }
         _T1IF = 0; //clear T1 interrupt flag
         TMR1 = 0; // clear timer T1
 
-         PORTBbits.RB15 = 1;  // just woke up, sleep duration is time LOW
-          // debugging A/D
-         
-         
-         
-         
+         // Update the hour and day
+         CurrentHour = GetRTCChour();
+         //sprintf(debugString, "%d", CurrentHour);
+         //sendMessage(debugString);
+         //sendMessage("\r\n");
+         if(CurrentHour != PrevHour){
+             // CurrentDay = GetRTCCday();
+             CheckBattery(); // Once the battery is found to be low, the LED will flash on and off
+             PrevHour = CurrentHour;
+         }
          // Flash Low Battery LED if battery is Low
          if(LowBatteryDetected){
-             if(PORTAbits.RA4){
-                 PORTAbits.RA4 = 0; // Turn Low Battery LED On
+             FlashBatteryCounter++;
+             if((!PORTAbits.RA4)&&(FlashBatteryCounter == 10)){
+                 PORTAbits.RA4 = 1; // Turn Low Battery LED On for 0.5sec
+                 FlashBatteryCounter = 0; // reset counter
              }
              else{
-                 PORTAbits.RA4 = 1;  // Turn Low Battery LED Off
-             }
-             
+                 PORTAbits.RA4 = 0;  // Turn Low Battery LED Off
+             }   
          }
          
-         // Update the day
-         loopCounter++;
-         if(loopCounter >= hourTicks){
-             dayCounter--;
-             sendMessage("One hour gone by\n");  // Debug
-             loopCounter = 0;
-             if(dayCounter == 0){
-                 Day++;
-                 dayCounter = 24;
-                 sendMessage("    NEXT DAY \n");  // Debug
-             }
-         }
-         if(Day > PrevDay){//Save daily water hours to EEPROM
-            int EEPROMaddrs = PrevDay*2;
+
+         //////////// Get rid of this, its just for testing
+         //loopCounter++;
+         //if(loopCounter >= hourTicks){
+         //    dayCounter--;
+         //    sendMessage("One hour gone by\r\n");  // Debug
+         //    loopCounter = 0;
+         //    if(dayCounter == 0){
+         //        Day++;
+         //        dayCounter = 24;
+         //        sendMessage("    NEXT DAY \r\n");  // Debug
+         //    }
+         //}
+         //////////// Get rid of this, its just for testing
+         CurrentDay = GetRTCCday();
+         if(CurrentDay != PrevDay){//Save daily water hours to EEPROM
+            int EEPROMaddrs = Day*2;
             int decimalHour=0;
             EEProm_Write_Int(EEPROMaddrs,hourCounter);
             hourCounter = 0; // reset for the new day 
             decimalHour = ((float)tickCounter/hourTicks)*1000;  // The value of decimalHour is the number of mHours of water
             EEPROMaddrs++;
             EEProm_Write_Int(EEPROMaddrs,decimalHour);
-            decimalHour = 0; //reset for the new day
             tickCounter = 0; //reset for the new day
-            PrevDay = Day;
-            CheckBattery(); // Once the battery is found to be low, the LED will flash on and off
-            
+            Day++;
+            PrevDay = CurrentDay;  
          }
         if (readWaterSensor2()){
             tickCounter++;  // keeps track of fractional hours pumped
-
             if (tickCounter >= hourTicks) 
             {
                 hourCounter++;  // keeps track of integer hours pumped
                 tickCounter = 0;
-                sendMessage("another hour of water\n");  // Debug
+           //     sendMessage("another hour of water\r\n");  // Debug
             }
         }
         
@@ -387,16 +385,16 @@ int main(void)
                buttonTicks++; 
                if(buttonTicks == (BUTTON_TICK_RESET_THRESHOLD - 3)) // Warn 1.5sec in advance
                { 
-                   sendMessage("About to RESET\n");
+                   sendMessage("About to RESET\r\n");
                }
                if(buttonTicks > BUTTON_TICK_RESET_THRESHOLD)
                {
-                   sendMessage("Resetting\n");
+                   sendMessage("Resetting\r\n");
                    tickCounter = 0;
                    hourCounter = 0;
                    buttonTicks = 0;
-                   Day = 0;
-                   PrevDay = Day; 
+                   Day = 0;  // Day is used to show the #day since last reset
+                   //PrevDay = Day; 
                    isButtonTicking = false;
                }
             }

@@ -47,9 +47,15 @@
 extern int MessageBeingTransmitted;  //set to 1 when the UART is sending a message
 extern float EEFloatData; //to be used when trying to write a float to EEProm EEFloatData = 123.456 then pass as &EEFloatData
 extern int Day; // Used to keep track of which day (since saved water hours was last read) is currently in progress
-extern int PrevDay;
+//                 this is not the day from the RTCC which will run from 0-6 and restart
+extern int PrevDay; //Based upon RTCC
+extern int CurrentDay; //Based upon RTCC
+extern int CurrentHour; //Based upon RTCC
+extern int PrevHour; //Based upon RTCC
 extern int debugVar;  // used during debug to read different values
 extern int LowBatteryDetected; // Set to 1 when battery is less than threshold
+extern int FlashBatteryCounter; //Used to flash low battery LED 0.5s/5sec
+extern char debugString[15]; 
 
 
 

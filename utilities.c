@@ -6,7 +6,7 @@
  */
 
 
-/////#include "xc.h"
+//#include "xc.h"
 #include "utilities.h"
 
 #include <p24Fxxxx.h>
@@ -18,6 +18,8 @@
 #include <string.h>
 #include <stdbool.h>
 #include <p24F16KA101.h>
+
+
 
 
 int __attribute__ ((space(eedata))) eeData; // Global variable located in EEPROM
@@ -40,9 +42,13 @@ int MessageBeingTransmitted = 0;  //set to 1 when the UART is sending a message
 float EEFloatData = 0;  // to be used when trying to write a float to EEProm, ie. EEFloatData = 123.456 then pass as &EEFloatData
 int Day = 0; // Used to keep track of which day (since saved water hours was last read) is currently in progress
 int PrevDay = 0;
+int CurrentDay = 0;
+int CurrentHour = 0; 
+int PrevHour = 0; 
 int debugVar = 0;
 int LowBatteryDetected = 0; // =1 when battery voltage drops below minimum
-
+int FlashBatteryCounter = 0;
+char debugString[15]; 
 // ****************************************************************************
 /************************* Utility FUNCTIONS ********************************/
 // ****************************************************************************
@@ -149,7 +155,7 @@ void CheckBattery(void){
     float battVolts = ((float)batteryLevel/107)+0.14; // assume FET = 0.14 based on testing
     
     PORTBbits.RB4 = 0;  // Disable the battery voltage check
-    if(battVolts < 4.0){
+    if(battVolts < 4.4){ // After 1V (some 1.2), each battery starts a steep voltage drop as charge is pulled
         // turn on LED
         LowBatteryDetected = 1;
         
@@ -163,7 +169,7 @@ void CheckBattery(void){
     //sprintf(BatStr, "%f", (double)battVolts);
     //sendMessage("Battery = ");
     //sendMessage(BatStr);
-    //sendMessage("\n");
+    //sendMessage("\r\n");
     
 }
 
@@ -369,26 +375,44 @@ void ReportHoursOfPumping(){
     
     int hours;
     int decimalHour;
+    int tenth;
+    int hundth;
+    int mil;
+    
     int Dayptr = Day;
     while(Dayptr >= 0){
         int EEPROMaddrs = Dayptr*2;
         hours = EEProm_Read_Int(EEPROMaddrs);
         EEPROMaddrs++;
         decimalHour = EEProm_Read_Int(EEPROMaddrs);
+        // need to deal with leading zeros
+        tenth = decimalHour/100;
+        decimalHour = decimalHour - (tenth*100);
+        hundth = decimalHour/10;
+        mil = decimalHour - (hundth*10);
+        
+        
+        
         char hourStr[15];
         char decimalStr[15];
         char dayStr[15];
         sprintf(dayStr, "%d", Dayptr);
         sprintf(hourStr, "%d", hours);
-        sprintf(decimalStr, "%d", decimalHour);
+        
             
         sendMessage("Day ");
         sendMessage(dayStr);
         sendMessage(" : ");
         sendMessage(hourStr);
         sendMessage(".");
+        
+        sprintf(decimalStr, "%d", tenth);
         sendMessage(decimalStr);
-        sendMessage("\n");    
+        sprintf(decimalStr, "%d", hundth);
+        sendMessage(decimalStr);
+        sprintf(decimalStr, "%d", mil);
+        sendMessage(decimalStr);
+        sendMessage("\r\n");    
         Dayptr--;
     }       
 }
