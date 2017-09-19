@@ -132,11 +132,11 @@ section                    address   length (PC units)   length (bytes) (dec)
 -------                    -------   -----------------   --------------------
 .text                        0x200               0xf16          0x16a1  (5793)
 .const                      0x1116                0x4c            0x72  (114)
-.text                       0x1162               0x966           0xe19  (3609)
-.dinit                      0x1ac8                0xca           0x12f  (303)
-.shared.dinit               0x1b92                 0x2             0x3  (3)
+.text                       0x1162               0x994           0xe5e  (3678)
+.dinit                      0x1af6                0xca           0x12f  (303)
+.shared.dinit               0x1bc0                 0x2             0x3  (3)
 
-                 Total program memory used (bytes):         0x265e  (9822) 60%
+                 Total program memory used (bytes):         0x26a3  (9891) 61%
 
 
 Ivt Memory  [Origin = 0x4, Length = 0xfc]
@@ -564,10 +564,10 @@ __FDS
 .comment
  *(.comment)
 
-.debug_info       0x000000       0x39dc
+.debug_info       0x000000       0x3a0c
  *(.debug_info)
- .debug_info      0x000000       0x17c7 build/default/production/main.o
- .debug_info      0x0017c7       0x2215 build/default/production/utilities.o
+ .debug_info      0x000000       0x17f5 build/default/production/main.o
+ .debug_info      0x0017f5       0x2217 build/default/production/utilities.o
  *(.gnu.linkonce.wi.*)
 
 .debug_abbrev     0x000000        0x407
@@ -575,10 +575,10 @@ __FDS
  .debug_abbrev    0x000000        0x1d1 build/default/production/main.o
  .debug_abbrev    0x0001d1        0x236 build/default/production/utilities.o
 
-.debug_line       0x000000        0x3a3
+.debug_line       0x000000        0x3aa
  *(.debug_line)
- .debug_line      0x000000        0x192 build/default/production/main.o
- .debug_line      0x000192        0x211 build/default/production/utilities.o
+ .debug_line      0x000000        0x199 build/default/production/main.o
+ .debug_line      0x000199        0x211 build/default/production/utilities.o
 
 .debug_frame      0x000000        0x416
  *(.debug_frame)
@@ -1161,7 +1161,7 @@ __c30_signature
                     0x9116                  _pulseWidthThreshold
  .const             0x9150         0x12 build/default/production/utilities.o
 
-.text             0x001162        0x966
+.text             0x001162        0x994
  .text            0x001162        0x6c4 build/default/production/utilities.o
                   0x001162                  _initAdc
                   0x0011ac                  _readAdc
@@ -1188,7 +1188,7 @@ __c30_signature
                   0x001706                  _initSleep
                   0x001744                  _sleepForPeriod
                   0x0017b2                  _resetCheckRemedy
- .text            0x001826        0x2a2 build/default/production/main.o
+ .text            0x001826        0x2d0 build/default/production/main.o
                   0x001826                  _ConfigTimerT1NoInt
                   0x001848                  _ConfigTimerT2NoInt
                   0x001858                  _UART_init
@@ -1198,11 +1198,11 @@ __c30_signature
                   0x001944                  __CNInterrupt
                   0x00196e                  _main
 
-.dinit            0x001ac8         0xca
- .dinit           0x001ac8         0xca data_init
+.dinit            0x001af6         0xca
+ .dinit           0x001af6         0xca data_init
 
-.shared.dinit     0x001b92          0x2
- .shared.dinit    0x001b92          0x2 shared_data_init
+.shared.dinit     0x001bc0          0x2
+ .shared.dinit    0x001bc0          0x2 shared_data_init
 
 .eedata             0xfe00          0x2 load address 0x7ffe00  
  .eedata            0xfe00          0x2 build/default/production/utilities.o

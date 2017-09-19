@@ -286,7 +286,7 @@ void __attribute__((interrupt, auto_psv)) _CNInterrupt(void) { //button interrup
 
 
 
-#define delayTime                   500 // main loop duration (including SLEEP) in milliseconds
+#define delayTime                   1000 // main loop duration (including SLEEP) in milliseconds
 #define msHr                        (uint32_t)3600000
 #define hourTicks                   (msHr / delayTime)
 //#define hourTicks                   5 // simulate 1hr every 2.5sec DEBUG
@@ -306,7 +306,12 @@ int main(void)
     uint16_t hourCounter = 0;
 //    int dayCounter = 24; // only needed for debug
 //    int loopCounter = 0; // only needed for debug
-    Day = 0;  // This is the number of days since the last reset 
+    //If there is no unread data, day should be zero. if there is unread data, the day should be the next day after what has already been saved.
+    int EEPROMaddrs = 0;
+    Day = EEProm_Read_Int(EEPROMaddrs);
+    if (Day > 0) { // This is the number of days saved but unread. 
+        Day++;
+    }
     
       
     _T1IF = 0; //clear interrupt flag
@@ -359,7 +364,9 @@ int main(void)
          //////////// Get rid of this, its just for testing
          CurrentDay = GetRTCCday();
          if(CurrentDay != PrevDay){//Save daily water hours to EEPROM
-            int EEPROMaddrs = Day*2;
+            int EEPROMaddrs = 0; //first location saved for the day
+            EEProm_Write_Int(EEPROMaddrs,Day);
+            EEPROMaddrs = 1+(Day*2); //first location for new days data
             int decimalHour=0;
             EEProm_Write_Int(EEPROMaddrs,hourCounter);
             hourCounter = 0; // reset for the new day 
@@ -395,6 +402,8 @@ int main(void)
                    buttonTicks = 0;
                    Day = 0;  // Day is used to show the #day since last reset
                    //PrevDay = Day; 
+                   int EEPROMaddrs = 0; //first location saved for the day
+                   EEProm_Write_Int(EEPROMaddrs,Day);
                    isButtonTicking = false;
                }
             }
