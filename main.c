@@ -419,7 +419,7 @@ int main(void)
             buttonFlag = 0;
             
             // Save the current pumping hours to EEPROM
-            int EEPROMaddrs = Day*2;
+            int EEPROMaddrs = 1 +(Day*2);
             EEProm_Write_Int(EEPROMaddrs,hourCounter);
              
             decimalHour = ((float)tickCounter/hourTicks)*1000;  // The value of decimalHour is the number of mHours of water

@@ -132,11 +132,11 @@ section                    address   length (PC units)   length (bytes) (dec)
 -------                    -------   -----------------   --------------------
 .text                        0x200               0xf16          0x16a1  (5793)
 .const                      0x1116                0x4c            0x72  (114)
-.text                       0x1162               0x994           0xe5e  (3678)
-.dinit                      0x1af6                0xca           0x12f  (303)
-.shared.dinit               0x1bc0                 0x2             0x3  (3)
+.text                       0x1162               0x996           0xe61  (3681)
+.dinit                      0x1af8                0xca           0x12f  (303)
+.shared.dinit               0x1bc2                 0x2             0x3  (3)
 
-                 Total program memory used (bytes):         0x26a3  (9891) 61%
+                 Total program memory used (bytes):         0x26a6  (9894) 61%
 
 
 Ivt Memory  [Origin = 0x4, Length = 0xfc]
@@ -1161,7 +1161,7 @@ __c30_signature
                     0x9116                  _pulseWidthThreshold
  .const             0x9150         0x12 build/default/production/utilities.o
 
-.text             0x001162        0x994
+.text             0x001162        0x996
  .text            0x001162        0x6c4 build/default/production/utilities.o
                   0x001162                  _initAdc
                   0x0011ac                  _readAdc
@@ -1188,7 +1188,7 @@ __c30_signature
                   0x001706                  _initSleep
                   0x001744                  _sleepForPeriod
                   0x0017b2                  _resetCheckRemedy
- .text            0x001826        0x2d0 build/default/production/main.o
+ .text            0x001826        0x2d2 build/default/production/main.o
                   0x001826                  _ConfigTimerT1NoInt
                   0x001848                  _ConfigTimerT2NoInt
                   0x001858                  _UART_init
@@ -1198,11 +1198,11 @@ __c30_signature
                   0x001944                  __CNInterrupt
                   0x00196e                  _main
 
-.dinit            0x001af6         0xca
- .dinit           0x001af6         0xca data_init
+.dinit            0x001af8         0xca
+ .dinit           0x001af8         0xca data_init
 
-.shared.dinit     0x001bc0          0x2
- .shared.dinit    0x001bc0          0x2 shared_data_init
+.shared.dinit     0x001bc2          0x2
+ .shared.dinit    0x001bc2          0x2 shared_data_init
 
 .eedata             0xfe00          0x2 load address 0x7ffe00  
  .eedata            0xfe00          0x2 build/default/production/utilities.o
