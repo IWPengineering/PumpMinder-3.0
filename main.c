@@ -291,7 +291,7 @@ void __attribute__((interrupt, auto_psv)) _CNInterrupt(void) { //button interrup
 #define hourTicks                   (msHr / delayTime)
 //#define hourTicks                   5 // simulate 1hr every 2.5sec DEBUG
 //#define BUTTON_TICK_COUNTDOWN_THRESHOLD          5
-#define BUTTON_TICK_RESET_THRESHOLD              10
+#define BUTTON_TICK_RESET_THRESHOLD              5
 
 int main(void)
 {   
@@ -390,7 +390,7 @@ int main(void)
         if(isButtonTicking){
             if(PORTAbits.RA6){
                buttonTicks++; 
-               if(buttonTicks == (BUTTON_TICK_RESET_THRESHOLD - 3)) // Warn 1.5sec in advance
+               if(buttonTicks == (BUTTON_TICK_RESET_THRESHOLD - 2)) // Warn 2sec in advance
                { 
                    sendMessage("About to RESET\r\n");
                }
