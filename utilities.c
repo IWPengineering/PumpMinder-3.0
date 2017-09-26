@@ -380,8 +380,8 @@ void ReportHoursOfPumping(){
     int mil;
     
     int Dayptr = Day;
-    while(Dayptr >= 0){
-        int EEPROMaddrs = Dayptr*2;
+    while(Dayptr >= 1){
+        int EEPROMaddrs = 1 + (Dayptr*2);
         hours = EEProm_Read_Int(EEPROMaddrs);
         EEPROMaddrs++;
         decimalHour = EEProm_Read_Int(EEPROMaddrs);
