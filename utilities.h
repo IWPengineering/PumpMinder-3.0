@@ -90,6 +90,8 @@ char DecToBcd(char val);
 int GetRTCCmonth(void);
 int GetRTCCday(void);
 int GetRTCChour(void);
+int GetRTCCminute(void);
+int GetRTCCsecond(void);
 void sendMessage(char message[160]);
 void initAdc(void);
 int readAdc(int channel) ;
