@@ -49,6 +49,19 @@ int debugVar = 0;
 int LowBatteryDetected = 0; // =1 when battery voltage drops below minimum
 int FlashBatteryCounter = 0;
 char debugString[15]; 
+int CurrentMin;
+int PrevMin;
+int CurrentSec;
+int PrevSec;
+int pumping;
+int hourInit;
+int hourEnd;
+int minuteInit;
+int minuteEnd;
+int secondInit;
+int secondEnd;
+int minTohour;
+
 // ****************************************************************************
 /************************* Utility FUNCTIONS ********************************/
 // ****************************************************************************

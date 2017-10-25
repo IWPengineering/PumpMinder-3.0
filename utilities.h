@@ -52,12 +52,22 @@ extern int PrevDay; //Based upon RTCC
 extern int CurrentDay; //Based upon RTCC
 extern int CurrentHour; //Based upon RTCC
 extern int PrevHour; //Based upon RTCC
+extern int CurrentMin; //Based upon RTCC
+extern int PrevMin; //Based upon RTCC
+extern int CurrentSec; //Based upon RTCC
+extern int PrevSec; //Based upon RTCC
 extern int debugVar;  // used during debug to read different values
 extern int LowBatteryDetected; // Set to 1 when battery is less than threshold
 extern int FlashBatteryCounter; //Used to flash low battery LED 0.5s/5sec
 extern char debugString[15]; 
-
-
+extern int pumping;
+extern int hourInit;
+extern int hourEnd;
+extern int minuteInit;
+extern int minuteEnd;
+extern int secondInit;
+extern int secondEnd;
+extern int minTohour;
 
 typedef enum 
 {

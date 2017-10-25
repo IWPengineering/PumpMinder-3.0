@@ -286,9 +286,9 @@ void __attribute__((interrupt, auto_psv)) _CNInterrupt(void) { //button interrup
 
 
 
-#define delayTime                   1000 // main loop duration (including SLEEP) in milliseconds
-#define msHr                        (uint32_t)3600000
-#define hourTicks                   (msHr / delayTime)
+//#define delayTime                   1000 // main loop duration (including SLEEP) in milliseconds
+//#define msHr                        (uint32_t)3600000
+//#define hourTicks                   (msHr / delayTime)
 //#define hourTicks                   5 // simulate 1hr every 2.5sec DEBUG
 //#define BUTTON_TICK_COUNTDOWN_THRESHOLD          5
 #define BUTTON_TICK_RESET_THRESHOLD              5
@@ -301,8 +301,7 @@ int main(void)
     
     initialization();
     sendMessage("Initialization Complete\r\n");
-    
-    uint16_t tickCounter = 0;
+    uint16_t decimalHour = 0;
     uint16_t hourCounter = 0;
 //    int dayCounter = 24; // only needed for debug
 //    int loopCounter = 0; // only needed for debug
@@ -317,7 +316,7 @@ int main(void)
     _T1IF = 0; //clear interrupt flag
     TMR1 = 0; // clear timer 
     T1CONbits.TON = 1;  //turn on Timer1 
-    PR1 = delayTime * 31.25;  // Timer 1 clock = 31.25khz so 31.25 clocks/1ms
+    //PR1 = delayTime * 31.25;  // Timer 1 clock = 31.25khz so 31.25 clocks/1ms
     
     while (1){
         // Just wait until Timer1 has gotten to delayTime since last loop start
@@ -367,24 +366,43 @@ int main(void)
             int EEPROMaddrs = 0; //first location saved for the day
             EEProm_Write_Int(EEPROMaddrs,Day);
             EEPROMaddrs = 1+(Day*2); //first location for new days data
-            int decimalHour=0;
             EEProm_Write_Int(EEPROMaddrs,hourCounter);
             hourCounter = 0; // reset for the new day 
-            decimalHour = ((float)tickCounter/hourTicks)*1000;  // The value of decimalHour is the number of mHours of water
             EEPROMaddrs++;
             EEProm_Write_Int(EEPROMaddrs,decimalHour);
-            tickCounter = 0; //reset for the new day
+            decimalHour = 0;
             Day++;
             PrevDay = CurrentDay;  
          }
+         
         if (readWaterSensor2()){
-            tickCounter++;  // keeps track of fractional hours pumped
-            if (tickCounter >= hourTicks) 
-            {
-                hourCounter++;  // keeps track of integer hours pumped
-                tickCounter = 0;
-           //     sendMessage("another hour of water\r\n");  // Debug
+            if (pumping == 0){
+                pumping = 1;
+                hourInit = GetRTCChour();
+                minuteInit = GetRTCCminute();
+                secondInit = GetRTCCsecond();
             }
+           //     sendMessage("another hour of water\r\n");  // Debug
+        }
+         
+        if ((pumping == 1)){ //&& (!readWaterSensor2)){
+            hourEnd = GetRTCChour();
+            minuteEnd = GetRTCCminute();
+            secondEnd = GetRTCCsecond();
+            int hourTOT = hourEnd - hourInit;
+            if (hourTOT > 0){
+                minuteEnd = minuteEnd + (60 * hourTOT);
+            }
+            int minuteTOT = minuteEnd - minuteInit;
+            if (minuteTOT > 0){
+                secondEnd = secondEnd + (60 * minuteTOT);          
+            }
+            int secondTOT = secondEnd - secondInit;
+            int secondToMin = secondTOT / 60;
+            minTohour = secondToMin / 60;
+            decimalHour = decimalHour + minTohour;
+            hourCounter = hourCounter + hourTOT;
+            pumping = 0;
         }
         
         if(isButtonTicking){
@@ -397,7 +415,7 @@ int main(void)
                if(buttonTicks > BUTTON_TICK_RESET_THRESHOLD)
                {
                    sendMessage("Resetting\r\n");
-                   tickCounter = 0;
+                   decimalHour = 0;
                    hourCounter = 0;
                    buttonTicks = 0;
                    Day = 0;  // Day is used to show the #day since last reset
@@ -415,16 +433,15 @@ int main(void)
         }
 
         if (buttonFlag){ // If someone pushed the button
-            int decimalHour = 0;
             buttonFlag = 0;
             
             // Save the current pumping hours to EEPROM
             int EEPROMaddrs = 1 +(Day*2);
             EEProm_Write_Int(EEPROMaddrs,hourCounter);
-             
-            decimalHour = ((float)tickCounter/hourTicks)*1000;  // The value of decimalHour is the number of mHours of water
+            
             EEPROMaddrs++;
             EEProm_Write_Int(EEPROMaddrs,decimalHour);
+            decimalHour = 0;
             
             ReportHoursOfPumping();  // This will send today and all previously saved days to the RJ45 connection
             isButtonTicking = true;
