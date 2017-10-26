@@ -370,39 +370,45 @@ int main(void)
             hourCounter = 0; // reset for the new day 
             EEPROMaddrs++;
             EEProm_Write_Int(EEPROMaddrs,decimalHour);
-            decimalHour = 0;
+            decimalHour = 0; //reset for new day
             Day++;
             PrevDay = CurrentDay;  
          }
-         
+        //int debugVar = 1; 
+        //if (debugVar == 1){
+        //}
         if (readWaterSensor2()){
             if (pumping == 0){
-                pumping = 1;
-                hourInit = GetRTCChour();
-                minuteInit = GetRTCCminute();
-                secondInit = GetRTCCsecond();
+                pumping = 1; //sets flag saying that it is pumping
+                hourInit = GetRTCChour(); //Gets the current hour
+                minuteInit = GetRTCCminute(); // Gets the current minute
+                secondInit = GetRTCCsecond(); //Gets the current second
             }
            //     sendMessage("another hour of water\r\n");  // Debug
         }
          
-        if ((pumping == 1)){ //&& (!readWaterSensor2)){
+        if ((pumping == 1) && !readWaterSensor2()){
             hourEnd = GetRTCChour();
             minuteEnd = GetRTCCminute();
             secondEnd = GetRTCCsecond();
-            int hourTOT = hourEnd - hourInit;
+            int hourTOT = hourEnd - hourInit; //gives you the total amount of hours pumped.
             if (hourTOT > 0){
-                minuteEnd = minuteEnd + (60 * hourTOT);
-            }
-            int minuteTOT = minuteEnd - minuteInit;
+                minuteEnd = minuteEnd + (60 * hourTOT); //converts the total hours pumped to minutes and adds it to the end total of minutes
+            }                                          
+            int minuteTOT = minuteEnd - minuteInit; //gives you the total amount of minutes pumped
             if (minuteTOT > 0){
-                secondEnd = secondEnd + (60 * minuteTOT);          
+                secondEnd = secondEnd + (60 * minuteTOT); //converts total minutes pumped into seconds pumped and adds it to the end total of seconds         
             }
-            int secondTOT = secondEnd - secondInit;
-            int secondToMin = secondTOT / 60;
-            minTohour = secondToMin / 60;
-            decimalHour = decimalHour + minTohour;
-            hourCounter = hourCounter + hourTOT;
-            pumping = 0;
+            int secondTOT = secondEnd - secondInit; //gives you the total number of seconds pumped
+            int secondToMin = (1000 * secondTOT) / 60; //converts total seconds to thousandths of seconds; then converts that into minutes 
+            int minTohour = secondToMin / 60; // converts secondTomin to thousandths of hours. (e.g.the .27 part of 5.27 hours)
+            decimalHour = decimalHour + minTohour; // adds value to the counter decimalHours
+            hourCounter = hourCounter + hourTOT; 
+            if (decimalHour > 1000){
+                decimalHour = decimalHour - 1000; //if decimalHour is greater than 1000 (e.g. an hours worth of seconds), increments the hour counter
+                hourCounter++;                    //and changes decimalHour as necessary.  
+            }
+            pumping = 0; // clears the pumping flag
         }
         
         if(isButtonTicking){

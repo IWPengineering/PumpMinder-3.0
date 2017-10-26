@@ -126,11 +126,11 @@ section                    address   length (PC units)   length (bytes) (dec)
 -------                    -------   -----------------   --------------------
 .text                        0x200               0xe68          0x159c  (5532)
 .const                      0x1068                0x4c            0x72  (114)
-.text                       0x10b4               0xa40           0xf60  (3936)
-.dinit                      0x1af4                0xca           0x12f  (303)
-.shared.dinit               0x1bbe                 0x2             0x3  (3)
+.text                       0x10b4               0xa5e           0xf8d  (3981)
+.dinit                      0x1b12                0xca           0x12f  (303)
+.shared.dinit               0x1bdc                 0x2             0x3  (3)
 
-                 Total program memory used (bytes):         0x26a0  (9888) 61%
+                 Total program memory used (bytes):         0x26cd  (9933) 61%
 
 
 Ivt Memory  [Origin = 0x4, Length = 0xfc]
@@ -154,12 +154,12 @@ Data Memory  [Origin = 0x800, Length = 0x600]
 
 section                    address      alignment gaps    total length  (dec)
 -------                    -------      --------------    -------------------
-.nbss                        0x800                   0            0x44  (68)
-.data                        0x844                   0            0xf0  (240)
-.bss                         0x934                   0             0x6  (6)
-.data                        0x93a                   0             0x2  (2)
+.nbss                        0x800                   0            0x42  (66)
+.data                        0x842                   0            0xf0  (240)
+.bss                         0x932                   0             0x6  (6)
+.data                        0x938                   0             0x2  (2)
 
-                 Total data memory used (bytes):          0x13c  (316) 20%
+                 Total data memory used (bytes):          0x13a  (314) 20%
 
 
 Dynamic Memory Usage
@@ -167,9 +167,9 @@ Dynamic Memory Usage
 region                     address                      maximum length  (dec)
 ------                     -------                      ---------------------
 heap                             0                                   0  (0)
-stack                        0x93c                               0x4c4  (1220)
+stack                        0x93a                               0x4c6  (1222)
 
-                 Maximum dynamic memory (bytes):          0x4c4  (1220)
+                 Maximum dynamic memory (bytes):          0x4c6  (1222)
 
 
 External Symbols in Data Memory (by address):
@@ -196,13 +196,12 @@ External Symbols in Data Memory (by address):
                     0x0836                  _minuteEnd
                     0x0838                  _secondInit
                     0x083a                  _secondEnd
-                    0x083c                  _minTohour
-                    0x090e                  __iob
-                    0x0932                  __Files
-                    0x0934                  __outdone
-                    0x0935                  __sibuf
-                    0x0937                  __sobuf
-                    0x093a                  ___C30_UART
+                    0x090c                  __iob
+                    0x0930                  __Files
+                    0x0932                  __outdone
+                    0x0933                  __sibuf
+                    0x0935                  __sobuf
+                    0x0938                  ___C30_UART
 
 External Symbols in Data Memory (by name):
 
@@ -219,17 +218,16 @@ External Symbols in Data Memory (by name):
                     0x080e                  _PrevHour
                     0x0828                  _PrevMin
                     0x082c                  _PrevSec
-                    0x0932                  __Files
-                    0x093a                  ___C30_UART
-                    0x090e                  __iob
-                    0x0934                  __outdone
-                    0x0935                  __sibuf
-                    0x0937                  __sobuf
+                    0x0930                  __Files
+                    0x0938                  ___C30_UART
+                    0x090c                  __iob
+                    0x0932                  __outdone
+                    0x0933                  __sibuf
+                    0x0935                  __sobuf
                     0x0816                  _debugString
                     0x0810                  _debugVar
                     0x0832                  _hourEnd
                     0x0830                  _hourInit
-                    0x083c                  _minTohour
                     0x0836                  _minuteEnd
                     0x0834                  _minuteInit
                     0x082e                  _pumping
@@ -573,10 +571,10 @@ __FDS
 .comment
  *(.comment)
 
-.debug_info       0x000000       0x3ca7
+.debug_info       0x000000       0x3c8a
  *(.debug_info)
- .debug_info      0x000000       0x18ed build/default/production/main.o
- .debug_info      0x0018ed       0x23ba build/default/production/utilities.o
+ .debug_info      0x000000       0x18e8 build/default/production/main.o
+ .debug_info      0x0018e8       0x23a2 build/default/production/utilities.o
  *(.gnu.linkonce.wi.*)
 
 .debug_abbrev     0x000000        0x407
@@ -584,20 +582,20 @@ __FDS
  .debug_abbrev    0x000000        0x1d1 build/default/production/main.o
  .debug_abbrev    0x0001d1        0x236 build/default/production/utilities.o
 
-.debug_line       0x000000        0x3ca
+.debug_line       0x000000        0x3ce
  *(.debug_line)
- .debug_line      0x000000        0x1a4 build/default/production/main.o
- .debug_line      0x0001a4        0x226 build/default/production/utilities.o
+ .debug_line      0x000000        0x1a8 build/default/production/main.o
+ .debug_line      0x0001a8        0x226 build/default/production/utilities.o
 
 .debug_frame      0x000000        0x44e
  *(.debug_frame)
  .debug_frame     0x000000        0x102 build/default/production/main.o
  .debug_frame     0x000102        0x34c build/default/production/utilities.o
 
-.debug_str        0x000000        0x234
+.debug_str        0x000000        0x22a
  *(.debug_str)
- .debug_str       0x000000        0x123 build/default/production/main.o
- .debug_str       0x000123        0x111 build/default/production/utilities.o
+ .debug_str       0x000000        0x119 build/default/production/main.o
+ .debug_str       0x000119        0x111 build/default/production/utilities.o
 
 .debug_loc
  *(.debug_loc)
@@ -606,12 +604,12 @@ __FDS
  *(.debug_macinfo)
 
 .debug_pubnames
-                  0x000000        0x413
+                  0x000000        0x405
  *(.debug_pubnames)
  .debug_pubnames
                   0x000000         0xbe build/default/production/main.o
  .debug_pubnames
-                  0x0000be        0x355 build/default/production/utilities.o
+                  0x0000be        0x347 build/default/production/utilities.o
 
 .debug_ranges
  *(.debug_ranges)
@@ -1097,8 +1095,8 @@ __c30_signature
  __c30_signature
                   0x00051a          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(umuldi3.eo)
 
-.nbss               0x0800         0x44
- .nbss              0x0800         0x3e build/default/production/utilities.o
+.nbss               0x0800         0x42
+ .nbss              0x0800         0x3c build/default/production/utilities.o
                     0x0800                  _MessageBeingTransmitted
                     0x0802                  _EEFloatData
                     0x0806                  _Day
@@ -1121,24 +1119,23 @@ __c30_signature
                     0x0836                  _minuteEnd
                     0x0838                  _secondInit
                     0x083a                  _secondEnd
-                    0x083c                  _minTohour
- .nbss              0x083e          0x6 build/default/production/main.o
+ .nbss              0x083c          0x6 build/default/production/main.o
 
-.data               0x0844         0xf0
- .data              0x0844         0xca c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(doprnt_cdnopuxX.XXeo)
- .data              0x090e         0x26 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(_iob.eo)
-                    0x090e                  __iob
-                    0x0932                  __Files
+.data               0x0842         0xf0
+ .data              0x0842         0xca c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(doprnt_cdnopuxX.XXeo)
+ .data              0x090c         0x26 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(_iob.eo)
+                    0x090c                  __iob
+                    0x0930                  __Files
 
-.bss                0x0934          0x6
- .bss               0x0934          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(_iob.eo)
-                    0x0934                  __outdone
-                    0x0935                  __sibuf
-                    0x0937                  __sobuf
+.bss                0x0932          0x6
+ .bss               0x0932          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(_iob.eo)
+                    0x0932                  __outdone
+                    0x0933                  __sibuf
+                    0x0935                  __sobuf
 
-.data               0x093a          0x2
- .data              0x093a          0x2 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libpic30-elf.a(c30_uart.eo)
-                    0x093a                  ___C30_UART
+.data               0x0938          0x2
+ .data              0x0938          0x2 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libpic30-elf.a(c30_uart.eo)
+                    0x0938                  ___C30_UART
 
 .config_DSWDTEN
                   0xf80010          0x2
@@ -1176,7 +1173,7 @@ __c30_signature
                     0x9068                  _pulseWidthThreshold
  .const             0x90a2         0x12 build/default/production/utilities.o
 
-.text             0x0010b4        0xa40
+.text             0x0010b4        0xa5e
  .text            0x0010b4        0x724 build/default/production/utilities.o
                   0x0010b4                  _initAdc
                   0x0010fe                  _readAdc
@@ -1205,7 +1202,7 @@ __c30_signature
                   0x0016b8                  _initSleep
                   0x0016f6                  _sleepForPeriod
                   0x001764                  _resetCheckRemedy
- .text            0x0017d8        0x31c build/default/production/main.o
+ .text            0x0017d8        0x33a build/default/production/main.o
                   0x0017d8                  _ConfigTimerT1NoInt
                   0x0017fa                  _ConfigTimerT2NoInt
                   0x00180a                  _UART_init
@@ -1215,11 +1212,11 @@ __c30_signature
                   0x0018f6                  __CNInterrupt
                   0x001920                  _main
 
-.dinit            0x001af4         0xca
- .dinit           0x001af4         0xca data_init
+.dinit            0x001b12         0xca
+ .dinit           0x001b12         0xca data_init
 
-.shared.dinit     0x001bbe          0x2
- .shared.dinit    0x001bbe          0x2 shared_data_init
+.shared.dinit     0x001bdc          0x2
+ .shared.dinit    0x001bdc          0x2 shared_data_init
 
 .eedata             0xfe00          0x2 load address 0x7ffe00  
  .eedata            0xfe00          0x2 build/default/production/utilities.o

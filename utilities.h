@@ -67,7 +67,6 @@ extern int minuteInit;
 extern int minuteEnd;
 extern int secondInit;
 extern int secondEnd;
-extern int minTohour;
 
 typedef enum 
 {

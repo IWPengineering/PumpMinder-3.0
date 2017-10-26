@@ -60,7 +60,6 @@ int minuteInit;
 int minuteEnd;
 int secondInit;
 int secondEnd;
-int minTohour;
 
 // ****************************************************************************
 /************************* Utility FUNCTIONS ********************************/
