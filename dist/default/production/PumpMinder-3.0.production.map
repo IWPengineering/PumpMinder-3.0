@@ -126,11 +126,11 @@ section                    address   length (PC units)   length (bytes) (dec)
 -------                    -------   -----------------   --------------------
 .text                        0x200               0xe68          0x159c  (5532)
 .const                      0x1068                0x4c            0x72  (114)
-.text                       0x10b4               0xa5e           0xf8d  (3981)
-.dinit                      0x1b12                0xca           0x12f  (303)
-.shared.dinit               0x1bdc                 0x2             0x3  (3)
+.text                       0x10b4               0xa62           0xf93  (3987)
+.dinit                      0x1b16                0xca           0x12f  (303)
+.shared.dinit               0x1be0                 0x2             0x3  (3)
 
-                 Total program memory used (bytes):         0x26cd  (9933) 61%
+                 Total program memory used (bytes):         0x26d3  (9939) 61%
 
 
 Ivt Memory  [Origin = 0x4, Length = 0xfc]
@@ -582,10 +582,10 @@ __FDS
  .debug_abbrev    0x000000        0x1d1 build/default/production/main.o
  .debug_abbrev    0x0001d1        0x236 build/default/production/utilities.o
 
-.debug_line       0x000000        0x3ce
+.debug_line       0x000000        0x3cf
  *(.debug_line)
- .debug_line      0x000000        0x1a8 build/default/production/main.o
- .debug_line      0x0001a8        0x226 build/default/production/utilities.o
+ .debug_line      0x000000        0x1a9 build/default/production/main.o
+ .debug_line      0x0001a9        0x226 build/default/production/utilities.o
 
 .debug_frame      0x000000        0x44e
  *(.debug_frame)
@@ -1173,7 +1173,7 @@ __c30_signature
                     0x9068                  _pulseWidthThreshold
  .const             0x90a2         0x12 build/default/production/utilities.o
 
-.text             0x0010b4        0xa5e
+.text             0x0010b4        0xa62
  .text            0x0010b4        0x724 build/default/production/utilities.o
                   0x0010b4                  _initAdc
                   0x0010fe                  _readAdc
@@ -1202,7 +1202,7 @@ __c30_signature
                   0x0016b8                  _initSleep
                   0x0016f6                  _sleepForPeriod
                   0x001764                  _resetCheckRemedy
- .text            0x0017d8        0x33a build/default/production/main.o
+ .text            0x0017d8        0x33e build/default/production/main.o
                   0x0017d8                  _ConfigTimerT1NoInt
                   0x0017fa                  _ConfigTimerT2NoInt
                   0x00180a                  _UART_init
@@ -1212,11 +1212,11 @@ __c30_signature
                   0x0018f6                  __CNInterrupt
                   0x001920                  _main
 
-.dinit            0x001b12         0xca
- .dinit           0x001b12         0xca data_init
+.dinit            0x001b16         0xca
+ .dinit           0x001b16         0xca data_init
 
-.shared.dinit     0x001bdc          0x2
- .shared.dinit    0x001bdc          0x2 shared_data_init
+.shared.dinit     0x001be0          0x2
+ .shared.dinit    0x001be0          0x2 shared_data_init
 
 .eedata             0xfe00          0x2 load address 0x7ffe00  
  .eedata            0xfe00          0x2 build/default/production/utilities.o

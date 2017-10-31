@@ -407,19 +407,19 @@ int main(void)
             if (decimalHour > 1000){
                 decimalHour = decimalHour - 1000; //if decimalHour is greater than 1000 (e.g. an hours worth of seconds), increments the hour counter
                 hourCounter++;                    //and changes decimalHour as necessary.  
-            }
+            } //This method of counting causes a granularity of 3 seconds, i.e. you only "see" water every three seconds
             pumping = 0; // clears the pumping flag
         }
         
         if(isButtonTicking){
             if(PORTAbits.RA6){
                buttonTicks++; 
-               if(buttonTicks == (BUTTON_TICK_RESET_THRESHOLD - 2)) // Warn 2sec in advance
-               { 
+               if(buttonTicks == ((BUTTON_TICK_RESET_THRESHOLD/3) - (2/3))) // Warn 2sec in advance
+               { // Divide variables by three to account for granularity error in time calculation
                    sendMessage("About to RESET\r\n");
                }
-               if(buttonTicks > BUTTON_TICK_RESET_THRESHOLD)
-               {
+               if(buttonTicks > (BUTTON_TICK_RESET_THRESHOLD/3))
+               { // Divide variables by three to account for granularity error in time calculation
                    sendMessage("Resetting\r\n");
                    decimalHour = 0;
                    hourCounter = 0;
@@ -440,10 +440,10 @@ int main(void)
 
         if (buttonFlag){ // If someone pushed the button
             buttonFlag = 0;
-            
             // Save the current pumping hours to EEPROM
             int EEPROMaddrs = 1 +(Day*2);
             EEProm_Write_Int(EEPROMaddrs,hourCounter);
+            hourCounter = 0;
             
             EEPROMaddrs++;
             EEProm_Write_Int(EEPROMaddrs,decimalHour);
