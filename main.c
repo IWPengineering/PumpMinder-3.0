@@ -301,8 +301,9 @@ int main(void)
     
     initialization();
     sendMessage("Initialization Complete\r\n");
-    uint16_t decimalHour = 0;
+    uint32_t decimalHour = 0;
     uint16_t hourCounter = 0;
+    uint32_t secondToMin = 0;
 //    int dayCounter = 24; // only needed for debug
 //    int loopCounter = 0; // only needed for debug
     //If there is no unread data, day should be zero. if there is unread data, the day should be the next day after what has already been saved.
@@ -393,17 +394,16 @@ int main(void)
             secondEnd = GetRTCCsecond();
             int hourTOT = hourEnd - hourInit; //gives you the total amount of hours pumped.
             if (hourTOT > 0){
-                minuteEnd = minuteEnd + (60 * hourTOT); //converts the total hours pumped to minutes and adds it to the end total of minutes
+                hourCounter++; //converts the total hours pumped to minutes and adds it to the end total of minutes
             }                                          
             int minuteTOT = minuteEnd - minuteInit; //gives you the total amount of minutes pumped
             if (minuteTOT > 0){
                 secondEnd = secondEnd + (60 * minuteTOT); //converts total minutes pumped into seconds pumped and adds it to the end total of seconds         
             }
             int secondTOT = secondEnd - secondInit; //gives you the total number of seconds pumped
-            int secondToMin = (1000 * secondTOT) / 60; //converts total seconds to thousandths of seconds; then converts that into minutes 
+            secondToMin = (1000 * secondTOT) / 60; //converts total seconds to thousandths of seconds; then converts that into minutes -- secondToMin is 32-bit
             int minTohour = secondToMin / 60; // converts secondTomin to thousandths of hours. (e.g.the .27 part of 5.27 hours)
-            decimalHour = decimalHour + minTohour; // adds value to the counter decimalHours
-            hourCounter = hourCounter + hourTOT; 
+            decimalHour = decimalHour + minTohour; // adds value to the counter decimalHour
             if (decimalHour > 1000){
                 decimalHour = decimalHour - 1000; //if decimalHour is greater than 1000 (e.g. an hours worth of seconds), increments the hour counter
                 hourCounter++;                    //and changes decimalHour as necessary.  
