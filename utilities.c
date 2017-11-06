@@ -420,7 +420,7 @@ void sendMessage(char message[160]) {
 void ReportHoursOfPumping(){
     
     int hours;
-    int decimalHour;
+    long int decimalHour;
     int tenth;
     int hundth;
     int mil;
