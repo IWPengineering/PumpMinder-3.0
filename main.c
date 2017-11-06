@@ -387,7 +387,6 @@ int main(void)
             }
            //     sendMessage("another hour of water\r\n");  // Debug
         }
-         
         if ((pumping == 1) && !readWaterSensor2()){
             hourEnd = GetRTCChour();
             minuteEnd = GetRTCCminute();
@@ -400,7 +399,7 @@ int main(void)
             if (minuteTOT > 0){
                 secondEnd = secondEnd + (60 * minuteTOT); //converts total minutes pumped into seconds pumped and adds it to the end total of seconds         
             }
-            int secondTOT = secondEnd - secondInit; //gives you the total number of seconds pumped
+            long int secondTOT = secondEnd - secondInit; //gives you the total number of seconds pumped
             secondToMin = (1000 * secondTOT) / 60; //converts total seconds to thousandths of seconds; then converts that into minutes -- secondToMin is 32-bit
             int minTohour = secondToMin / 60; // converts secondTomin to thousandths of hours. (e.g.the .27 part of 5.27 hours)
             decimalHour = decimalHour + minTohour; // adds value to the counter decimalHour
