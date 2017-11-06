@@ -393,7 +393,7 @@ int main(void)
             secondEnd = GetRTCCsecond();
             int hourTOT = hourEnd - hourInit; //gives you the total amount of hours pumped.
             if (hourTOT > 0){
-                hourCounter++; //converts the total hours pumped to minutes and adds it to the end total of minutes
+                hourCounter = hourCounter + hourTOT; //converts the total hours pumped to minutes and adds it to the end total of minutes
             }                                          
             int minuteTOT = minuteEnd - minuteInit; //gives you the total amount of minutes pumped
             if (minuteTOT > 0){
