@@ -200,6 +200,7 @@ void initialization(void) {
     PrevDay = CurrentDay;
     CurrentHour = GetRTCChour();
     PrevHour = CurrentHour;
+    CheckBattery();
   
 }
 
@@ -286,9 +287,9 @@ void __attribute__((interrupt, auto_psv)) _CNInterrupt(void) { //button interrup
 
 
 
-#define delayTime                   1000 // main loop duration (including SLEEP) in milliseconds
-#define msHr                        (uint32_t)3600000
-#define hourTicks                   (msHr / delayTime)
+//#define delayTime                   1000 // main loop duration (including SLEEP) in milliseconds
+//#define msHr                        (uint32_t)3600000
+//#define hourTicks                   (msHr / delayTime)
 //#define hourTicks                   5 // simulate 1hr every 2.5sec DEBUG
 //#define BUTTON_TICK_COUNTDOWN_THRESHOLD          5
 #define BUTTON_TICK_RESET_THRESHOLD              5
@@ -301,9 +302,9 @@ int main(void)
     
     initialization();
     sendMessage("Initialization Complete\r\n");
-    
-    uint16_t tickCounter = 0;
+    uint32_t decimalHour = 0;
     uint16_t hourCounter = 0;
+    uint32_t secondToMin = 0;
 //    int dayCounter = 24; // only needed for debug
 //    int loopCounter = 0; // only needed for debug
     //If there is no unread data, day should be zero. if there is unread data, the day should be the next day after what has already been saved.
@@ -317,7 +318,7 @@ int main(void)
     _T1IF = 0; //clear interrupt flag
     TMR1 = 0; // clear timer 
     T1CONbits.TON = 1;  //turn on Timer1 
-    PR1 = delayTime * 31.25;  // Timer 1 clock = 31.25khz so 31.25 clocks/1ms
+    //PR1 = delayTime * 31.25;  // Timer 1 clock = 31.25khz so 31.25 clocks/1ms
     
     while (1){
         // Just wait until Timer1 has gotten to delayTime since last loop start
@@ -339,7 +340,7 @@ int main(void)
          // Flash Low Battery LED if battery is Low
          if(LowBatteryDetected){
              FlashBatteryCounter++;
-             if((!PORTAbits.RA4)&&(FlashBatteryCounter == 10)){
+             if((!PORTAbits.RA4)&&(FlashBatteryCounter == 10/3)){
                  PORTAbits.RA4 = 1; // Turn Low Battery LED On for 0.5sec
                  FlashBatteryCounter = 0; // reset counter
              }
@@ -367,37 +368,60 @@ int main(void)
             int EEPROMaddrs = 0; //first location saved for the day
             EEProm_Write_Int(EEPROMaddrs,Day);
             EEPROMaddrs = 1+(Day*2); //first location for new days data
-            int decimalHour=0;
             EEProm_Write_Int(EEPROMaddrs,hourCounter);
             hourCounter = 0; // reset for the new day 
-            decimalHour = ((float)tickCounter/hourTicks)*1000;  // The value of decimalHour is the number of mHours of water
             EEPROMaddrs++;
             EEProm_Write_Int(EEPROMaddrs,decimalHour);
-            tickCounter = 0; //reset for the new day
+            decimalHour = 0; //reset for new day
             Day++;
             PrevDay = CurrentDay;  
          }
+        //int debugVar = 1; 
+        //if (debugVar == 1){
+        //}
         if (readWaterSensor2()){
-            tickCounter++;  // keeps track of fractional hours pumped
-            if (tickCounter >= hourTicks) 
-            {
-                hourCounter++;  // keeps track of integer hours pumped
-                tickCounter = 0;
-           //     sendMessage("another hour of water\r\n");  // Debug
+            if (pumping == 0){
+                pumping = 1; //sets flag saying that it is pumping
+                hourInit = GetRTCChour(); //Gets the current hour
+                minuteInit = GetRTCCminute(); // Gets the current minute
+                secondInit = GetRTCCsecond(); //Gets the current second
             }
+           //     sendMessage("another hour of water\r\n");  // Debug
+        }
+        if ((pumping == 1) && !readWaterSensor2()){
+            hourEnd = GetRTCChour();
+            minuteEnd = GetRTCCminute();
+            secondEnd = GetRTCCsecond();
+            int hourTOT = hourEnd - hourInit; //gives you the total amount of hours pumped.
+            if (hourTOT > 0){
+                hourCounter = hourCounter + hourTOT; //converts the total hours pumped to minutes and adds it to the end total of minutes
+            }                                          
+            int minuteTOT = minuteEnd - minuteInit; //gives you the total amount of minutes pumped
+            if (minuteTOT > 0){
+                secondEnd = secondEnd + (60 * minuteTOT); //converts total minutes pumped into seconds pumped and adds it to the end total of seconds         
+            }
+            long int secondTOT = secondEnd - secondInit; //gives you the total number of seconds pumped
+            secondToMin = (1000 * secondTOT) / 60; //converts total seconds to thousandths of seconds; then converts that into minutes -- secondToMin is 32-bit
+            int minTohour = secondToMin / 60; // converts secondTomin to thousandths of hours. (e.g.the .27 part of 5.27 hours)
+            decimalHour = decimalHour + minTohour; // adds value to the counter decimalHour
+            if (decimalHour > 1000){
+                decimalHour = decimalHour - 1000; //if decimalHour is greater than 1000 (e.g. an hours worth of seconds), increments the hour counter
+                hourCounter++;                    //and changes decimalHour as necessary.  
+            } //This method of counting causes a granularity of 3 seconds, i.e. you only "see" water every three seconds
+            pumping = 0; // clears the pumping flag
         }
         
         if(isButtonTicking){
             if(PORTAbits.RA6){
                buttonTicks++; 
-               if(buttonTicks == (BUTTON_TICK_RESET_THRESHOLD - 2)) // Warn 2sec in advance
-               { 
+               if(buttonTicks == ((BUTTON_TICK_RESET_THRESHOLD/3) - (2/3))) // Warn 2sec in advance
+               { // Divide variables by three to account for granularity error in time calculation
                    sendMessage("About to RESET\r\n");
                }
-               if(buttonTicks > BUTTON_TICK_RESET_THRESHOLD)
-               {
+               if(buttonTicks > (BUTTON_TICK_RESET_THRESHOLD/3))
+               { // Divide variables by three to account for granularity error in time calculation
                    sendMessage("Resetting\r\n");
-                   tickCounter = 0;
+                   decimalHour = 0;
                    hourCounter = 0;
                    buttonTicks = 0;
                    Day = 0;  // Day is used to show the #day since last reset
@@ -415,14 +439,11 @@ int main(void)
         }
 
         if (buttonFlag){ // If someone pushed the button
-            int decimalHour = 0;
             buttonFlag = 0;
-            
             // Save the current pumping hours to EEPROM
             int EEPROMaddrs = 1 +(Day*2);
             EEProm_Write_Int(EEPROMaddrs,hourCounter);
-             
-            decimalHour = ((float)tickCounter/hourTicks)*1000;  // The value of decimalHour is the number of mHours of water
+            
             EEPROMaddrs++;
             EEProm_Write_Int(EEPROMaddrs,decimalHour);
             
