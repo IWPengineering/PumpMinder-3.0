@@ -200,6 +200,7 @@ void initialization(void) {
     PrevDay = CurrentDay;
     CurrentHour = GetRTCChour();
     PrevHour = CurrentHour;
+    CheckBattery();
   
 }
 
@@ -339,7 +340,7 @@ int main(void)
          // Flash Low Battery LED if battery is Low
          if(LowBatteryDetected){
              FlashBatteryCounter++;
-             if((!PORTAbits.RA4)&&(FlashBatteryCounter == 10)){
+             if((!PORTAbits.RA4)&&(FlashBatteryCounter == 10/3)){
                  PORTAbits.RA4 = 1; // Turn Low Battery LED On for 0.5sec
                  FlashBatteryCounter = 0; // reset counter
              }
