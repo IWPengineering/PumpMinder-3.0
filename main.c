@@ -442,11 +442,9 @@ int main(void)
             // Save the current pumping hours to EEPROM
             int EEPROMaddrs = 1 +(Day*2);
             EEProm_Write_Int(EEPROMaddrs,hourCounter);
-            hourCounter = 0;
             
             EEPROMaddrs++;
             EEProm_Write_Int(EEPROMaddrs,decimalHour);
-            decimalHour = 0;
             
             ReportHoursOfPumping();  // This will send today and all previously saved days to the RJ45 connection
             isButtonTicking = true;
