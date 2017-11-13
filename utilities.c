@@ -49,6 +49,18 @@ int debugVar = 0;
 int LowBatteryDetected = 0; // =1 when battery voltage drops below minimum
 int FlashBatteryCounter = 0;
 char debugString[15]; 
+int CurrentMin;
+int PrevMin;
+int CurrentSec;
+int PrevSec;
+int pumping;
+int hourInit;
+int hourEnd;
+int minuteInit;
+int minuteEnd;
+int secondInit;
+int secondEnd;
+
 // ****************************************************************************
 /************************* Utility FUNCTIONS ********************************/
 // ****************************************************************************
@@ -331,6 +343,40 @@ int GetRTCChour(void){
     value = binaryWkDayHours & 0b0000000000111111; 
     return BcdToDec(value);
 }
+/*********************************************************************
+ * Function: GetRTCCminute()
+ * Input: None
+ * Output: int value of the current minute from internal RTCC
+ * Overview: Reads both the current minute and second from the internal RTCC
+ *           and returns the minute
+ * Note: 
+ ********************************************************************/
+int GetRTCCminute(void){
+    char value = 0;
+    //Set the pointer to 0b01 so that reading starts at weekday - hours
+    _RTCPTR = 0b00; // decrements with read or write
+    _RTCWREN = 0; //don't want to write, just want to read
+    long binaryMinuteSec = RTCVAL; // write month & day to variable
+    value = (binaryMinuteSec >> 8) & 0b0000000000111111; 
+    return BcdToDec(value);
+}
+/*********************************************************************
+ * Function: GetRTCCsecond()
+ * Input: None
+ * Output: int value of the current second from internal RTCC
+ * Overview: Reads both the current minute and second from the internal RTCC
+ *           and returns the second
+ * Note: 
+ ********************************************************************/
+int GetRTCCsecond(void){
+    char value = 0;
+    //Set the pointer to 0b01 so that reading starts at weekday - hours
+    _RTCPTR = 0b00; // decrements with read or write
+    _RTCWREN = 0; //don't want to write, just want to read
+    long binaryMinuteSec = RTCVAL; // write month & day to variable
+    value = binaryMinuteSec & 0b0000000000111111; 
+    return BcdToDec(value);
+}
 
 int stringLength(char *string) {
     int i = 0;
@@ -374,14 +420,14 @@ void sendMessage(char message[160]) {
 void ReportHoursOfPumping(){
     
     int hours;
-    int decimalHour;
+    long int decimalHour;
     int tenth;
     int hundth;
     int mil;
     
     int Dayptr = Day;
     while(Dayptr >= 0){
-        int EEPROMaddrs = Dayptr*2;
+        int EEPROMaddrs = 1 + (Dayptr*2);
         hours = EEProm_Read_Int(EEPROMaddrs);
         EEPROMaddrs++;
         decimalHour = EEProm_Read_Int(EEPROMaddrs);
