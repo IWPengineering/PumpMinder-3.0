@@ -406,7 +406,10 @@ int main(void)
             int minuteTOT = minuteEnd - minuteInit; //gives you the total amount of minutes pumped
             if(minuteTOT<0){minuteTOT = minuteTOT+60;} // start may have been just before 60min in an hour
             long int secondTOT = secondEnd - secondInit;
-            if(secondTOT<0){secondTOT = secondTOT+60;} // seconds may have wrapped over a minute boundary
+            if(secondTOT<0){
+                secondTOT = secondTOT+60; // seconds may have wrapped over a minute boundary
+                minuteTOT--;
+            }
             secondTOT = secondTOT + 60*minuteTOT; //now we have the total number of seconds in this event
             // Find the number of milli Minutes
             secondToMin = (1000 * secondTOT) / 60; //converts total seconds to thousandths of seconds; then converts that into minutes -- secondToMin is 32-bit
