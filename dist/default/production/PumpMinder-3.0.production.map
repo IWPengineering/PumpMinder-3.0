@@ -65,7 +65,7 @@ c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(funpack
 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(futil.eo)
                               c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(addsf3.eo) (__fPropagateNaN)
 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(udivsi3.eo)
-                              build/default/production/main.o (___udivsi3)
+                              c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(divsi3.eo) (___udivsi3)
 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(fcompare.eo)
                               c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(feqltle.eo) (__fcompare)
 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(floatdisf.eo)
@@ -127,12 +127,12 @@ Program Memory  [Origin = 0x200, Length = 0x2a00]
 section                    address   length (PC units)   length (bytes) (dec)
 -------                    -------   -----------------   --------------------
 .text                        0x200               0xe86          0x15c9  (5577)
-.const                      0x1086                0x4c            0x72  (114)
-.text                       0x10d2               0xab8          0x1014  (4116)
-.dinit                      0x1b8a                0xca           0x12f  (303)
-.shared.dinit               0x1c54                 0x2             0x3  (3)
+.const                      0x1086                0x74            0xae  (174)
+.text                       0x10fa               0xb3c          0x10da  (4314)
+.dinit                      0x1c36                0xca           0x12f  (303)
+.shared.dinit               0x1d00                 0x2             0x3  (3)
 
-                 Total program memory used (bytes):         0x2781  (10113) 62%
+                 Total program memory used (bytes):         0x2883  (10371) 64%
 
 
 Ivt Memory  [Origin = 0x4, Length = 0xfc]
@@ -281,68 +281,68 @@ External Symbols in Program Memory (by address):
                   0x000ff0                  ___muldi3
                   0x001042                  ___umuldi3
                   0x001086                  _pulseWidthThreshold
-                  0x0010d2                  _initAdc
-                  0x00111c                  _readAdc
-                  0x00114c                  _CheckBattery
-                  0x00119c                  _readBatteryPin
-                  0x0011b4                  _BcdToDec
-                  0x0011e2                  _DecToBcd
-                  0x001210                  _getLowerBCDAsDecimal
-                  0x00122e                  _getUpperBCDAsDecimal
-                  0x00124e                  _setRTCC
-                  0x0012bc                  _GetRTCCmonth
-                  0x0012ee                  _GetRTCCday
-                  0x001318                  _GetRTCChour
-                  0x001342                  _GetRTCCminute
-                  0x001376                  _GetRTCCsecond
-                  0x0013a0                  _stringLength
-                  0x0013be                  _sendMessage
-                  0x0013f8                  _ReportHoursOfPumping
-                  0x0014d2                  _EEProm_Write_Int
-                  0x001516                  _EEProm_Read_Int
-                  0x00153a                  _EEProm_Read_Float
-                  0x00158a                  _EEProm_Write_Float
-                  0x001616                  _ClearEEProm
-                  0x0016a0                  _delayMs
-                  0x0016ce                  __RTCCInterrupt
-                  0x0016e2                  _initSleep
-                  0x001720                  _sleepForPeriod
-                  0x00178e                  _resetCheckRemedy
-                  0x001802                  _ConfigTimerT1NoInt
-                  0x001824                  _ConfigTimerT2NoInt
-                  0x001834                  _UART_init
-                  0x001846                  _initialization
-                  0x001894                  _readWaterSensor2
-                  0x001910                  __DefaultInterrupt
-                  0x001922                  __CNInterrupt
-                  0x00194c                  _main
+                  0x0010fa                  _initAdc
+                  0x001144                  _readAdc
+                  0x001174                  _CheckBattery
+                  0x0011c4                  _readBatteryPin
+                  0x0011dc                  _BcdToDec
+                  0x00120a                  _DecToBcd
+                  0x001238                  _getLowerBCDAsDecimal
+                  0x001256                  _getUpperBCDAsDecimal
+                  0x001276                  _setRTCC
+                  0x0012e4                  _GetRTCCmonth
+                  0x001316                  _GetRTCCday
+                  0x001340                  _GetRTCChour
+                  0x001366                  _GetRTCCminute
+                  0x001396                  _GetRTCCsecond
+                  0x0013bc                  _stringLength
+                  0x0013da                  _sendMessage
+                  0x001414                  _ReportHoursOfPumping
+                  0x0014ee                  _EEProm_Write_Int
+                  0x001532                  _EEProm_Read_Int
+                  0x001556                  _EEProm_Read_Float
+                  0x0015a6                  _EEProm_Write_Float
+                  0x001632                  _ClearEEProm
+                  0x0016bc                  _delayMs
+                  0x0016ea                  __RTCCInterrupt
+                  0x0016fe                  _initSleep
+                  0x00173c                  _sleepForPeriod
+                  0x0017aa                  _resetCheckRemedy
+                  0x00181e                  _ConfigTimerT1NoInt
+                  0x001840                  _ConfigTimerT2NoInt
+                  0x001850                  _UART_init
+                  0x001862                  _initialization
+                  0x0018b0                  _readWaterSensor2
+                  0x00192c                  __DefaultInterrupt
+                  0x00193e                  __CNInterrupt
+                  0x001968                  _main
                   0xf80000                  __FBS.sec
                   0xf80004                  __FGS.sec
 
 External Symbols in Program Memory (by name):
 
-                  0x0011b4                  _BcdToDec
-                  0x00114c                  _CheckBattery
-                  0x001616                  _ClearEEProm
-                  0x001802                  _ConfigTimerT1NoInt
-                  0x001824                  _ConfigTimerT2NoInt
-                  0x0011e2                  _DecToBcd
-                  0x00153a                  _EEProm_Read_Float
-                  0x001516                  _EEProm_Read_Int
-                  0x00158a                  _EEProm_Write_Float
-                  0x0014d2                  _EEProm_Write_Int
-                  0x0012ee                  _GetRTCCday
-                  0x001318                  _GetRTCChour
-                  0x001342                  _GetRTCCminute
-                  0x0012bc                  _GetRTCCmonth
-                  0x001376                  _GetRTCCsecond
-                  0x0013f8                  _ReportHoursOfPumping
-                  0x001834                  _UART_init
-                  0x001922                  __CNInterrupt
-                  0x001910                  __DefaultInterrupt
+                  0x0011dc                  _BcdToDec
+                  0x001174                  _CheckBattery
+                  0x001632                  _ClearEEProm
+                  0x00181e                  _ConfigTimerT1NoInt
+                  0x001840                  _ConfigTimerT2NoInt
+                  0x00120a                  _DecToBcd
+                  0x001556                  _EEProm_Read_Float
+                  0x001532                  _EEProm_Read_Int
+                  0x0015a6                  _EEProm_Write_Float
+                  0x0014ee                  _EEProm_Write_Int
+                  0x001316                  _GetRTCCday
+                  0x001340                  _GetRTCChour
+                  0x001366                  _GetRTCCminute
+                  0x0012e4                  _GetRTCCmonth
+                  0x001396                  _GetRTCCsecond
+                  0x001414                  _ReportHoursOfPumping
+                  0x001850                  _UART_init
+                  0x00193e                  __CNInterrupt
+                  0x00192c                  __DefaultInterrupt
                   0xf80000                  __FBS.sec
                   0xf80004                  __FGS.sec
-                  0x0016ce                  __RTCCInterrupt
+                  0x0016ea                  __RTCCInterrupt
                   0x000306                  ___addsf3
                   0x000f34                  ___divdi3
                   0x0003c0                  ___divsf3
@@ -377,22 +377,22 @@ External Symbols in Program Memory (by name):
                   0x000200                  __resetPRI
                   0x0005e6                  __sprintf_cdnopuxX
                   0x000624                  __vfprintf_cdnopuxX
-                  0x0016a0                  _delayMs
-                  0x001210                  _getLowerBCDAsDecimal
-                  0x00122e                  _getUpperBCDAsDecimal
-                  0x0010d2                  _initAdc
-                  0x0016e2                  _initSleep
-                  0x001846                  _initialization
-                  0x00194c                  _main
+                  0x0016bc                  _delayMs
+                  0x001238                  _getLowerBCDAsDecimal
+                  0x001256                  _getUpperBCDAsDecimal
+                  0x0010fa                  _initAdc
+                  0x0016fe                  _initSleep
+                  0x001862                  _initialization
+                  0x001968                  _main
                   0x001086                  _pulseWidthThreshold
-                  0x00111c                  _readAdc
-                  0x00119c                  _readBatteryPin
-                  0x001894                  _readWaterSensor2
-                  0x00178e                  _resetCheckRemedy
-                  0x0013be                  _sendMessage
-                  0x00124e                  _setRTCC
-                  0x001720                  _sleepForPeriod
-                  0x0013a0                  _stringLength
+                  0x001144                  _readAdc
+                  0x0011c4                  _readBatteryPin
+                  0x0018b0                  _readWaterSensor2
+                  0x0017aa                  _resetCheckRemedy
+                  0x0013da                  _sendMessage
+                  0x001276                  _setRTCC
+                  0x00173c                  _sleepForPeriod
+                  0x0013bc                  _stringLength
 
 Memory Configuration
 
@@ -577,10 +577,10 @@ __FDS
 .comment
  *(.comment)
 
-.debug_info       0x000000       0x3c9a
+.debug_info       0x000000       0x3f4f
  *(.debug_info)
- .debug_info      0x000000       0x18f8 build/default/production/main.o
- .debug_info      0x0018f8       0x23a2 build/default/production/utilities.o
+ .debug_info      0x000000       0x1b90 build/default/production/main.o
+ .debug_info      0x001b90       0x23bf build/default/production/utilities.o
  *(.gnu.linkonce.wi.*)
 
 .debug_abbrev     0x000000        0x407
@@ -588,20 +588,20 @@ __FDS
  .debug_abbrev    0x000000        0x1d1 build/default/production/main.o
  .debug_abbrev    0x0001d1        0x236 build/default/production/utilities.o
 
-.debug_line       0x000000        0x3d5
+.debug_line       0x000000        0x3e5
  *(.debug_line)
- .debug_line      0x000000        0x1ae build/default/production/main.o
- .debug_line      0x0001ae        0x227 build/default/production/utilities.o
+ .debug_line      0x000000        0x1bf build/default/production/main.o
+ .debug_line      0x0001bf        0x226 build/default/production/utilities.o
 
 .debug_frame      0x000000        0x44e
  *(.debug_frame)
  .debug_frame     0x000000        0x102 build/default/production/main.o
  .debug_frame     0x000102        0x34c build/default/production/utilities.o
 
-.debug_str        0x000000        0x22a
+.debug_str        0x000000        0x250
  *(.debug_str)
- .debug_str       0x000000        0x119 build/default/production/main.o
- .debug_str       0x000119        0x111 build/default/production/utilities.o
+ .debug_str       0x000000        0x13f build/default/production/main.o
+ .debug_str       0x00013f        0x111 build/default/production/utilities.o
 
 .debug_loc
  *(.debug_loc)
@@ -1038,70 +1038,70 @@ LOAD data_init
 LOAD shared_data_init
 
 .debug_pubtypes
-                  0x000030        0x45b
+                  0x000030        0x47e
  .debug_pubtypes
-                  0x000030        0x1f7 build/default/production/main.o
+                  0x000030        0x21a build/default/production/main.o
  .debug_pubtypes
-                  0x000227        0x264 build/default/production/utilities.o
+                  0x00024a        0x264 build/default/production/utilities.o
 
 __c30_signature
-                  0x00048b         0xa8
+                  0x0004ae         0xa8
  __c30_signature
-                  0x00048b          0x6 build/default/production/main.o
+                  0x0004ae          0x6 build/default/production/main.o
  __c30_signature
-                  0x000491          0x6 build/default/production/utilities.o
+                  0x0004b4          0x6 build/default/production/utilities.o
  __c30_signature
-                  0x000497          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libpic30-elf.a(crt0_standard.o)
+                  0x0004ba          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libpic30-elf.a(crt0_standard.o)
  __c30_signature
-                  0x00049d          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libpic30-elf.a(data_init_standard.o)
+                  0x0004c0          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libpic30-elf.a(data_init_standard.o)
  __c30_signature
-                  0x0004a3          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(addsf3.eo)
+                  0x0004c6          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(addsf3.eo)
  __c30_signature
-                  0x0004a9          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(divsf3.eo)
+                  0x0004cc          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(divsf3.eo)
  __c30_signature
-                  0x0004af          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(divsi3.eo)
+                  0x0004d2          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(divsi3.eo)
  __c30_signature
-                  0x0004b5          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(feqltle.eo)
+                  0x0004d8          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(feqltle.eo)
  __c30_signature
-                  0x0004bb          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(floatsisf.eo)
+                  0x0004de          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(floatsisf.eo)
  __c30_signature
-                  0x0004c1          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(fpack.eo)
+                  0x0004e4          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(fpack.eo)
  __c30_signature
-                  0x0004c7          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(funpack2.eo)
+                  0x0004ea          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(funpack2.eo)
  __c30_signature
-                  0x0004cd          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(futil.eo)
+                  0x0004f0          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(futil.eo)
  __c30_signature
-                  0x0004d3          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(udivsi3.eo)
+                  0x0004f6          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(udivsi3.eo)
  __c30_signature
-                  0x0004d9          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(fcompare.eo)
+                  0x0004fc          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(fcompare.eo)
  __c30_signature
-                  0x0004df          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(floatdisf.eo)
+                  0x000502          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(floatdisf.eo)
  __c30_signature
-                  0x0004e5          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(floatundisf.eo)
+                  0x000508          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(floatundisf.eo)
  __c30_signature
-                  0x0004eb          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(funpack.eo)
+                  0x00050e          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(funpack.eo)
  __c30_signature
-                  0x0004f1          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(sprintf_cdnopuxX.XXeo)
+                  0x000514          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(sprintf_cdnopuxX.XXeo)
  __c30_signature
-                  0x0004f7          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(doprnt_cdnopuxX.XXeo)
+                  0x00051a          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(doprnt_cdnopuxX.XXeo)
  __c30_signature
-                  0x0004fd          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(fputc.eo)
+                  0x000520          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(fputc.eo)
  __c30_signature
-                  0x000503          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(_iob.eo)
+                  0x000526          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(_iob.eo)
  __c30_signature
-                  0x000509          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(flsbuf.eo)
+                  0x00052c          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(flsbuf.eo)
  __c30_signature
-                  0x00050f          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libpic30-elf.a(write.eo)
+                  0x000532          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libpic30-elf.a(write.eo)
  __c30_signature
-                  0x000515          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libpic30-elf.a(c30_uart.eo)
+                  0x000538          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libpic30-elf.a(c30_uart.eo)
  __c30_signature
-                  0x00051b          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(mulsi3.eo)
+                  0x00053e          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(mulsi3.eo)
  __c30_signature
-                  0x000521          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(divmoddi3.eo)
+                  0x000544          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(divmoddi3.eo)
  __c30_signature
-                  0x000527          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(muldi3.eo)
+                  0x00054a          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(muldi3.eo)
  __c30_signature
-                  0x00052d          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(umuldi3.eo)
+                  0x000550          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(umuldi3.eo)
 
 .nbss               0x0800         0x42
  .nbss              0x0800         0x3c build/default/production/utilities.o
@@ -1176,55 +1176,55 @@ __c30_signature
  .ivt._RTCCInterrupt
                   0x000090          0x2 build/default/production/utilities.o
 
-.const              0x9086         0x4c load address 0x001086  
- .const             0x9086         0x3a build/default/production/main.o
+.const              0x9086         0x74 load address 0x001086  
+ .const             0x9086         0x62 build/default/production/main.o
                     0x9086                  _pulseWidthThreshold
- .const             0x90c0         0x12 build/default/production/utilities.o
+ .const             0x90e8         0x12 build/default/production/utilities.o
 
-.text             0x0010d2        0xab8
- .text            0x0010d2        0x730 build/default/production/utilities.o
-                  0x0010d2                  _initAdc
-                  0x00111c                  _readAdc
-                  0x00114c                  _CheckBattery
-                  0x00119c                  _readBatteryPin
-                  0x0011b4                  _BcdToDec
-                  0x0011e2                  _DecToBcd
-                  0x001210                  _getLowerBCDAsDecimal
-                  0x00122e                  _getUpperBCDAsDecimal
-                  0x00124e                  _setRTCC
-                  0x0012bc                  _GetRTCCmonth
-                  0x0012ee                  _GetRTCCday
-                  0x001318                  _GetRTCChour
-                  0x001342                  _GetRTCCminute
-                  0x001376                  _GetRTCCsecond
-                  0x0013a0                  _stringLength
-                  0x0013be                  _sendMessage
-                  0x0013f8                  _ReportHoursOfPumping
-                  0x0014d2                  _EEProm_Write_Int
-                  0x001516                  _EEProm_Read_Int
-                  0x00153a                  _EEProm_Read_Float
-                  0x00158a                  _EEProm_Write_Float
-                  0x001616                  _ClearEEProm
-                  0x0016a0                  _delayMs
-                  0x0016ce                  __RTCCInterrupt
-                  0x0016e2                  _initSleep
-                  0x001720                  _sleepForPeriod
-                  0x00178e                  _resetCheckRemedy
- .text            0x001802        0x388 build/default/production/main.o
-                  0x001802                  _ConfigTimerT1NoInt
-                  0x001824                  _ConfigTimerT2NoInt
-                  0x001834                  _UART_init
-                  0x001846                  _initialization
-                  0x001894                  _readWaterSensor2
-                  0x001910                  __DefaultInterrupt
-                  0x001922                  __CNInterrupt
-                  0x00194c                  _main
+.text             0x0010fa        0xb3c
+ .text            0x0010fa        0x724 build/default/production/utilities.o
+                  0x0010fa                  _initAdc
+                  0x001144                  _readAdc
+                  0x001174                  _CheckBattery
+                  0x0011c4                  _readBatteryPin
+                  0x0011dc                  _BcdToDec
+                  0x00120a                  _DecToBcd
+                  0x001238                  _getLowerBCDAsDecimal
+                  0x001256                  _getUpperBCDAsDecimal
+                  0x001276                  _setRTCC
+                  0x0012e4                  _GetRTCCmonth
+                  0x001316                  _GetRTCCday
+                  0x001340                  _GetRTCChour
+                  0x001366                  _GetRTCCminute
+                  0x001396                  _GetRTCCsecond
+                  0x0013bc                  _stringLength
+                  0x0013da                  _sendMessage
+                  0x001414                  _ReportHoursOfPumping
+                  0x0014ee                  _EEProm_Write_Int
+                  0x001532                  _EEProm_Read_Int
+                  0x001556                  _EEProm_Read_Float
+                  0x0015a6                  _EEProm_Write_Float
+                  0x001632                  _ClearEEProm
+                  0x0016bc                  _delayMs
+                  0x0016ea                  __RTCCInterrupt
+                  0x0016fe                  _initSleep
+                  0x00173c                  _sleepForPeriod
+                  0x0017aa                  _resetCheckRemedy
+ .text            0x00181e        0x418 build/default/production/main.o
+                  0x00181e                  _ConfigTimerT1NoInt
+                  0x001840                  _ConfigTimerT2NoInt
+                  0x001850                  _UART_init
+                  0x001862                  _initialization
+                  0x0018b0                  _readWaterSensor2
+                  0x00192c                  __DefaultInterrupt
+                  0x00193e                  __CNInterrupt
+                  0x001968                  _main
 
-.dinit            0x001b8a         0xca
- .dinit           0x001b8a         0xca data_init
+.dinit            0x001c36         0xca
+ .dinit           0x001c36         0xca data_init
 
-.shared.dinit     0x001c54          0x2
- .shared.dinit    0x001c54          0x2 shared_data_init
+.shared.dinit     0x001d00          0x2
+ .shared.dinit    0x001d00          0x2 shared_data_init
 
 .eedata             0xfe00          0x2 load address 0x7ffe00  
  .eedata            0xfe00          0x2 build/default/production/utilities.o

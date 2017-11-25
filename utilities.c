@@ -169,8 +169,7 @@ void CheckBattery(void){
     PORTBbits.RB4 = 0;  // Disable the battery voltage check
     if(battVolts < 4.4){ // After 1V (some 1.2), each battery starts a steep voltage drop as charge is pulled
         // turn on LED
-        LowBatteryDetected = 1;
-        
+        LowBatteryDetected = 1;     
     }
     else{
         LowBatteryDetected = 0;
@@ -340,7 +339,7 @@ int GetRTCChour(void){
     _RTCPTR = 0b01; // decrements with read or write
     _RTCWREN = 0; //don't want to write, just want to read
     long binaryWkDayHours = RTCVAL; // write month & day to variable
-    value = binaryWkDayHours & 0b0000000000111111; 
+    value = binaryWkDayHours & 0b0000000011111111; 
     return BcdToDec(value);
 }
 /*********************************************************************
@@ -353,11 +352,11 @@ int GetRTCChour(void){
  ********************************************************************/
 int GetRTCCminute(void){
     char value = 0;
-    //Set the pointer to 0b01 so that reading starts at weekday - hours
+    //Set the pointer to 0b00 so that reading starts at at minutes - seconds
     _RTCPTR = 0b00; // decrements with read or write
     _RTCWREN = 0; //don't want to write, just want to read
-    long binaryMinuteSec = RTCVAL; // write month & day to variable
-    value = (binaryMinuteSec >> 8) & 0b0000000000111111; 
+    long binaryMinuteSec = RTCVAL; // write minute & second to variable
+    value = (binaryMinuteSec >> 8) & 0b0000000011111111; 
     return BcdToDec(value);
 }
 /*********************************************************************
@@ -370,11 +369,11 @@ int GetRTCCminute(void){
  ********************************************************************/
 int GetRTCCsecond(void){
     char value = 0;
-    //Set the pointer to 0b01 so that reading starts at weekday - hours
+    //Set the pointer to 0b00 so that reading starts at minutes - seconds
     _RTCPTR = 0b00; // decrements with read or write
     _RTCWREN = 0; //don't want to write, just want to read
-    long binaryMinuteSec = RTCVAL; // write month & day to variable
-    value = binaryMinuteSec & 0b0000000000111111; 
+    long binaryMinuteSec = RTCVAL; // write minutes & seconds to variable
+    value = binaryMinuteSec & 0b0000000011111111; 
     return BcdToDec(value);
 }
 
@@ -419,31 +418,30 @@ void sendMessage(char message[160]) {
  * *********************************************************************/
 void ReportHoursOfPumping(){
     
-    int hours;
-    long int decimalHour;
-    int tenth;
-    int hundth;
-    int mil;
+    int report_hours;
+    long int report_decimalHour;
+    int report_tenth;
+    int report_cent;
+    int report_mil;
     
     int Dayptr = Day;
     while(Dayptr >= 0){
         int EEPROMaddrs = 1 + (Dayptr*2);
-        hours = EEProm_Read_Int(EEPROMaddrs);
+        report_hours = EEProm_Read_Int(EEPROMaddrs);
         EEPROMaddrs++;
-        decimalHour = EEProm_Read_Int(EEPROMaddrs);
+        report_decimalHour = EEProm_Read_Int(EEPROMaddrs);
         // need to deal with leading zeros
-        tenth = decimalHour/100;
-        decimalHour = decimalHour - (tenth*100);
-        hundth = decimalHour/10;
-        mil = decimalHour - (hundth*10);
+        report_tenth = report_decimalHour/100;
+        report_decimalHour = report_decimalHour - (report_tenth*100);
+        report_cent = report_decimalHour/10;
+        report_mil = report_decimalHour - (report_cent*10);
         
-        
-        
+               
         char hourStr[15];
         char decimalStr[15];
         char dayStr[15];
         sprintf(dayStr, "%d", Dayptr);
-        sprintf(hourStr, "%d", hours);
+        sprintf(hourStr, "%d", report_hours);
         
             
         sendMessage("Day ");
@@ -452,11 +450,11 @@ void ReportHoursOfPumping(){
         sendMessage(hourStr);
         sendMessage(".");
         
-        sprintf(decimalStr, "%d", tenth);
+        sprintf(decimalStr, "%d", report_tenth);
         sendMessage(decimalStr);
-        sprintf(decimalStr, "%d", hundth);
+        sprintf(decimalStr, "%d", report_cent);
         sendMessage(decimalStr);
-        sprintf(decimalStr, "%d", mil);
+        sprintf(decimalStr, "%d", report_mil);
         sendMessage(decimalStr);
         sendMessage("\r\n");    
         Dayptr--;
