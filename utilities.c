@@ -443,7 +443,7 @@ void ReportHoursOfPumping(){
         sprintf(dayStr, "%d", Dayptr);
         sprintf(hourStr, "%d", report_hours);
         
-        sendMessage("Version 3.1");    
+        sendMessage("Version 3.1\r\n");    
         sendMessage("Day ");
         sendMessage(dayStr);
         sendMessage(" : ");
