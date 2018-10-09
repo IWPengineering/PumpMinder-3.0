@@ -295,6 +295,18 @@ void __attribute__((interrupt, auto_psv)) _CNInterrupt(void) { //button interrup
 //#define BUTTON_TICK_COUNTDOWN_THRESHOLD          5
 #define BUTTON_TICK_RESET_THRESHOLD              10
 
+void DeepSleep() {
+
+    PORTAbits.RA4 = 0; //Turn of low battery LED
+    PORTAbits.RA2 = 0; //Turn off WPS
+
+    asm(
+    BSET DSCON, #15; //Enable Deep Sleep
+    PWRSAV #SLEEP_MODE ; //Put the device into Deep Sleep mode
+    );
+}
+
+
 int main(void)
 {   
     resetCheckRemedy();
@@ -319,7 +331,15 @@ int main(void)
     TMR1 = 0; // clear timer 
     T1CONbits.TON = 1;  //turn on Timer1 
     PR1 = delayTime * 31.25;  // Timer 1 clock = 31.25khz so 31.25 clocks/1ms
-    
+
+
+    while(1) {
+        if(PORTAbits.RA6) {
+            DeepSleep();
+        }
+
+    }
+
     while (1){
         // Just wait until Timer1 has gotten to delayTime since last loop start
         //
