@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project>
-  <executable name="dist/default/production/PumpMinder-3.0.production.elf">
+  <executable name="dist/default/debug/PumpMinder-3.0.debug.elf">
     <memory name="data">
       <units>bytes</units>
       <length>1536</length>
-      <used>194</used>
-      <free>1342</free>
+      <used>274</used>
+      <free>1262</free>
     </memory>
     <memory name="program">
       <units>bytes</units>
       <length>16128</length>
-      <used>7815</used>
-      <free>8313</free>
+      <used>7797</used>
+      <free>8331</free>
     </memory>
   </executable>
 </project>

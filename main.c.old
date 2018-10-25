@@ -36,7 +36,7 @@
 #pragma config GCP = OFF                // General Segment Code Flash Code Protection bit (No protection)
 
 // FOSCSEL
-///#pragma config FNOSC = FRC              // Fast RC oscillator (FRC)
+///#pragma config FNOSC = FRC              // Fast RC oscilator (FRC)
 #pragma config FNOSC = LPFRC            // Oscillator Select (500 kHz Low-Power FRC oscillator with divide-by-N (LPFRCDIV), default div 1:1)
 #pragma config IESO = OFF               // Internal External Switch Over bit (Internal External Switchover mode disabled (Two-Speed Start-up disabled))
 
@@ -247,16 +247,16 @@ int readWaterSensor2(void) // RB8 is one water sensor
     TMR2 = 0;  //Restart Timer2
     while(!PORTAbits.RA1 && WaterPresent){
         if(_T2IF){
-      
+            WaterPresent=false;
+            _T2IF = 0;
+        } //low too long, no water
     }
     TMR2 = 0;  //Restart Timer2
     while(PORTAbits.RA1 && WaterPresent){
         if(_T2IF){
             WaterPresent=false;
             _T2IF=0;
-        } //high too long, no water     WaterPresent=false;
-            _T2IF = 0;
-        } //low t
+        } //high too long, no water
     }
     T2CONbits.TON = 0;  //turn off Timer2
     // Don't turn off the 555 Timer.  You need to wait to turn it on 
@@ -266,21 +266,6 @@ int readWaterSensor2(void) // RB8 is one water sensor
     return (WaterPresent);
     
 
-}
-
-void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
-   
-    PORTAbits.RA2 = 0; //Turn off WPS
-    PORTAbits.RA4 = 0; //Turn off low battery LED
-
-    PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
-    PMD2 = PMD2 | 0xFFFF;		//bulk turn off Input Capture and Output compare
-  
-    
-    //asm("BSET DSCON, #DSEN;"); //Enable Deep Sleep
-    asm("BSET DSCON, #15;");
-    asm("PWRSAV #0");
-    //asm("PWRSAV #SLEEP_MODE;"); //Put the device into Deep Sleep mode
 }
 
 void __attribute__((__interrupt__, __auto_psv__)) _DefaultInterrupt() 
@@ -310,6 +295,18 @@ void __attribute__((interrupt, auto_psv)) _CNInterrupt(void) { //button interrup
 //#define BUTTON_TICK_COUNTDOWN_THRESHOLD          5
 #define BUTTON_TICK_RESET_THRESHOLD              10
 
+void DeepSleep() {
+
+    PORTAbits.RA4 = 0; //Turn of low battery LED
+    PORTAbits.RA2 = 0; //Turn off WPS
+
+    asm(
+    BSET DSCON, #15; //Enable Deep Sleep
+    PWRSAV #SLEEP_MODE ; //Put the device into Deep Sleep mode
+    );
+}
+
+
 int main(void)
 {   
     resetCheckRemedy();
@@ -322,8 +319,6 @@ int main(void)
     uint32_t decimalHour = 0;
     uint16_t hourCounter = 0;
 
-    
-    
     //If there is no unread data, day should be zero. if there is unread data, the day should be the next day after what has already been saved.
     int EEPROMaddrs = 0;
     Day = EEProm_Read_Int(EEPROMaddrs);
@@ -336,21 +331,22 @@ int main(void)
     TMR1 = 0; // clear timer 
     T1CONbits.TON = 1;  //turn on Timer1 
     PR1 = delayTime * 31.25;  // Timer 1 clock = 31.25khz so 31.25 clocks/1ms
-    
+
+
     while(1) {
-        if(PORTBbits.RB12 == 1) {
-            //Enter Sleep Mode
-            deepSleep();
+        if(PORTAbits.RA6) {
+            DeepSleep();
         }
+
     }
-    
+
     while (1){
         // Just wait until Timer1 has gotten to delayTime since last loop start
         //
         // For our current selections, this means that we go around this loop 1 every second
         
-        while(!_T1IF){ // just wait until delayTime has gone by
-        }
+         while(!_T1IF){ // just wait until delayTime has gone by
+         }
         _T1IF = 0; //clear T1 interrupt flag
         TMR1 = 0; // clear timer T1
 
@@ -523,7 +519,7 @@ int main(void)
 }
 /** Notes for Dr. Fish:
  *  Need to add the code for writing to EEPROM to store daily values (done not tested)
- *  Need to update code to transmit that array of data points.  (done not tested)
+ *  Need to update code to tranmit that array of data points.  (done not tested)
  *  Need to update Sleep code so that it doesn't go to sleep mid UART transmission (not necessary.  Only start SLEEP when main() commands is
  *  Verify the overall usage of the WPS and also the ticks to hour and decimal hours conversion is correct.
  */
