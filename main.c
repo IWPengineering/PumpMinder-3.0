@@ -66,8 +66,8 @@
 #pragma config ICS = PGx1              // ICD Pin Placement Select bits (PGC1/PGD1 are used for programming and debugging the device)
 
 // FDS
-//#pragma config DSWDTPS = DSWDTPSF       // Deep Sleep Watchdog Timer Postscale Select bits (1:2,147,483,648 (25.7 Days))
-#pragma config DSWDTPS = DSWDTPS4         // 528ms Deep Sleep Watchdog Timer
+#pragma config DSWDTPS = DSWDTPSF       // Deep Sleep Watchdog Timer Postscale Select bits (1:2,147,483,648 (25.7 Days))
+//#pragma config DSWDTPS = DSWDTPS4         // 528ms Deep Sleep Watchdog Timer
 #pragma config DSWDTOSC = LPRC          // DSWDT Reference Clock Select bit (DSWDT uses LPRC as reference clock)
 //#pragma config RTCOSC = SOSC            // RTCC Reference Clock Select bit (RTCC uses SOSC as reference clock)
 #pragma config RTCOSC = LPRC            // RTCC Reference Clock Select bit (RTCC uses LPRC as reference clock)
@@ -273,6 +273,7 @@ void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other 
    
     PORTAbits.RA2 = 0; //Turn off WPS
     PORTAbits.RA4 = 0; //Turn off low battery LED
+    PORTBbits.RB4 = 0; //Turn off Battery Voltage Sensor
 
     PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
     PMD2 = PMD2 | 0xFFFF;		//bulk turn off Input Capture and Output compare
@@ -414,7 +415,7 @@ int main(void)
             }
            
         }
-        if ((pumping == 1) && !readWaterSensor2()){ // We just stopped pumping
+         else if ((pumping == 1) && !readWaterSensor2()){ // We just stopped pumping
             hourEnd = GetRTCChour();
             // We want to read minute and second at the same time so we don't 
                 // have a problem like the time is 1:59 when we read seconds so we 
