@@ -66,8 +66,8 @@
 #pragma config ICS = PGx1              // ICD Pin Placement Select bits (PGC1/PGD1 are used for programming and debugging the device)
 
 // FDS
-#pragma config DSWDTPS = DSWDTPSF       // Deep Sleep Watchdog Timer Postscale Select bits (1:2,147,483,648 (25.7 Days))
-//#pragma config DSWDTPS = DSWDTPS4         // 528ms Deep Sleep Watchdog Timer
+//#pragma config DSWDTPS = DSWDTPSF       // Deep Sleep Watchdog Timer Postscale Select bits (1:2,147,483,648 (25.7 Days))
+#pragma config DSWDTPS = DSWDTPS9         // 9min Deep Sleep Watchdog Timer
 #pragma config DSWDTOSC = LPRC          // DSWDT Reference Clock Select bit (DSWDT uses LPRC as reference clock)
 //#pragma config RTCOSC = SOSC            // RTCC Reference Clock Select bit (RTCC uses SOSC as reference clock)
 #pragma config RTCOSC = LPRC            // RTCC Reference Clock Select bit (RTCC uses LPRC as reference clock)
@@ -306,6 +306,7 @@ void __attribute__((interrupt, auto_psv)) _CNInterrupt(void) { //button interrup
 
 
 #define delayTime                   500 // main loop duration (including SLEEP) in milliseconds
+#define tenSeconds                  10000 //Ten second wait for waiting before sleep after pumping stops
 //#define msHr                        (uint32_t)3600000
 //#define hourTicks                   (msHr / delayTime)
 //#define hourTicks                   5 // simulate 1hr every 2.5sec DEBUG
@@ -337,24 +338,43 @@ int main(void)
     _T1IF = 0; //clear interrupt flag
     TMR1 = 0; // clear timer 
     T1CONbits.TON = 1;  //turn on Timer1 
-    PR1 = delayTime * 31.25;  // Timer 1 clock = 31.25khz so 31.25 clocks/1ms
+    //PR1 = delayTime * 31.25;  // Timer 1 clock = 31.25khz so 31.25 clocks/1ms
+    PR1 = tenSeconds * 31.25; //Timer 1 clock set to ten seconds
     
+    /* Test code for deepSleep
+     * RB12 is jumper pins when shorted enters deep sleep
     while(1) {
         if(PORTBbits.RB12 == 1) {
             //Enter Sleep Mode
             deepSleep();
         }
     }
+    */
+    
+    /**
+     * DSWAKE register with bits set for reason of DeepSleep wakeup
+     * bit 8 high when wake up on INT0 interrupt
+     *  -INT0 is on pin 11; Same pin as U1TX change to interrupt in deepSleep
+     *      method. use a mosfet to block off vibration sensor when sending data
+     *      or change U1TX to U2TX(pin4) and put Pickit_4(pin4) elsewhere
+     * bit 4 high when wake up on DWSDT timeout 
+     * bit 7 high when wake up on Deep Sleep Fault
+     *  -Do a power on reset?
+     * Bits need to be cleared after being read
+     *  
+     */    
     
     while (1){
         // Just wait until Timer1 has gotten to delayTime since last loop start
         //
         // For our current selections, this means that we go around this loop 1 every second
         
-        while(!_T1IF){ // just wait until delayTime has gone by
-        }
-        _T1IF = 0; //clear T1 interrupt flag
-        TMR1 = 0; // clear timer T1
+        
+        //Not necessary? Commented out for sake of going to sleep sooner
+//        while(!_T1IF){ // just wait until delayTime has gone by
+//        }
+//        _T1IF = 0; //clear T1 interrupt flag
+//        TMR1 = 0; // clear timer T1
 
          // Update the hour and day
          CurrentHour = GetRTCChour();
@@ -395,6 +415,8 @@ int main(void)
             PrevDay = CurrentDay;  
          }
 
+         
+         //Start of checking for water 
           if (readWaterSensor2()){
             if (pumping == 0){ //Is this the start of a pumping event?
                 pumping = 1; //sets flag saying that pumping is in progress
@@ -519,6 +541,25 @@ int main(void)
             isButtonTicking = true;
             
         }
+         
+         //If timer at 10 seconds and pumping == 0 goto deepsleep and didn't wake up from deepsleep
+         //tenSeconds is the delay time variable
+         //DSWDT set to 9 minutes
+         if(_T1IF && pumping == 0 && !DSWAKE&0b00001000) {//_T1IF set when timer reaches 10 seconds
+             deepSleep();
+         } 
+         else if(pumping == 0 && DSWAKE&0b00001000) { //else woke up from deep sleep go back to sleep if pumping == 0
+             DSWAKE = DSWAKE & 0b11110111; //Clear wake up from deepsleep flag
+             
+             // _DPSLP same bit from DSWAKE?
+             deepSleep();
+         }
+         else { //Still pumping clear TMR1
+             _T1IF = 0; //Clearing in case reached timeout but is still pumping
+             TMR1 = 0;
+         }
+         
+        
     }
 
     return -1;
