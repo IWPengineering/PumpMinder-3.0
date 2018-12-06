@@ -747,11 +747,12 @@ void resetCheckRemedy(void)
         _IOPUWR = 0;
     }
 
-    if(_DPSLP)
-    {
-        // Woke up from Deep Sleep Mode
-        _DPSLP = 0;
-    }
+    //Using this flag in main code for deep sleep cycling
+//    if(_DPSLP)
+//    {
+//        // Woke up from Deep Sleep Mode
+//        _DPSLP = 0;
+//    }
     
     /*if(RCONbits.CM)
     {
