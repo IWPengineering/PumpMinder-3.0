@@ -419,6 +419,9 @@ int main(void)
          //Start of checking for water 
           if (readWaterSensor2()){
             if (pumping == 0){ //Is this the start of a pumping event?
+                
+                TMR1 = 0; //We are pumping timer needs to be reset
+                
                 pumping = 1; //sets flag saying that pumping is in progress
                 hourInit = GetRTCChour(); //Gets the current hour
                 // We want to read minute and second at the same time so we don't 
@@ -438,7 +441,10 @@ int main(void)
            
         }
          else if ((pumping == 1) && !readWaterSensor2()){ // We just stopped pumping
-            hourEnd = GetRTCChour();
+             TMR1 = 0; //Stopped pumping set timer to 0 to
+                        //wait for 10 seconds without water pumping
+             
+             hourEnd = GetRTCChour();
             // We want to read minute and second at the same time so we don't 
                 // have a problem like the time is 1:59 when we read seconds so we 
                 // end up getting seconds =  59 and min = 2;
@@ -545,16 +551,19 @@ int main(void)
          //If timer at 10 seconds and pumping == 0 goto deepsleep and didn't wake up from deepsleep
          //tenSeconds is the delay time variable
          //DSWDT set to 9 minutes
-         if(_T1IF && pumping == 0 && !DSWAKE&0b00001000) {//_T1IF set when timer reaches 10 seconds
+         //if(_T1IF && pumping == 0 && (!DSWAKE&0b00001000)) {//_T1IF set when timer reaches 10 seconds
+         if(_T1IF && pumping == 0 && (!_DPSLP)) {   
+            sendMessage("\r\n Entering Deep Sleep Did not wake up from Deep Sleep\r\n");
              deepSleep();
          } 
-         else if(pumping == 0 && DSWAKE&0b00001000) { //else woke up from deep sleep go back to sleep if pumping == 0
-             DSWAKE = DSWAKE & 0b11110111; //Clear wake up from deepsleep flag
-             
+         //else if(pumping == 0 && (DSWAKE&0b00001000)) { //else woke up from deep sleep go back to sleep if pumping == 0
+         else if(pumping == 0 && (_DPSLP))   {
+            DSWAKE = DSWAKE & 0b11110111; //Clear wake up from deepsleep flag
+             sendMessage("\r\n Entering Deep Sleep recently woke up from Deep Sleep\r\n");
              // _DPSLP same bit from DSWAKE?
              deepSleep();
          }
-         else { //Still pumping clear TMR1
+         else if(pumping == 1) { //Still pumping clear TMR1
              _T1IF = 0; //Clearing in case reached timeout but is still pumping
              TMR1 = 0;
          }
