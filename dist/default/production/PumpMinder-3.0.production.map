@@ -295,9 +295,9 @@ External Symbols in Program Memory (by address):
                   0x001548                  _ConfigTimerT2NoInt
                   0x001558                  _UART_init
                   0x00156a                  _initialization
-                  0x0015b8                  _readWaterSensor2
-                  0x001628                  _deepSleep
-                  0x001644                  _main
+                  0x0015ba                  _readWaterSensor2
+                  0x00162e                  _deepSleep
+                  0x00164a                  _main
                   0xf80000                  __FBS.sec
                   0xf80004                  __FGS.sec
 
@@ -352,18 +352,18 @@ External Symbols in Program Memory (by name):
                   0x000200                  __resetPRI
                   0x000680                  __sprintf_cdnopuxX
                   0x0006be                  __vfprintf_cdnopuxX
-                  0x001628                  _deepSleep
+                  0x00162e                  _deepSleep
                   0x0013e0                  _delayMs
                   0x000f52                  _getLowerBCDAsDecimal
                   0x000f70                  _getUpperBCDAsDecimal
                   0x000e14                  _initAdc
                   0x00140e                  _initSleep
                   0x00156a                  _initialization
-                  0x001644                  _main
+                  0x00164a                  _main
                   0x000d1e                  _pulseWidthThreshold
                   0x000e5a                  _readAdc
                   0x000ed8                  _readBatteryPin
-                  0x0015b8                  _readWaterSensor2
+                  0x0015ba                  _readWaterSensor2
                   0x0014bc                  _resetCheckRemedy
                   0x0010fa                  _sendMessage
                   0x000f90                  _setRTCC
@@ -509,12 +509,12 @@ usercode
 
 __FBS             0xf80000          0x2
  *(__FBS.sec*)
- __FBS.sec        0xf80000          0x2 /CW/_FBSàTÝ
+ __FBS.sec        0xf80000          0x2 /CW/_FBS¨aàa__FBS.sec
                   0xf80000                  __FBS.sec
 
 __FGS             0xf80004          0x2
  *(__FGS.sec*)
- __FGS.sec        0xf80004          0x2 /CW/_FGSØDÝ
+ __FGS.sec        0xf80004          0x2 /CW/_FGSØÁÂ__FGS.sec
                   0xf80004                  __FGS.sec
 
 __FOSCSEL
@@ -549,10 +549,10 @@ __FDS
  .debug_abbrev    0x000000        0x1d1 build/default/production/main.o
  .debug_abbrev    0x0001d1        0x236 build/default/production/utilities.o
 
-.debug_line       0x000000        0x469
+.debug_line       0x000000        0x46f
  *(.debug_line)
- .debug_line      0x000000        0x1e5 build/default/production/main.o
- .debug_line      0x0001e5        0x284 build/default/production/utilities.o
+ .debug_line      0x000000        0x1eb build/default/production/main.o
+ .debug_line      0x0001eb        0x284 build/default/production/utilities.o
 
 .debug_frame      0x000000        0x472
  *(.debug_frame)
@@ -993,8 +993,8 @@ LOAD c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a
 LOAD c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libc-elf.a
 END GROUP
 OUTPUT(dist/default/production/PumpMinder-3.0.production.elf elf32-pic30)
-LOAD /CW/_FGSØDÝ
-LOAD /CW/_FBSàTÝ
+LOAD /CW/_FGSØÁÂ__FGS.sec
+LOAD /CW/_FBS¨aàa__FBS.sec
 LOAD data_init
 
 .debug_pubtypes
@@ -1168,9 +1168,9 @@ __c30_signature
                   0x001548                  _ConfigTimerT2NoInt
                   0x001558                  _UART_init
                   0x00156a                  _initialization
-                  0x0015b8                  _readWaterSensor2
-                  0x001628                  _deepSleep
-                  0x001644                  _main
+                  0x0015ba                  _readWaterSensor2
+                  0x00162e                  _deepSleep
+                  0x00164a                  _main
 
 .dinit            0x00195a         0x7a
  .dinit           0x00195a         0x7a data_init

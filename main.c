@@ -93,7 +93,7 @@ void ConfigTimerT1NoInt(){
     // Assume the period register PR1 will be set by the function using Timer1
 
     // init the Timer1 Interrupt control bits
-    _T1IF = 0; // clear the interrupt flag, this can be used to see if Timer1 got to PR2
+    _T1IF = 0; // clear the interrupt flag, this can be used to see if Timer1 got to PR1
     _T1IE = 0; // disable the T1 interrupt source
  
 }
@@ -203,6 +203,8 @@ void initialization(void) {
     CurrentHour = GetRTCChour();
     PrevHour = CurrentHour;
     CheckBattery();
+    
+    pumping = 0; //Assume not pumping on turn on
   
 }
 
@@ -265,6 +267,7 @@ int readWaterSensor2(void) // RB8 is one water sensor
     // and its not worth the power savings
     //           PORTAbits.RA2 = 0; // Turn off the 555 Timer
     //WaterPresent variable is high if the freq detected is fast enough (PR2 value)
+    WaterPresent = false;
     return (WaterPresent);
     
 
@@ -273,7 +276,8 @@ int readWaterSensor2(void) // RB8 is one water sensor
 void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
    
     PORTAbits.RA2 = 0; //Turn off WPS
-    PORTAbits.RA4 = 0; //Turn off low battery LED
+    //PORTAbits.RA4 = 0; //Turn off low battery LED
+    PORTAbits.RA4 = 1; //Turn on LED to help with debugging
     PORTBbits.RB4 = 0; //Turn off Battery Voltage Sensor
 
     PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
@@ -340,17 +344,11 @@ int main(void)
     TMR1 = 0; // clear timer 
     T1CONbits.TON = 1;  //turn on Timer1 
     //PR1 = delayTime * 31.25;  // Timer 1 clock = 31.25khz so 31.25 clocks/1ms
-    PR1 = tenSeconds * 31.25; //Timer 1 clock set to ten seconds
-    
+    PR1 = 39000; //Timer 1 clock set to about ten seconds
+    //PR1 = 7800;
     /* Test code for deepSleep
      * RB12 is jumper pins when shorted enters deep sleep
-    while(1) {
-        if(PORTBbits.RB12 == 1) {
-            //Enter Sleep Mode
-            deepSleep();
-        }
-    }
-    */
+
     
     /**
      * DSWAKE register with bits set for reason of DeepSleep wakeup
@@ -363,7 +361,7 @@ int main(void)
      *  -Do a power on reset?
      * Bits need to be cleared after being read
      *  
-     */    
+     */  
     
     while (1){
         // Just wait until Timer1 has gotten to delayTime since last loop start
@@ -420,8 +418,9 @@ int main(void)
          //Start of checking for water 
           if (readWaterSensor2()){
             if (pumping == 0){ //Is this the start of a pumping event?
-                
+                _T1IF = 0;
                 TMR1 = 0; //We are pumping timer needs to be reset
+                T1CONbits.TON = 0;
                 
                 pumping = 1; //sets flag saying that pumping is in progress
                 hourInit = GetRTCChour(); //Gets the current hour
@@ -442,8 +441,7 @@ int main(void)
            
         }
          else if ((pumping == 1) && !readWaterSensor2()){ // We just stopped pumping
-             TMR1 = 0; //Stopped pumping set timer to 0 to
-                        //wait for 10 seconds without water pumping
+            T1CONbits.TON = 1;
              
              hourEnd = GetRTCChour();
             // We want to read minute and second at the same time so we don't 
@@ -548,12 +546,12 @@ int main(void)
             isButtonTicking = true;
             
         }
-         
+        
          //If timer at 10 seconds and pumping == 0 goto deepsleep and didn't wake up from deepsleep
          //tenSeconds is the delay time variable
          //DSWDT set to 9 minutes
          //if(_T1IF && pumping == 0 && (!DSWAKE&0b00001000)) {//_T1IF set when timer reaches 10 seconds
-         if(_T1IF && pumping == 0 && (!_DPSLP)) {   
+         if(_T1IF && pumping == 0 && (!_DPSLP)) { 
             sendMessage("\r\n Entering Deep Sleep Did not wake up from Deep Sleep\r\n");
             deepSleep();
          } 
@@ -563,10 +561,6 @@ int main(void)
             sendMessage("\r\n Entering Deep Sleep recently woke up from Deep Sleep\r\n");
              // _DPSLP same bit from DSWAKE?
             deepSleep();
-         }
-         else if(pumping == 1) { //Still pumping clear TMR1
-             _T1IF = 0; //Clearing in case reached timeout but is still pumping
-             TMR1 = 0;
          }
     }
 
