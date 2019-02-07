@@ -88,12 +88,13 @@ void ConfigTimerT1NoInt(){
     //   As a 16bit counter running from Fosc/2 
     //   continue running in IDLE, Don't enable yet
     T1CON = 0x2000; 
-    T1CONbits.TCKPS = 1; // select 1:8 prescale so Timer Clock = 250khz/8 = 31.25khz 
+    //T1CONbits.TCKPS = 1; // select 1:8 prescale so Timer Clock = 250khz/8 = 31.25khz Timer can wait up to 2 seconds
+    T1CONbits.TCKPS = 2; // 1:64 -> 250kHz/64 = 3.906kHz Timer can wait up 16 seconds
     // Assume the period register PR1 will be set by the function using Timer1
 
     // init the Timer1 Interrupt control bits
-    _T1IF = 0; // clear the interrupt flag, this can be used to see if Timer2 got to PR2
-    _T1IE = 0; // disable the T2 interrupt source
+    _T1IF = 0; // clear the interrupt flag, this can be used to see if Timer1 got to PR2
+    _T1IE = 0; // disable the T1 interrupt source
  
 }
 void ConfigTimerT2NoInt(){
@@ -554,21 +555,19 @@ int main(void)
          //if(_T1IF && pumping == 0 && (!DSWAKE&0b00001000)) {//_T1IF set when timer reaches 10 seconds
          if(_T1IF && pumping == 0 && (!_DPSLP)) {   
             sendMessage("\r\n Entering Deep Sleep Did not wake up from Deep Sleep\r\n");
-             deepSleep();
+            deepSleep();
          } 
          //else if(pumping == 0 && (DSWAKE&0b00001000)) { //else woke up from deep sleep go back to sleep if pumping == 0
          else if(pumping == 0 && (_DPSLP))   {
             DSWAKE = DSWAKE & 0b11110111; //Clear wake up from deepsleep flag
-             sendMessage("\r\n Entering Deep Sleep recently woke up from Deep Sleep\r\n");
+            sendMessage("\r\n Entering Deep Sleep recently woke up from Deep Sleep\r\n");
              // _DPSLP same bit from DSWAKE?
-             deepSleep();
+            deepSleep();
          }
          else if(pumping == 1) { //Still pumping clear TMR1
              _T1IF = 0; //Clearing in case reached timeout but is still pumping
              TMR1 = 0;
          }
-         
-        
     }
 
     return -1;
