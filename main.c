@@ -52,7 +52,7 @@
 #pragma config WDTPS = PS32768          // Watchdog Timer Postscale Select bits (1:32,768)
 #pragma config FWPSA = PR128            // WDT Prescaler (WDT prescaler ratio of 1:128)
 #pragma config WINDIS = OFF             // Windowed Watchdog Timer Disable bit (Standard WDT selected; windowed WDT disabled)
-///#pragma config FWDTEN = ON              // Watchdog Timer Enable bit (WDT enabled)
+#//pragma config FWDTEN = ON              // Watchdog Timer Enable bit (WDT enabled)
 #pragma config FWDTEN = OFF             // Watchdog Timer Enable bit (WDT disabled (control is placed on the SWDTEN bit))
 
 // FPOR
@@ -67,7 +67,7 @@
 
 // FDS
 //#pragma config DSWDTPS = DSWDTPSF       // Deep Sleep Watchdog Timer Postscale Select bits (1:2,147,483,648 (25.7 Days))
-#pragma config DSWDTPS = DSWDTPS9         // 9min Deep Sleep Watchdog Timer
+#pragma config DSWDTPS = DSWDTPS6         // Deep Sleep Watchdog Timer
 #pragma config DSWDTOSC = LPRC          // DSWDT Reference Clock Select bit (DSWDT uses LPRC as reference clock)
 //#pragma config RTCOSC = SOSC            // RTCC Reference Clock Select bit (RTCC uses SOSC as reference clock)
 #pragma config RTCOSC = LPRC            // RTCC Reference Clock Select bit (RTCC uses LPRC as reference clock)
@@ -276,8 +276,8 @@ int readWaterSensor2(void) // RB8 is one water sensor
 void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
    
     PORTAbits.RA2 = 0; //Turn off WPS
-    //PORTAbits.RA4 = 0; //Turn off low battery LED
-    PORTAbits.RA4 = 1; //Turn on LED to help with debugging
+    PORTAbits.RA4 = 0; //Turn off low battery LED
+    //PORTAbits.RA4 = 1; //Turn on LED to help with debugging
     PORTBbits.RB4 = 0; //Turn off Battery Voltage Sensor
 
     PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
@@ -286,6 +286,7 @@ void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other 
     
     //asm("BSET DSCON, #DSEN;"); //Enable Deep Sleep
     asm("BSET DSCON, #15;");
+    asm("NOP;");
     asm("PWRSAV #0");
     //asm("PWRSAV #SLEEP_MODE;"); //Put the device into Deep Sleep mode
 }
@@ -329,8 +330,8 @@ int main(void)
     sendMessage("Initialization Complete\r\n");
     uint32_t decimalHour = 0;
     uint16_t hourCounter = 0;
-
     
+    //PORTAbits.RA4 = 0;
     
     //If there is no unread data, day should be zero. if there is unread data, the day should be the next day after what has already been saved.
     int EEPROMaddrs = 0;
@@ -346,8 +347,8 @@ int main(void)
     //PR1 = delayTime * 31.25;  // Timer 1 clock = 31.25khz so 31.25 clocks/1ms
     PR1 = 39000; //Timer 1 clock set to about ten seconds
     //PR1 = 7800;
-    /* Test code for deepSleep
-     * RB12 is jumper pins when shorted enters deep sleep
+    //* Test code for deepSleep
+    //* RB12 is jumper pins when shorted enters deep sleep
 
     
     /**
@@ -557,7 +558,12 @@ int main(void)
          } 
          //else if(pumping == 0 && (DSWAKE&0b00001000)) { //else woke up from deep sleep go back to sleep if pumping == 0
          else if(pumping == 0 && (_DPSLP))   {
+            _RELEASE = 0;
             DSWAKE = DSWAKE & 0b11110111; //Clear wake up from deepsleep flag
+            asm("NOP;");
+            asm("NOP;");
+            asm("NOP;");
+            
             sendMessage("\r\n Entering Deep Sleep recently woke up from Deep Sleep\r\n");
              // _DPSLP same bit from DSWAKE?
             deepSleep();
