@@ -125,10 +125,10 @@ section                    address   length (PC units)   length (bytes) (dec)
 -------                    -------   -----------------   --------------------
 .text                        0x200               0xb1e          0x10ad  (4269)
 .const                       0xd1e                0xf6           0x171  (369)
-.text                        0xe14               0xb5e          0x110d  (4365)
-.dinit                      0x1972                0x7a            0xb7  (183)
+.text                        0xe14               0xb66          0x1119  (4377)
+.dinit                      0x197a                0x7a            0xb7  (183)
 
-                 Total "program" memory used (bytes):         0x23e2  (9186) 56%
+                 Total "program" memory used (bytes):         0x23ee  (9198) 57%
 
 
 Data EEPROM Memory  [Origin = 0x7ffe00, Length = 0x200]
@@ -295,9 +295,9 @@ External Symbols in Program Memory (by address):
                   0x001548                  _ConfigTimerT2NoInt
                   0x001558                  _UART_init
                   0x00156a                  _initialization
-                  0x0015ba                  _readWaterSensor2
-                  0x00162e                  _deepSleep
-                  0x00164c                  _main
+                  0x0015ce                  _readWaterSensor2
+                  0x00163e                  _deepSleep
+                  0x00165c                  _main
                   0xf80000                  __FBS.sec
                   0xf80004                  __FGS.sec
 
@@ -352,18 +352,18 @@ External Symbols in Program Memory (by name):
                   0x000200                  __resetPRI
                   0x000680                  __sprintf_cdnopuxX
                   0x0006be                  __vfprintf_cdnopuxX
-                  0x00162e                  _deepSleep
+                  0x00163e                  _deepSleep
                   0x0013e0                  _delayMs
                   0x000f52                  _getLowerBCDAsDecimal
                   0x000f70                  _getUpperBCDAsDecimal
                   0x000e14                  _initAdc
                   0x00140e                  _initSleep
                   0x00156a                  _initialization
-                  0x00164c                  _main
+                  0x00165c                  _main
                   0x000d1e                  _pulseWidthThreshold
                   0x000e5a                  _readAdc
                   0x000ed8                  _readBatteryPin
-                  0x0015ba                  _readWaterSensor2
+                  0x0015ce                  _readWaterSensor2
                   0x0014bc                  _resetCheckRemedy
                   0x0010fa                  _sendMessage
                   0x000f90                  _setRTCC
@@ -509,12 +509,12 @@ usercode
 
 __FBS             0xf80000          0x2
  *(__FBS.sec*)
- __FBS.sec        0xf80000          0x2 /CW/_FBSÿDÓ
+ __FBS.sec        0xf80000          0x2 /CW/_FBS∏‚
                   0xf80000                  __FBS.sec
 
 __FGS             0xf80004          0x2
  *(__FGS.sec*)
- __FGS.sec        0xf80004          0x2 /CW/_FGS®‰Ì
+ __FGS.sec        0xf80004          0x2 /CW/_FGSê¥·
                   0xf80004                  __FGS.sec
 
 __FOSCSEL
@@ -549,10 +549,10 @@ __FDS
  .debug_abbrev    0x000000        0x1d1 build/default/production/main.o
  .debug_abbrev    0x0001d1        0x236 build/default/production/utilities.o
 
-.debug_line       0x000000        0x476
+.debug_line       0x000000        0x47c
  *(.debug_line)
- .debug_line      0x000000        0x1f2 build/default/production/main.o
- .debug_line      0x0001f2        0x284 build/default/production/utilities.o
+ .debug_line      0x000000        0x1f8 build/default/production/main.o
+ .debug_line      0x0001f8        0x284 build/default/production/utilities.o
 
 .debug_frame      0x000000        0x472
  *(.debug_frame)
@@ -993,8 +993,8 @@ LOAD c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a
 LOAD c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libc-elf.a
 END GROUP
 OUTPUT(dist/default/production/PumpMinder-3.0.production.elf elf32-pic30)
-LOAD /CW/_FGS®‰Ì
-LOAD /CW/_FBSÿDÓ
+LOAD /CW/_FGSê¥·
+LOAD /CW/_FBS∏‚
 LOAD data_init
 
 .debug_pubtypes
@@ -1135,7 +1135,7 @@ __c30_signature
                     0x8d1e                  _pulseWidthThreshold
  .const             0x8df4         0x20 build/default/production/utilities.o
 
-.text             0x000e14        0xb5e
+.text             0x000e14        0xb66
  .text            0x000e14        0x710 build/default/production/utilities.o
                   0x000e14                  _initAdc
                   0x000e5a                  _readAdc
@@ -1163,17 +1163,17 @@ __c30_signature
                   0x00140e                  _initSleep
                   0x00144c                  _sleepForPeriod
                   0x0014bc                  _resetCheckRemedy
- .text            0x001524        0x44e build/default/production/main.o
+ .text            0x001524        0x456 build/default/production/main.o
                   0x001524                  _ConfigTimerT1NoInt
                   0x001548                  _ConfigTimerT2NoInt
                   0x001558                  _UART_init
                   0x00156a                  _initialization
-                  0x0015ba                  _readWaterSensor2
-                  0x00162e                  _deepSleep
-                  0x00164c                  _main
+                  0x0015ce                  _readWaterSensor2
+                  0x00163e                  _deepSleep
+                  0x00165c                  _main
 
-.dinit            0x001972         0x7a
- .dinit           0x001972         0x7a data_init
+.dinit            0x00197a         0x7a
+ .dinit           0x00197a         0x7a data_init
 
 .eedata             0xfe00          0x2 load address 0x7ffe00  
  .eedata            0xfe00          0x2 build/default/production/utilities.o

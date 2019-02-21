@@ -110,6 +110,7 @@ void ConfigTimerT2NoInt(){
     // init the Timer2 Interrupt control bits
     _T2IF = 0; // clear the interrupt flag, this can be used to see if Timer2 got to PR2
     _T2IE = 0; // disable the T2 interrupt source
+    T2CONbits.TON = 0; //Turn off timer 2
 }
 
 void UART_init(void) {
@@ -169,6 +170,7 @@ void initialization(void) {
     // WPS_ON/OFF pin 7 RA2 (WPS input is RA1 - pin 3)
     TRISAbits.TRISA2 = 0; //makes water presence sensor enable pin an output.
     PORTAbits.RA2 = 1; //turn on the water presence sensor.
+    // Need to wait for the 555 to turn on.
     
     // Battery Voltage Check (enable = B4, battery voltage A3)
     TRISBbits.TRISB4 = 0; // make battery voltage check enable an output
@@ -177,6 +179,7 @@ void initialization(void) {
     // Low battery Indicator
     TRISAbits.TRISA4 = 0; // Make low battery indicator (pin 10 A4 an output)
     PORTAbits.RA4 = 0;    // Turn off the low battery indicator
+    //TRISAbits.TRISA4 = 1; // Pin 10 A4 input.
     
     // Debug/Setting Pins
     // Button pin (RA6) is already an input
@@ -194,6 +197,16 @@ void initialization(void) {
     // Timer control (for WPS)
     ConfigTimerT1NoInt();    // used to control total time for each outer loop
     ConfigTimerT2NoInt();    // used by readWaterSensor to time the WPS_OUT pulse
+    
+    //Delay for 5ms for the WPS turn on time
+    _T1IF = 0;
+    TMR1 = 0;
+    T1CONbits.TON = 1;
+    //PR1 = 20; //5 ms = 3906 * .005
+    PR1 = 40; //10ms
+    while(!_T1IF) {
+        // Waiting for 5ms
+    }
     
     //void setRTCC(char sec, char min, char hr, char wkday, char date, char month, char year)
     //        internal RTCC expects 0-6 lets call Sunday 0
@@ -248,26 +261,28 @@ int readWaterSensor2(void) // RB8 is one water sensor
             _T2IF = 0;
         } //high too long, no water
     }
-    TMR2 = 0;  //Restart Timer2
+    TMR2 = 0;  //Clear Timer2
     while(!PORTAbits.RA1 && WaterPresent){
         if(_T2IF){
-      
+            WaterPresent=false;
+            _T2IF = 0;      
+        }
     }
-    TMR2 = 0;  //Restart Timer2
+    TMR2 = 0;  //Clear Timer2
     while(PORTAbits.RA1 && WaterPresent){
         if(_T2IF){
             WaterPresent=false;
             _T2IF=0;
         } //high too long, no water     WaterPresent=false;
-            _T2IF = 0;
-        } //low t
-    }
+       
+    } //low t
     T2CONbits.TON = 0;  //turn off Timer2
+    _T2IF = 0;
     // Don't turn off the 555 Timer.  You need to wait to turn it on 
     // and its not worth the power savings
     //           PORTAbits.RA2 = 0; // Turn off the 555 Timer
     //WaterPresent variable is high if the freq detected is fast enough (PR2 value)
-    WaterPresent = false;
+    //WaterPresent = false;
     return (WaterPresent);
     
 
@@ -279,6 +294,8 @@ void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other 
     PORTAbits.RA4 = 0; //Turn off low battery LED
     //PORTAbits.RA4 = 1; //Turn on LED to help with debugging
     PORTBbits.RB4 = 0; //Turn off Battery Voltage Sensor
+    //TRISAbits.TRISA4 = 0; // Pin 10 A4 input.
+    //PORTAbits.RA4 = 1; //Vibration Sensor
 
     PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
     PMD2 = PMD2 | 0xFFFF;		//bulk turn off Input Capture and Output compare
@@ -339,7 +356,7 @@ int main(void)
     if (Day > 0) { // This is the number of days saved but unread. 
         Day++;
     }
-    
+
       
     _T1IF = 0; //clear interrupt flag
     TMR1 = 0; // clear timer 
@@ -363,7 +380,7 @@ int main(void)
      * Bits need to be cleared after being read
      *  
      */  
-    
+    PORTAbits.RA4 = 0; //DEBUG Code
     while (1){
         // Just wait until Timer1 has gotten to delayTime since last loop start
         //
@@ -547,7 +564,7 @@ int main(void)
             isButtonTicking = true;
             
         }
-        
+         pumping = pumping;
          //If timer at 10 seconds and pumping == 0 goto deepsleep and didn't wake up from deepsleep
          //tenSeconds is the delay time variable
          //DSWDT set to 9 minutes

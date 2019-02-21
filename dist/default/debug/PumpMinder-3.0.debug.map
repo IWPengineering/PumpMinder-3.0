@@ -4,11 +4,11 @@ Tool Name:
   c:\program files (x86)\microchip\xc16\v1.35\bin\bin\..\bin/elf-ld.exe
 
 Command:
-  -TC:\\Users\\Shane\\AppData\\Local\\Temp\\tmp000001d4.00 \
-  -TC:\\Users\\Shane\\AppData\\Local\\Temp\\tmp000001d4.01 \
-  -TC:\\Users\\Shane\\AppData\\Local\\Temp\\tmp000001d4.02 \
-  -TC:\\Users\\Shane\\AppData\\Local\\Temp\\tmp000001d4.03 \
-  -TC:\\Users\\Shane\\AppData\\Local\\Temp\\tmp000001d4.04 \
+  -TC:\\Users\\Shane\\AppData\\Local\\Temp\\tmp00002448.00 \
+  -TC:\\Users\\Shane\\AppData\\Local\\Temp\\tmp00002448.01 \
+  -TC:\\Users\\Shane\\AppData\\Local\\Temp\\tmp00002448.02 \
+  -TC:\\Users\\Shane\\AppData\\Local\\Temp\\tmp00002448.03 \
+  -TC:\\Users\\Shane\\AppData\\Local\\Temp\\tmp00002448.04 \
   -p24F16KA101 \
   -o \
   dist/default/debug/PumpMinder-3.0.debug.elf \
@@ -133,10 +133,10 @@ section                    address   length (PC units)   length (bytes) (dec)
 -------                    -------   -----------------   --------------------
 .text                        0x200               0xb1e          0x10ad  (4269)
 .const                       0xd1e                0xf6           0x171  (369)
-.text                        0xe14               0xb46          0x10e9  (4329)
-.dinit                      0x195a                0x7a            0xb7  (183)
+.text                        0xe14               0xb76          0x1131  (4401)
+.dinit                      0x198a                0x7a            0xb7  (183)
 
-                 Total "program" memory used (bytes):         0x23be  (9150) 56%
+                 Total "program" memory used (bytes):         0x2406  (9222) 57%
 
 
 Data EEPROM Memory  [Origin = 0x7ffe00, Length = 0x200]
@@ -306,11 +306,11 @@ External Symbols in Program Memory (by address):
                   0x0014bc                  _resetCheckRemedy
                   0x001524                  _ConfigTimerT1NoInt
                   0x001548                  _ConfigTimerT2NoInt
-                  0x001558                  _UART_init
-                  0x00156a                  _initialization
-                  0x0015ba                  _readWaterSensor2
-                  0x00162e                  _deepSleep
-                  0x00164a                  _main
+                  0x00155a                  _UART_init
+                  0x00156c                  _initialization
+                  0x0015d0                  _readWaterSensor2
+                  0x00164e                  _deepSleep
+                  0x00166c                  _main
                   0xf80000                  __FBS.sec
                   0xf80004                  __FGS.sec
 
@@ -332,7 +332,7 @@ External Symbols in Program Memory (by name):
                   0x000ffe                  _GetRTCCmonth
                   0x0010b6                  _GetRTCCsecond
                   0x001134                  _ReportHoursOfPumping
-                  0x001558                  _UART_init
+                  0x00155a                  _UART_init
                   0x0002da                  __CNInterrupt
                   0x0002c8                  __DefaultInterrupt
                   0xf80000                  __FBS.sec
@@ -365,18 +365,18 @@ External Symbols in Program Memory (by name):
                   0x000200                  __resetPRI
                   0x000680                  __sprintf_cdnopuxX
                   0x0006be                  __vfprintf_cdnopuxX
-                  0x00162e                  _deepSleep
+                  0x00164e                  _deepSleep
                   0x0013e0                  _delayMs
                   0x000f52                  _getLowerBCDAsDecimal
                   0x000f70                  _getUpperBCDAsDecimal
                   0x000e14                  _initAdc
                   0x00140e                  _initSleep
-                  0x00156a                  _initialization
-                  0x00164a                  _main
+                  0x00156c                  _initialization
+                  0x00166c                  _main
                   0x000d1e                  _pulseWidthThreshold
                   0x000e5a                  _readAdc
                   0x000ed8                  _readBatteryPin
-                  0x0015ba                  _readWaterSensor2
+                  0x0015d0                  _readWaterSensor2
                   0x0014bc                  _resetCheckRemedy
                   0x0010fa                  _sendMessage
                   0x000f90                  _setRTCC
@@ -550,12 +550,12 @@ usercode
 
 __FBS             0xf80000          0x2
  *(__FBS.sec*)
- __FBS.sec        0xf80000          0x2 /CW/_FBSˆ°ê
+ __FBS.sec        0xf80000          0x2 /CW/_FBSˆ0ó
                   0xf80000                  __FBS.sec
 
 __FGS             0xf80004          0x2
  *(__FGS.sec*)
- __FGS.sec        0xf80004          0x2 /CW/_FGS˜Ðê
+ __FGS.sec        0xf80004          0x2 /CW/_FGS€ ó
                   0xf80004                  __FGS.sec
 
 __FOSCSEL
@@ -579,10 +579,10 @@ __FDS
 .comment
  *(.comment)
 
-.debug_info       0x000000       0x416f
+.debug_info       0x000000       0x41f6
  *(.debug_info)
- .debug_info      0x000000       0x1d91 build/default/debug/main.o
- .debug_info      0x001d91       0x23de build/default/debug/utilities.o
+ .debug_info      0x000000       0x1e18 build/default/debug/main.o
+ .debug_info      0x001e18       0x23de build/default/debug/utilities.o
  *(.gnu.linkonce.wi.*)
 
 .debug_abbrev     0x000000        0x407
@@ -590,20 +590,20 @@ __FDS
  .debug_abbrev    0x000000        0x1d1 build/default/debug/main.o
  .debug_abbrev    0x0001d1        0x236 build/default/debug/utilities.o
 
-.debug_line       0x000000        0x46f
+.debug_line       0x000000        0x47d
  *(.debug_line)
- .debug_line      0x000000        0x1eb build/default/debug/main.o
- .debug_line      0x0001eb        0x284 build/default/debug/utilities.o
+ .debug_line      0x000000        0x1f9 build/default/debug/main.o
+ .debug_line      0x0001f9        0x284 build/default/debug/utilities.o
 
 .debug_frame      0x000000        0x472
  *(.debug_frame)
  .debug_frame     0x000000        0x126 build/default/debug/main.o
  .debug_frame     0x000126        0x34c build/default/debug/utilities.o
 
-.debug_str        0x000000        0x259
+.debug_str        0x000000        0x263
  *(.debug_str)
- .debug_str       0x000000        0x148 build/default/debug/main.o
- .debug_str       0x000148        0x111 build/default/debug/utilities.o
+ .debug_str       0x000000        0x152 build/default/debug/main.o
+ .debug_str       0x000152        0x111 build/default/debug/utilities.o
 
 .debug_loc
  *(.debug_loc)
@@ -1034,69 +1034,69 @@ LOAD c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a
 LOAD c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libc-elf.a
 END GROUP
 OUTPUT(dist/default/debug/PumpMinder-3.0.debug.elf elf32-pic30)
-LOAD /CW/_FGS˜Ðê
-LOAD /CW/_FBSˆ°ê
+LOAD /CW/_FGS€ ó
+LOAD /CW/_FBSˆ0ó
 LOAD data_init
 
 .debug_pubtypes
-                  0x000030        0x4b4
+                  0x000030        0x4d3
  .debug_pubtypes
-                  0x000030        0x237 build/default/debug/main.o
+                  0x000030        0x256 build/default/debug/main.o
  .debug_pubtypes
-                  0x000267        0x27d build/default/debug/utilities.o
+                  0x000286        0x27d build/default/debug/utilities.o
 
 __c30_signature
-                  0x0004e4         0x96
+                  0x000503         0x96
  __c30_signature
-                  0x0004e4          0x6 build/default/debug/main.o
+                  0x000503          0x6 build/default/debug/main.o
  __c30_signature
-                  0x0004ea          0x6 build/default/debug/utilities.o
+                  0x000509          0x6 build/default/debug/utilities.o
  __c30_signature
-                  0x0004f0          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libpic30-elf.a(crt0_standard.o)
+                  0x00050f          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libpic30-elf.a(crt0_standard.o)
  __c30_signature
-                  0x0004f6          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libpic30-elf.a(data_init_standard.o)
+                  0x000515          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libpic30-elf.a(data_init_standard.o)
  __c30_signature
-                  0x0004fc          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(addsf3.eo)
+                  0x00051b          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(addsf3.eo)
  __c30_signature
-                  0x000502          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(divsf3.eo)
+                  0x000521          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(divsf3.eo)
  __c30_signature
-                  0x000508          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(divsi3.eo)
+                  0x000527          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(divsi3.eo)
  __c30_signature
-                  0x00050e          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(feqltle.eo)
+                  0x00052d          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(feqltle.eo)
  __c30_signature
-                  0x000514          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(floatsisf.eo)
+                  0x000533          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(floatsisf.eo)
  __c30_signature
-                  0x00051a          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(fpack.eo)
+                  0x000539          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(fpack.eo)
  __c30_signature
-                  0x000520          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(funpack2.eo)
+                  0x00053f          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(funpack2.eo)
  __c30_signature
-                  0x000526          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(futil.eo)
+                  0x000545          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(futil.eo)
  __c30_signature
-                  0x00052c          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(udivsi3.eo)
+                  0x00054b          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(udivsi3.eo)
  __c30_signature
-                  0x000532          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(fcompare.eo)
+                  0x000551          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(fcompare.eo)
  __c30_signature
-                  0x000538          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(floatdisf.eo)
+                  0x000557          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(floatdisf.eo)
  __c30_signature
-                  0x00053e          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(floatundisf.eo)
+                  0x00055d          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(floatundisf.eo)
  __c30_signature
-                  0x000544          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(funpack.eo)
+                  0x000563          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(funpack.eo)
  __c30_signature
-                  0x00054a          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libc-elf.a(sprintf_cdnopuxX.XXeo)
+                  0x000569          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libc-elf.a(sprintf_cdnopuxX.XXeo)
  __c30_signature
-                  0x000550          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libc-elf.a(doprnt_cdnopuxX.XXeo)
+                  0x00056f          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libc-elf.a(doprnt_cdnopuxX.XXeo)
  __c30_signature
-                  0x000556          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libc-elf.a(fputc.eo)
+                  0x000575          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libc-elf.a(fputc.eo)
  __c30_signature
-                  0x00055c          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libc-elf.a(_iob.eo)
+                  0x00057b          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libc-elf.a(_iob.eo)
  __c30_signature
-                  0x000562          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libc-elf.a(flsbuf.eo)
+                  0x000581          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libc-elf.a(flsbuf.eo)
  __c30_signature
-                  0x000568          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libpic30-elf.a(write.eo)
+                  0x000587          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libpic30-elf.a(write.eo)
  __c30_signature
-                  0x00056e          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libpic30-elf.a(c30_uart.eo)
+                  0x00058d          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libpic30-elf.a(c30_uart.eo)
  __c30_signature
-                  0x000574          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(mulsi3.eo)
+                  0x000593          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a(mulsi3.eo)
 
 .nbss               0x0850         0x42
  .nbss              0x0850         0x3c build/default/debug/utilities.o
@@ -1176,7 +1176,7 @@ __c30_signature
                     0x8d1e                  _pulseWidthThreshold
  .const             0x8df4         0x20 build/default/debug/utilities.o
 
-.text             0x000e14        0xb46
+.text             0x000e14        0xb76
  .text            0x000e14        0x710 build/default/debug/utilities.o
                   0x000e14                  _initAdc
                   0x000e5a                  _readAdc
@@ -1204,17 +1204,17 @@ __c30_signature
                   0x00140e                  _initSleep
                   0x00144c                  _sleepForPeriod
                   0x0014bc                  _resetCheckRemedy
- .text            0x001524        0x436 build/default/debug/main.o
+ .text            0x001524        0x466 build/default/debug/main.o
                   0x001524                  _ConfigTimerT1NoInt
                   0x001548                  _ConfigTimerT2NoInt
-                  0x001558                  _UART_init
-                  0x00156a                  _initialization
-                  0x0015ba                  _readWaterSensor2
-                  0x00162e                  _deepSleep
-                  0x00164a                  _main
+                  0x00155a                  _UART_init
+                  0x00156c                  _initialization
+                  0x0015d0                  _readWaterSensor2
+                  0x00164e                  _deepSleep
+                  0x00166c                  _main
 
-.dinit            0x00195a         0x7a
- .dinit           0x00195a         0x7a data_init
+.dinit            0x00198a         0x7a
+ .dinit           0x00198a         0x7a data_init
 
 .eedata             0xfe00          0x2 load address 0x7ffe00  
  .eedata            0xfe00          0x2 build/default/debug/utilities.o
