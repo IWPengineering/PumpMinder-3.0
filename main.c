@@ -52,7 +52,7 @@
 #pragma config WDTPS = PS32768          // Watchdog Timer Postscale Select bits (1:32,768)
 #pragma config FWPSA = PR128            // WDT Prescaler (WDT prescaler ratio of 1:128)
 #pragma config WINDIS = OFF             // Windowed Watchdog Timer Disable bit (Standard WDT selected; windowed WDT disabled)
-#//pragma config FWDTEN = ON              // Watchdog Timer Enable bit (WDT enabled)
+//#pragma config FWDTEN = ON              // Watchdog Timer Enable bit (WDT enabled)
 #pragma config FWDTEN = OFF             // Watchdog Timer Enable bit (WDT disabled (control is placed on the SWDTEN bit))
 
 // FPOR
@@ -179,6 +179,7 @@ void initialization(void) {
     // Low battery Indicator
     TRISAbits.TRISA4 = 0; // Make low battery indicator (pin 10 A4 an output)
     PORTAbits.RA4 = 0;    // Turn off the low battery indicator
+    //PORTAbits.RA4 = 1; // Turn on LED
     //TRISAbits.TRISA4 = 1; // Pin 10 A4 input.
     
     // Debug/Setting Pins
@@ -291,8 +292,8 @@ int readWaterSensor2(void) // RB8 is one water sensor
 void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
    
     PORTAbits.RA2 = 0; //Turn off WPS
-    PORTAbits.RA4 = 0; //Turn off low battery LED
-    //PORTAbits.RA4 = 1; //Turn on LED to help with debugging
+    //PORTAbits.RA4 = 0; //Turn off low battery LED
+    PORTAbits.RA4 = 1; //Turn on LED to help with debugging
     PORTBbits.RB4 = 0; //Turn off Battery Voltage Sensor
     //TRISAbits.TRISA4 = 0; // Pin 10 A4 input.
     //PORTAbits.RA4 = 1; //Vibration Sensor
@@ -380,8 +381,9 @@ int main(void)
      * Bits need to be cleared after being read
      *  
      */  
-    PORTAbits.RA4 = 0; //DEBUG Code
+
     while (1){
+        //deepSleep();
         // Just wait until Timer1 has gotten to delayTime since last loop start
         //
         // For our current selections, this means that we go around this loop 1 every second
@@ -565,6 +567,7 @@ int main(void)
             
         }
          pumping = pumping;
+         //PORTAbits.RA4 = 0;
          //If timer at 10 seconds and pumping == 0 goto deepsleep and didn't wake up from deepsleep
          //tenSeconds is the delay time variable
          //DSWDT set to 9 minutes
