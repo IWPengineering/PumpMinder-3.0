@@ -509,12 +509,12 @@ usercode
 
 __FBS             0xf80000          0x2
  *(__FBS.sec*)
- __FBS.sec        0xf80000          0x2 /CW/_FBSð%×
+ __FBS.sec        0xf80000          0x2 /CW/_FBSØõú
                   0xf80000                  __FBS.sec
 
 __FGS             0xf80004          0x2
  *(__FGS.sec*)
- __FGS.sec        0xf80004          0x2 /CW/_FGSà×
+ __FGS.sec        0xf80004          0x2 /CW/_FGSàû
                   0xf80004                  __FGS.sec
 
 __FOSCSEL
@@ -993,8 +993,8 @@ LOAD c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a
 LOAD c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libc-elf.a
 END GROUP
 OUTPUT(dist/default/production/PumpMinder-3.0.production.elf elf32-pic30)
-LOAD /CW/_FGSà×
-LOAD /CW/_FBSð%×
+LOAD /CW/_FGSàû
+LOAD /CW/_FBSØõú
 LOAD data_init
 
 .debug_pubtypes

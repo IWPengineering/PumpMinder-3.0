@@ -116,12 +116,19 @@ void initAdc(void)
 
 void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
     //PORTAbits.RA4 = 0; //Turn off low battery LED
-    
-    
+    asm("NOP;");
+    pumping = pumping;
+    asm("NOP;");
+    int bob = PORTA;
+    bob = bob & 0b11111011;
+    bob = bob | 0b00010000;
+    PORTA = bob;
+    /*
     PORTAbits.RA4 = 1; //Turn on LED to help with debugging
     PORTAbits.RA2 = 0; //Turn off WPS
     PORTAbits.RA4 = 1; //Turn on LED to help with debugging
     PORTAbits.RA2 = 0; //Turn off WPS
+     */
     
     PORTBbits.RB4 = 0; //Turn off Battery Voltage Sensor
     //TRISAbits.TRISA4 = 0; // Pin 10 A4 input.
