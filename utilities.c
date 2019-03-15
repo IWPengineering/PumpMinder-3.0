@@ -114,6 +114,31 @@ void initAdc(void)
     AD1CHSbits.CH0SA = 5; //AN5 is where VWATCH is connected
 }
 
+void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
+    //PORTAbits.RA4 = 0; //Turn off low battery LED
+    
+    
+    PORTAbits.RA4 = 1; //Turn on LED to help with debugging
+    PORTAbits.RA2 = 0; //Turn off WPS
+    PORTAbits.RA4 = 1; //Turn on LED to help with debugging
+    PORTAbits.RA2 = 0; //Turn off WPS
+    
+    PORTBbits.RB4 = 0; //Turn off Battery Voltage Sensor
+    //TRISAbits.TRISA4 = 0; // Pin 10 A4 input.
+    //PORTAbits.RA4 = 1; //Vibration Sensor
+
+    PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
+    PMD2 = PMD2 | 0xFFFF;		//bulk turn off Input Capture and Output compare
+  
+    
+    //asm("BSET DSCON, #DSEN;"); //Enable Deep Sleep
+    asm("BSET DSCON, #15;");
+    asm("NOP;");
+    asm("PWRSAV #0");
+    //asm("PWRSAV #SLEEP_MODE;"); //Put the device into Deep Sleep mode
+}
+
+
 /*********************************************************************
  * Function: readAdc()
  * Input: channel

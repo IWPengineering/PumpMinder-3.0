@@ -281,7 +281,7 @@ int readWaterSensor2(void) // RB8 is one water sensor
     _T2IF = 0;
     // Don't turn off the 555 Timer.  You need to wait to turn it on 
     // and its not worth the power savings
-    //           PORTAbits.RA2 = 0; // Turn off the 555 Timer
+    // Turn off the 555 Timer
     //WaterPresent variable is high if the freq detected is fast enough (PR2 value)
     //WaterPresent = false;
     return (WaterPresent);
@@ -289,25 +289,7 @@ int readWaterSensor2(void) // RB8 is one water sensor
 
 }
 
-void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
-   
-    PORTAbits.RA2 = 0; //Turn off WPS
-    //PORTAbits.RA4 = 0; //Turn off low battery LED
-    PORTAbits.RA4 = 1; //Turn on LED to help with debugging
-    PORTBbits.RB4 = 0; //Turn off Battery Voltage Sensor
-    //TRISAbits.TRISA4 = 0; // Pin 10 A4 input.
-    //PORTAbits.RA4 = 1; //Vibration Sensor
 
-    PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
-    PMD2 = PMD2 | 0xFFFF;		//bulk turn off Input Capture and Output compare
-  
-    
-    //asm("BSET DSCON, #DSEN;"); //Enable Deep Sleep
-    asm("BSET DSCON, #15;");
-    asm("NOP;");
-    asm("PWRSAV #0");
-    //asm("PWRSAV #SLEEP_MODE;"); //Put the device into Deep Sleep mode
-}
 
 void __attribute__((__interrupt__, __auto_psv__)) _DefaultInterrupt() 
 { 
@@ -348,8 +330,6 @@ int main(void)
     sendMessage("Initialization Complete\r\n");
     uint32_t decimalHour = 0;
     uint16_t hourCounter = 0;
-    
-    //PORTAbits.RA4 = 0;
     
     //If there is no unread data, day should be zero. if there is unread data, the day should be the next day after what has already been saved.
     int EEPROMaddrs = 0;
