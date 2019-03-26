@@ -115,22 +115,26 @@ void initAdc(void)
 }
 
 void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
+    //Read from ports, Write to Latches
     //PORTAbits.RA4 = 0; //Turn off low battery LED
-    asm("NOP;");
     pumping = pumping;
-    asm("NOP;");
-    int bob = PORTA;
-    bob = bob & 0b11111011;
-    bob = bob | 0b00010000;
-    PORTA = bob;
+    //int bob = PORTA;
+    //bob = bob & 0b11111011;
+    //bob = bob | 0b00010000;
+    //PORTA = bob;
+    
+    LATAbits.LATA4 = 1;
+    LATAbits.LATA2 = 0;
+    //LATA = LATA & 0b11111011;
+    //LATA = LATA | 0b00010000;
+    
     /*
     PORTAbits.RA4 = 1; //Turn on LED to help with debugging
     PORTAbits.RA2 = 0; //Turn off WPS
-    PORTAbits.RA4 = 1; //Turn on LED to help with debugging
-    PORTAbits.RA2 = 0; //Turn off WPS
      */
+    LATB = LATB * 0b11101111;
+    //PORTBbits.RB4 = 0; //Turn off Battery Voltage Sensor
     
-    PORTBbits.RB4 = 0; //Turn off Battery Voltage Sensor
     //TRISAbits.TRISA4 = 0; // Pin 10 A4 input.
     //PORTAbits.RA4 = 1; //Vibration Sensor
 
