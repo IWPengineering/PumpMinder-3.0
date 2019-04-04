@@ -66,8 +66,8 @@
 #pragma config ICS = PGx1              // ICD Pin Placement Select bits (PGC1/PGD1 are used for programming and debugging the device)
 
 // FDS
-//#pragma config DSWDTPS = DSWDTPSF       // Deep Sleep Watchdog Timer Postscale Select bits (1:2,147,483,648 (25.7 Days))
-#pragma config DSWDTPS = DSWDTPS6         // Deep Sleep Watchdog Timer
+#pragma config DSWDTPS = DSWDTPSF       // Deep Sleep Watchdog Timer Postscale Select bits (1:2,147,483,648 (25.7 Days))
+//#pragma config DSWDTPS = DSWDTPS6         // Deep Sleep Watchdog Timer
 #pragma config DSWDTOSC = LPRC          // DSWDT Reference Clock Select bit (DSWDT uses LPRC as reference clock)
 //#pragma config RTCOSC = SOSC            // RTCC Reference Clock Select bit (RTCC uses SOSC as reference clock)
 #pragma config RTCOSC = LPRC            // RTCC Reference Clock Select bit (RTCC uses LPRC as reference clock)
@@ -182,16 +182,16 @@ void initialization(void) {
     // Low battery Indicator--Will be used for Vibration Sensor
     TRISAbits.TRISA4 = 0; // Make low battery indicator (pin 10 A4 an output)
     PORTAbits.RA4 = 0;    // Turn off the low battery indicator
-<<<<<<< HEAD
+
     //TRISAbits.TRISA4 = 1; // Pin 10 A4 input. (Tristate for Normal Operation).
     
     //Bluetooth Module Power Pin RB15
     TRISBbits.TRISB15 = 0; //Make BLE-Power pin an output
     PORTBbits.RB15 = 1; //Turn off BLE-Power PMOS switch (PMOS is active low).
-=======
+
     //PORTAbits.RA4 = 1; // Turn on LED
     //TRISAbits.TRISA4 = 1; // Pin 10 A4 input.
->>>>>>> origin/Shane-Deep-Sleep
+
     
     // Debug/Setting Pins
     // Button pin (RA6) is already an input
@@ -303,30 +303,6 @@ int readWaterSensor2(void) // RB8 is one water sensor
 
 }
 
-<<<<<<< HEAD
-void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
-   
-    PORTAbits.RA2 = 0; //Turn off WPS
-    PORTAbits.RA4 = 0; //Turn off low battery LED
-    PORTBbits.RB4 = 0; //Turn off Battery Voltage Sensor
-    //TRISAbits.TRISA4 = 0; // Pin 10 A4 output (Power to Vibration Sensor).
-    //TRISBbits.TRISB7 = 1; // Pin 11 R7 is an input (Interrupt to Wake up from deep sleep).
-    //PORTAbits.RA4 = 1; //Vibration Sensor
-
-    PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
-    PMD2 = PMD2 | 0xFFFF;		//bulk turn off Input Capture and Output compare
-  
-    
-    //asm("BSET DSCON, #DSEN;"); //Enable Deep Sleep
-    asm("BSET DSCON, #15;");
-    asm("NOP;");
-    asm("PWRSAV #0");
-    //asm("PWRSAV #SLEEP_MODE;"); //Put the device into Deep Sleep mode
-}
-=======
-
->>>>>>> origin/Shane-Deep-Sleep
-
 void __attribute__((__interrupt__, __auto_psv__)) _DefaultInterrupt() 
 { 
     // We should never be here
@@ -348,7 +324,6 @@ void __attribute__((interrupt, auto_psv)) _CNInterrupt(void) { //button interrup
 
 
 #define delayTime                   500 // main loop duration (including SLEEP) in milliseconds
-#define tenSeconds                  10000 //Ten second wait for waiting before sleep after pumping stops
 //#define msHr                        (uint32_t)3600000
 //#define hourTicks                   (msHr / delayTime)
 //#define hourTicks                   5 // simulate 1hr every 2.5sec DEBUG
@@ -601,9 +576,8 @@ int main(void)
             
         }
          pumping = pumping;
-         //PORTAbits.RA4 = 0;
          //If timer at 10 seconds and pumping == 0 goto deepsleep and didn't wake up from deepsleep
-         //tenSeconds is the delay time variable
+        
          //DSWDT set to 9 minutes
          //if(_T1IF && pumping == 0 && (!DSWAKE&0b00001000)) {//_T1IF set when timer reaches 10 seconds
          if(_T1IF && pumping == 0 && (!_DPSLP)) { 

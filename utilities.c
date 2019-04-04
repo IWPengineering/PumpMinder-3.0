@@ -131,8 +131,6 @@ void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other 
     //PORTA = bob;
     
     LATAbits.LATA2 = 0; //WPS
-    //LATA = LATA & 0b11111011;
-    //LATA = LATA | 0b00010000;
     LATBbits.LATB15 = 0; //Test Pin
    
     //LATB = LATB & 0b11101111;
