@@ -176,10 +176,14 @@ void initialization(void) {
     TRISBbits.TRISB4 = 0; // make battery voltage check enable an output
     PORTBbits.RB4 = 0;    // Disable the battery voltage check
     
-    // Low battery Indicator
+    // Low battery Indicator--Will be used for Vibration Sensor
     TRISAbits.TRISA4 = 0; // Make low battery indicator (pin 10 A4 an output)
     PORTAbits.RA4 = 0;    // Turn off the low battery indicator
-    //TRISAbits.TRISA4 = 1; // Pin 10 A4 input.
+    //TRISAbits.TRISA4 = 1; // Pin 10 A4 input. (Tristate for Normal Operation).
+    
+    //Bluetooth Module Power Pin RB15
+    TRISBbits.TRISB15 = 0; //Make BLE-Power pin an output
+    PORTBbits.RB15 = 1; //Turn off BLE-Power PMOS switch (PMOS is active low).
     
     // Debug/Setting Pins
     // Button pin (RA6) is already an input
@@ -292,9 +296,9 @@ void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other 
    
     PORTAbits.RA2 = 0; //Turn off WPS
     PORTAbits.RA4 = 0; //Turn off low battery LED
-    //PORTAbits.RA4 = 1; //Turn on LED to help with debugging
     PORTBbits.RB4 = 0; //Turn off Battery Voltage Sensor
-    //TRISAbits.TRISA4 = 0; // Pin 10 A4 input.
+    //TRISAbits.TRISA4 = 0; // Pin 10 A4 output (Power to Vibration Sensor).
+    //TRISBbits.TRISB7 = 1; // Pin 11 R7 is an input (Interrupt to Wake up from deep sleep).
     //PORTAbits.RA4 = 1; //Vibration Sensor
 
     PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
@@ -560,8 +564,27 @@ int main(void)
             EEPROMaddrs++;
             EEProm_Write_Int(EEPROMaddrs,decimalHour);
             
-            ReportHoursOfPumping();  // This will send today and all previously saved days to the RJ45 connection
-            isButtonTicking = true;
+             //PORTBbits.RB15 = 0; //Enable the BLE-Power PMOS power switch
+            LATBbits.LATB15 = 0;
+            bool bleConnect = false;
+            //Start timer/counter to count up to 1.5 minutes
+            while(true){
+                //check receive message to see if connected
+                //if connected break while loop and set bleConnect to true.
+                if(WHAT AM I DOING){ //If the Receive UART interrupt is set
+                    gg
+                }
+                //check counter to see if timeout  
+                //if timeout turn off LATB15 and break loop
+            }
+            while(bleConnect){
+                bool x = receiveMessage();
+                if(x){
+                    //Data has been cleared, disconnect from BLE?
+                }
+            }          
+            //ReportHoursOfPumping();  // This will send today and all previously saved days to the RJ45 connection
+            //isButtonTicking = true;
             
         }
          pumping = pumping;
