@@ -571,9 +571,9 @@ int main(void)
             while(true){
                 //check receive message to see if connected
                 //if connected break while loop and set bleConnect to true.
-                if(WHAT AM I DOING){ //If the Receive UART interrupt is set
-                    gg
-                }
+                //if(WHAT AM I DOING){ //If the Receive UART interrupt is set
+                  //  gg;
+                //}
                 //check counter to see if timeout  
                 //if timeout turn off LATB15 and break loop
             }
