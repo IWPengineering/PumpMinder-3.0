@@ -11,8 +11,13 @@
     <memory name="program">
       <units>bytes</units>
       <length>16128</length>
+<<<<<<< HEAD
       <used>12204</used>
       <free>3924</free>
+=======
+      <used>9234</used>
+      <free>6894</free>
+>>>>>>> origin/Shane-Deep-Sleep
     </memory>
   </executable>
 </project>

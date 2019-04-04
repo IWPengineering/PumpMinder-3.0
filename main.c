@@ -52,7 +52,7 @@
 #pragma config WDTPS = PS32768          // Watchdog Timer Postscale Select bits (1:32,768)
 #pragma config FWPSA = PR128            // WDT Prescaler (WDT prescaler ratio of 1:128)
 #pragma config WINDIS = OFF             // Windowed Watchdog Timer Disable bit (Standard WDT selected; windowed WDT disabled)
-#//pragma config FWDTEN = ON              // Watchdog Timer Enable bit (WDT enabled)
+//#pragma config FWDTEN = ON              // Watchdog Timer Enable bit (WDT enabled)
 #pragma config FWDTEN = OFF             // Watchdog Timer Enable bit (WDT disabled (control is placed on the SWDTEN bit))
 
 // FPOR
@@ -168,9 +168,13 @@ void initialization(void) {
 
     //H2O sensor config
     // WPS_ON/OFF pin 7 RA2 (WPS input is RA1 - pin 3)
+    LATAbits.LATA2 = 1;
     TRISAbits.TRISA2 = 0; //makes water presence sensor enable pin an output.
-    PORTAbits.RA2 = 1; //turn on the water presence sensor.
+    //PORTAbits.RA2 = 1; //turn on the water presence sensor.
+    LATAbits.LATA2 = 1;
     // Need to wait for the 555 to turn on.
+    TRISBbits.TRISB15 = 0; //Test pin
+    LATBbits.LATB15 = 1; //Test pin
     
     // Battery Voltage Check (enable = B4, battery voltage A3)
     TRISBbits.TRISB4 = 0; // make battery voltage check enable an output
@@ -179,11 +183,16 @@ void initialization(void) {
     // Low battery Indicator--Will be used for Vibration Sensor
     TRISAbits.TRISA4 = 0; // Make low battery indicator (pin 10 A4 an output)
     PORTAbits.RA4 = 0;    // Turn off the low battery indicator
+<<<<<<< HEAD
     //TRISAbits.TRISA4 = 1; // Pin 10 A4 input. (Tristate for Normal Operation).
     
     //Bluetooth Module Power Pin RB15
     TRISBbits.TRISB15 = 0; //Make BLE-Power pin an output
     PORTBbits.RB15 = 1; //Turn off BLE-Power PMOS switch (PMOS is active low).
+=======
+    //PORTAbits.RA4 = 1; // Turn on LED
+    //TRISAbits.TRISA4 = 1; // Pin 10 A4 input.
+>>>>>>> origin/Shane-Deep-Sleep
     
     // Debug/Setting Pins
     // Button pin (RA6) is already an input
@@ -202,6 +211,9 @@ void initialization(void) {
     ConfigTimerT1NoInt();    // used to control total time for each outer loop
     ConfigTimerT2NoInt();    // used by readWaterSensor to time the WPS_OUT pulse
     
+    
+    //LATAbits.LATA2 = 0;
+    LATAbits.LATA2 = 1;
     //Delay for 5ms for the WPS turn on time
     _T1IF = 0;
     TMR1 = 0;
@@ -284,7 +296,7 @@ int readWaterSensor2(void) // RB8 is one water sensor
     _T2IF = 0;
     // Don't turn off the 555 Timer.  You need to wait to turn it on 
     // and its not worth the power savings
-    //           PORTAbits.RA2 = 0; // Turn off the 555 Timer
+    // Turn off the 555 Timer
     //WaterPresent variable is high if the freq detected is fast enough (PR2 value)
     //WaterPresent = false;
     return (WaterPresent);
@@ -292,6 +304,7 @@ int readWaterSensor2(void) // RB8 is one water sensor
 
 }
 
+<<<<<<< HEAD
 void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
    
     PORTAbits.RA2 = 0; //Turn off WPS
@@ -311,6 +324,9 @@ void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other 
     asm("PWRSAV #0");
     //asm("PWRSAV #SLEEP_MODE;"); //Put the device into Deep Sleep mode
 }
+=======
+
+>>>>>>> origin/Shane-Deep-Sleep
 
 void __attribute__((__interrupt__, __auto_psv__)) _DefaultInterrupt() 
 { 
@@ -352,8 +368,6 @@ int main(void)
     uint32_t decimalHour = 0;
     uint16_t hourCounter = 0;
     
-    //PORTAbits.RA4 = 0;
-    
     //If there is no unread data, day should be zero. if there is unread data, the day should be the next day after what has already been saved.
     int EEPROMaddrs = 0;
     Day = EEProm_Read_Int(EEPROMaddrs);
@@ -384,7 +398,7 @@ int main(void)
      * Bits need to be cleared after being read
      *  
      */  
-    PORTAbits.RA4 = 0; //DEBUG Code
+
     while (1){
         // Just wait until Timer1 has gotten to delayTime since last loop start
         //
@@ -588,6 +602,7 @@ int main(void)
             
         }
          pumping = pumping;
+         //PORTAbits.RA4 = 0;
          //If timer at 10 seconds and pumping == 0 goto deepsleep and didn't wake up from deepsleep
          //tenSeconds is the delay time variable
          //DSWDT set to 9 minutes
