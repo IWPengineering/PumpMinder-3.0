@@ -115,31 +115,27 @@ void initAdc(void)
 }
 
 void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
-    IEC0BITS.INT0IE = 1; // Enable Interrupt Zero
-    //IPC0BITS.INT0IP = 0; // ??? Not need ??? Sets interrupt priority
-    INTCON2BITS.INT0EP = 1; // 1 = negative edge, 0 = positive edge]
+    //SRbits.IPL = 0; // Set CPU interrupt to max priority.
+    IEC0BITS.INT0IE = 1; // Enable Interrupt Zero (INT0)
+    //IPC0BITS.INT0IP = 0; // default is highest priority, Sets interrupt priority
+    INTCON2BITS.INT0EP = 0; // 1 = negative edge, 0 = positive edge]
+    TRISBbits.TRISB7 = 0; // Pin 10 A4 input. INT0 vibration sensor output, high upon vibration
+    LATAbits.LATA4 = 1; //Vibration Sensor power
     
     //Read from ports, Write to Latches
+    // Use shadow register
     //int bob = PORTA;
     //bob = bob & 0b11111011;
     //bob = bob | 0b00010000;
     //PORTA = bob;
-    LATAbits.LATA4 = 1; //LED
     
-    // leave it on for now?
     LATAbits.LATA2 = 0; //WPS
     //LATA = LATA & 0b11111011;
     //LATA = LATA | 0b00010000;
     LATBbits.LATB15 = 0; //Test Pin
-    /*
-    PORTAbits.RA4 = 1; //Turn on LED to help with debugging
-    PORTAbits.RA2 = 0; //Turn off WPS
-     */
+   
     //LATB = LATB & 0b11101111;
-    LATBbits.LATB4 = 0;
-    //PORTBbits.RB4 = 0; //Turn off Battery Voltage Sensor
-    //TRISAbits.TRISA4 = 0; // Pin 10 A4 input.
-    //PORTAbits.RA4 = 1; //Vibration Sensor
+    LATBbits.LATB4 = 0; //Turn off Battery Voltage Sensor
 
     PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
     PMD2 = PMD2 | 0xFFFF;       //bulk turn off Input Capture and Output compare

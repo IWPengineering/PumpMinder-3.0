@@ -170,8 +170,7 @@ void initialization(void) {
     // WPS_ON/OFF pin 7 RA2 (WPS input is RA1 - pin 3)
     LATAbits.LATA2 = 1;
     TRISAbits.TRISA2 = 0; //makes water presence sensor enable pin an output.
-    //PORTAbits.RA2 = 1; //turn on the water presence sensor.
-    LATAbits.LATA2 = 1;
+    LATAbits.LATA2 = 1; //turn on the water presence sensor.
     // Need to wait for the 555 to turn on.
     TRISBbits.TRISB15 = 0; //Test pin
     LATBbits.LATB15 = 1; //Test pin
