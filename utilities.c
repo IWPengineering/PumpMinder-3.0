@@ -18,6 +18,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <p24F16KA101.h>
+#include <string.h>
 
 
 
@@ -421,7 +422,7 @@ int stringLength(char *string) {
     return i;
 }
 
-void sendMessage(char message[160]) {
+void sendMessage(char message[750]) {
     int stringIndex = 0;
     int msg_length = 0;
    
@@ -440,6 +441,11 @@ void sendMessage(char message[160]) {
     }
 }
 
+bool receiveMessage(void){
+    //NEED CODE HERE TO RECEIVE MESSAGE
+    return true;
+    
+}
 
 /**********************************************************************
  * Function:  ReportHoursOfPumping(void)
@@ -458,9 +464,18 @@ void ReportHoursOfPumping(){
     int report_tenth;
     int report_cent;
     int report_mil;
+    char strMessage[750] = "GETDATA: "; //initializes the Message string with the format code fore the app.
     
-    int Dayptr = Day;
-    while(Dayptr >= 0){
+    CheckBattery();
+    
+    if(LowBatteryDetected == 0){
+        sendMessage("GETBATT: Battery is OK");
+    }else{
+        sendMessage("GETBATT: Change Batteries");
+    }
+    
+    int Dayptr = 0;
+    while(Dayptr <= Day){ // I think this should make the data count up not down?
         int EEPROMaddrs = 1 + (Dayptr*2);
         report_hours = EEProm_Read_Int(EEPROMaddrs);
         EEPROMaddrs++;
@@ -471,14 +486,14 @@ void ReportHoursOfPumping(){
         report_cent = report_decimalHour/10;
         report_mil = report_decimalHour - (report_cent*10);
         
-               
+        char timeStr[15];
         char hourStr[15];
         char decimalStr[15];
         char dayStr[15];
-        sprintf(dayStr, "%d", Dayptr);
+        /*sprintf(dayStr, "%d", Dayptr);        
         sprintf(hourStr, "%d", report_hours);
         
-        sendMessage("Version 3.1\r\n");    
+        sendMessage("Version 4.0\r\n");    
         sendMessage("Day ");
         sendMessage(dayStr);
         sendMessage(" : ");
@@ -491,9 +506,28 @@ void ReportHoursOfPumping(){
         sendMessage(decimalStr);
         sprintf(decimalStr, "%d", report_mil);
         sendMessage(decimalStr);
-        sendMessage("\r\n");    
-        Dayptr--;
-    }       
+        sendMessage("\r\n"); */  
+        
+        
+        //The message string should have the final format of GETDATA:X.XXX,X.XXX,X.XXX, etc.
+        sprintf(timeStr, "%d.%d%d%d", report_hours, report_tenth, report_cent, report_mil);
+        strcat(strMessage, timeStr);
+        //-----------------------------------------------------------------------------  
+        sprintf(hourStr, "%d", report_hours);
+        strcat(strMessage, hourStr);    
+        strcat(strMessage, ".");
+        sprintf(decimalStr, "%d", report_tenth);
+        strcat(strMessage, decimalStr);
+        sprintf(decimalStr, "%d", report_cent);
+        strcat(strMessage, decimalStr);
+        sprintf(decimalStr, "%d", report_mil);
+        strcat(strMessage, decimalStr);
+         if(Dayptr < Day){
+            strcat(strMessage, ",");
+         }
+        Dayptr++;
+    } 
+    sendMessage(strMessage);
 }
 /*********************************************************************
  * Function: EEProm_Write_Int(int addr, int newData)

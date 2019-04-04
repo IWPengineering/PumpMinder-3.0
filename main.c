@@ -179,11 +179,19 @@ void initialization(void) {
     TRISBbits.TRISB4 = 0; // make battery voltage check enable an output
     PORTBbits.RB4 = 0;    // Disable the battery voltage check
     
-    // Low battery Indicator
+    // Low battery Indicator--Will be used for Vibration Sensor
     TRISAbits.TRISA4 = 0; // Make low battery indicator (pin 10 A4 an output)
     PORTAbits.RA4 = 0;    // Turn off the low battery indicator
+<<<<<<< HEAD
+    //TRISAbits.TRISA4 = 1; // Pin 10 A4 input. (Tristate for Normal Operation).
+    
+    //Bluetooth Module Power Pin RB15
+    TRISBbits.TRISB15 = 0; //Make BLE-Power pin an output
+    PORTBbits.RB15 = 1; //Turn off BLE-Power PMOS switch (PMOS is active low).
+=======
     //PORTAbits.RA4 = 1; // Turn on LED
     //TRISAbits.TRISA4 = 1; // Pin 10 A4 input.
+>>>>>>> origin/Shane-Deep-Sleep
     
     // Debug/Setting Pins
     // Button pin (RA6) is already an input
@@ -295,7 +303,29 @@ int readWaterSensor2(void) // RB8 is one water sensor
 
 }
 
+<<<<<<< HEAD
+void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
+   
+    PORTAbits.RA2 = 0; //Turn off WPS
+    PORTAbits.RA4 = 0; //Turn off low battery LED
+    PORTBbits.RB4 = 0; //Turn off Battery Voltage Sensor
+    //TRISAbits.TRISA4 = 0; // Pin 10 A4 output (Power to Vibration Sensor).
+    //TRISBbits.TRISB7 = 1; // Pin 11 R7 is an input (Interrupt to Wake up from deep sleep).
+    //PORTAbits.RA4 = 1; //Vibration Sensor
 
+    PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
+    PMD2 = PMD2 | 0xFFFF;		//bulk turn off Input Capture and Output compare
+  
+    
+    //asm("BSET DSCON, #DSEN;"); //Enable Deep Sleep
+    asm("BSET DSCON, #15;");
+    asm("NOP;");
+    asm("PWRSAV #0");
+    //asm("PWRSAV #SLEEP_MODE;"); //Put the device into Deep Sleep mode
+}
+=======
+
+>>>>>>> origin/Shane-Deep-Sleep
 
 void __attribute__((__interrupt__, __auto_psv__)) _DefaultInterrupt() 
 { 
@@ -547,8 +577,27 @@ int main(void)
             EEPROMaddrs++;
             EEProm_Write_Int(EEPROMaddrs,decimalHour);
             
-            ReportHoursOfPumping();  // This will send today and all previously saved days to the RJ45 connection
-            isButtonTicking = true;
+             //PORTBbits.RB15 = 0; //Enable the BLE-Power PMOS power switch
+            LATBbits.LATB15 = 0;
+            bool bleConnect = false;
+            //Start timer/counter to count up to 1.5 minutes
+            while(true){
+                //check receive message to see if connected
+                //if connected break while loop and set bleConnect to true.
+                //if(WHAT AM I DOING){ //If the Receive UART interrupt is set
+                  //  gg;
+                //}
+                //check counter to see if timeout  
+                //if timeout turn off LATB15 and break loop
+            }
+            while(bleConnect){
+                bool x = receiveMessage();
+                if(x){
+                    //Data has been cleared, disconnect from BLE?
+                }
+            }          
+            //ReportHoursOfPumping();  // This will send today and all previously saved days to the RJ45 connection
+            //isButtonTicking = true;
             
         }
          pumping = pumping;

@@ -30,13 +30,13 @@
         <targetDevice>PIC24F16KA101</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>PICkit3PlatformTool</platformTool>
+        <platformTool>Simulator</platformTool>
         <languageToolchain>XC16</languageToolchain>
-        <languageToolchainVersion>1.35</languageToolchainVersion>
+        <languageToolchainVersion>1.26</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="PIC24F-KA-KL-KM_DFP" vendor="Microchip" version="0.1.5"/>
+        <pack name="PIC24F-KA-KL-KM_DFP" vendor="Microchip" version="1.0.12"/>
       </packs>
       <compileType>
         <linkerTool>
