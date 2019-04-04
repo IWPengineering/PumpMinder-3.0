@@ -115,31 +115,34 @@ void initAdc(void)
 }
 
 void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
+    IEC0BITS.INT0IE = 1; // Enable Interrupt Zero
+    //IPC0BITS.INT0IP = 0; // ??? Not need ??? Sets interrupt priority
+    INTCON2BITS.INT0EP = 1; // 1 = negative edge, 0 = positive edge]
+    
     //Read from ports, Write to Latches
-    //PORTAbits.RA4 = 0; //Turn off low battery LED
-    pumping = pumping;
     //int bob = PORTA;
     //bob = bob & 0b11111011;
     //bob = bob | 0b00010000;
     //PORTA = bob;
+    LATAbits.LATA4 = 1; //LED
     
-    LATAbits.LATA4 = 1;
-    LATAbits.LATA2 = 0;
+    // leave it on for now?
+    LATAbits.LATA2 = 0; //WPS
     //LATA = LATA & 0b11111011;
     //LATA = LATA | 0b00010000;
-    
+    LATBbits.LATB15 = 0; //Test Pin
     /*
     PORTAbits.RA4 = 1; //Turn on LED to help with debugging
     PORTAbits.RA2 = 0; //Turn off WPS
      */
-    LATB = LATB * 0b11101111;
+    //LATB = LATB & 0b11101111;
+    LATBbits.LATB4 = 0;
     //PORTBbits.RB4 = 0; //Turn off Battery Voltage Sensor
-    
     //TRISAbits.TRISA4 = 0; // Pin 10 A4 input.
     //PORTAbits.RA4 = 1; //Vibration Sensor
 
     PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
-    PMD2 = PMD2 | 0xFFFF;		//bulk turn off Input Capture and Output compare
+    PMD2 = PMD2 | 0xFFFF;       //bulk turn off Input Capture and Output compare
   
     
     //asm("BSET DSCON, #DSEN;"); //Enable Deep Sleep

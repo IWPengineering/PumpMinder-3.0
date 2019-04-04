@@ -168,9 +168,13 @@ void initialization(void) {
 
     //H2O sensor config
     // WPS_ON/OFF pin 7 RA2 (WPS input is RA1 - pin 3)
+    LATAbits.LATA2 = 1;
     TRISAbits.TRISA2 = 0; //makes water presence sensor enable pin an output.
-    PORTAbits.RA2 = 1; //turn on the water presence sensor.
+    //PORTAbits.RA2 = 1; //turn on the water presence sensor.
+    LATAbits.LATA2 = 1;
     // Need to wait for the 555 to turn on.
+    TRISBbits.TRISB15 = 0; //Test pin
+    LATBbits.LATB15 = 1; //Test pin
     
     // Battery Voltage Check (enable = B4, battery voltage A3)
     TRISBbits.TRISB4 = 0; // make battery voltage check enable an output
@@ -199,6 +203,9 @@ void initialization(void) {
     ConfigTimerT1NoInt();    // used to control total time for each outer loop
     ConfigTimerT2NoInt();    // used by readWaterSensor to time the WPS_OUT pulse
     
+    
+    //LATAbits.LATA2 = 0;
+    LATAbits.LATA2 = 1;
     //Delay for 5ms for the WPS turn on time
     _T1IF = 0;
     TMR1 = 0;
@@ -363,7 +370,6 @@ int main(void)
      */  
 
     while (1){
-        //deepSleep();
         // Just wait until Timer1 has gotten to delayTime since last loop start
         //
         // For our current selections, this means that we go around this loop 1 every second
