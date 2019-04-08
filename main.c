@@ -66,8 +66,8 @@
 #pragma config ICS = PGx1              // ICD Pin Placement Select bits (PGC1/PGD1 are used for programming and debugging the device)
 
 // FDS
-//#pragma config DSWDTPS = DSWDTPSF       // Deep Sleep Watchdog Timer Postscale Select bits (1:2,147,483,648 (25.7 Days))
-#pragma config DSWDTPS = DSWDTPS6         // Deep Sleep Watchdog Timer
+#pragma config DSWDTPS = DSWDTPSF       // Deep Sleep Watchdog Timer Postscale Select bits (1:2,147,483,648 (25.7 Days))
+//#pragma config DSWDTPS = DSWDTPS6         // Deep Sleep Watchdog Timer
 #pragma config DSWDTOSC = LPRC          // DSWDT Reference Clock Select bit (DSWDT uses LPRC as reference clock)
 //#pragma config RTCOSC = SOSC            // RTCC Reference Clock Select bit (RTCC uses SOSC as reference clock)
 #pragma config RTCOSC = LPRC            // RTCC Reference Clock Select bit (RTCC uses LPRC as reference clock)
@@ -76,7 +76,7 @@
 
 const int pulseWidthThreshold = 20; // The value to check the pulse width against (2048)
 static volatile int buttonFlag = 0; // alerts us that the button has been pushed and entered the interrupt subroutine
-static bool isButtonTicking = false;
+//static bool isButtonTicking = false;
 static volatile int buttonTicks = 0;
 
 
@@ -170,8 +170,7 @@ void initialization(void) {
     // WPS_ON/OFF pin 7 RA2 (WPS input is RA1 - pin 3)
     LATAbits.LATA2 = 1;
     TRISAbits.TRISA2 = 0; //makes water presence sensor enable pin an output.
-    //PORTAbits.RA2 = 1; //turn on the water presence sensor.
-    LATAbits.LATA2 = 1;
+    LATAbits.LATA2 = 1; //turn on the water presence sensor.
     // Need to wait for the 555 to turn on.
     TRISBbits.TRISB15 = 0; //Test pin
     LATBbits.LATB15 = 1; //Test pin
@@ -184,15 +183,21 @@ void initialization(void) {
     TRISAbits.TRISA4 = 0; // Make low battery indicator (pin 10 A4 an output)
     PORTAbits.RA4 = 0;    // Turn off the low battery indicator
 <<<<<<< HEAD
+=======
+
+>>>>>>> 6723f617e01f7d67b5593fe03871bc83624e5390
     //TRISAbits.TRISA4 = 1; // Pin 10 A4 input. (Tristate for Normal Operation).
     
     //Bluetooth Module Power Pin RB15
     TRISBbits.TRISB15 = 0; //Make BLE-Power pin an output
     PORTBbits.RB15 = 1; //Turn off BLE-Power PMOS switch (PMOS is active low).
+<<<<<<< HEAD
 =======
+
+>>>>>>> 6723f617e01f7d67b5593fe03871bc83624e5390
     //PORTAbits.RA4 = 1; // Turn on LED
     //TRISAbits.TRISA4 = 1; // Pin 10 A4 input.
->>>>>>> origin/Shane-Deep-Sleep
+
     
     // Debug/Setting Pins
     // Button pin (RA6) is already an input
@@ -324,10 +329,11 @@ void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other 
     asm("PWRSAV #0");
     //asm("PWRSAV #SLEEP_MODE;"); //Put the device into Deep Sleep mode
 }
+
+
+
 =======
-
->>>>>>> origin/Shane-Deep-Sleep
-
+>>>>>>> 6723f617e01f7d67b5593fe03871bc83624e5390
 void __attribute__((__interrupt__, __auto_psv__)) _DefaultInterrupt() 
 { 
     // We should never be here
@@ -349,7 +355,6 @@ void __attribute__((interrupt, auto_psv)) _CNInterrupt(void) { //button interrup
 
 
 #define delayTime                   500 // main loop duration (including SLEEP) in milliseconds
-#define tenSeconds                  10000 //Ten second wait for waiting before sleep after pumping stops
 //#define msHr                        (uint32_t)3600000
 //#define hourTicks                   (msHr / delayTime)
 //#define hourTicks                   5 // simulate 1hr every 2.5sec DEBUG
@@ -537,7 +542,7 @@ int main(void)
             pumping = 0; // clears the pumping flag
         }
         
-        if(isButtonTicking){
+        /*if(isButtonTicking){
             if(PORTAbits.RA6){
                buttonTicks++; 
                if(buttonTicks == (BUTTON_TICK_RESET_THRESHOLD / 2)) // Warn before resetting
@@ -565,7 +570,7 @@ int main(void)
                 buttonTicks = 0;
                 isButtonTicking = false;
             }
-        }
+        }*/
 
         if (buttonFlag){ // If someone pushed the button
             buttonFlag = 0;
@@ -578,33 +583,84 @@ int main(void)
             EEPROMaddrs++;
             EEProm_Write_Int(EEPROMaddrs,decimalHour);
             
-             //PORTBbits.RB15 = 0; //Enable the BLE-Power PMOS power switch
-            LATBbits.LATB15 = 0;
-            bool bleConnect = false;
-            //Start timer/counter to count up to 1.5 minutes
-            while(true){
-                //check receive message to see if connected
-                //if connected break while loop and set bleConnect to true.
-                //if(WHAT AM I DOING){ //If the Receive UART interrupt is set
-                  //  gg;
-                //}
-                //check counter to see if timeout  
-                //if timeout turn off LATB15 and break loop
-            }
-            while(bleConnect){
-                bool x = receiveMessage();
-                if(x){
-                    //Data has been cleared, disconnect from BLE?
-                }
-            }          
-            //ReportHoursOfPumping();  // This will send today and all previously saved days to the RJ45 connection
-            //isButtonTicking = true;
+            //PORTBbits.RB15 = 0; //Enable the BLE-Power PMOS power switch
+            LATBbits.LATB15 = 0; //Enable the BLE-Power PMOs switch
+            bool bleConnected = false;
+            bool beforeConnect = true;
             
+            //Start timer/counter to count up to 1.5 minutes
+            int counter = 0;
+            
+            while (counter < 344){
+                PR2 = 65535; //System clock is 500kHz/2 = 250kHz => 4us period
+                //To count to 1.5 minutes needs 90 seconds/4us = 22500000. The timer
+                //value only goes up to 65535, so we'll need to run the timer
+                //22500000/65535 = 344 times for the time to equal 1.5 minutes.
+                //PR2 is the register that when the timer reaches its value, the 
+                //interrupt flag is set.
+                TMR2 = 0; //Clear the timer
+                _T2IF = 0; //Clear the timer interrupt
+                T2CONbits.TON = 1; //Turn on the timer
+            
+                while(beforeConnect){
+                
+                    if(U1STAbits.URXDA == 1){ //If the Receive UART interrupt is set, enter the loop
+                        char connect = U1RXREG; //read the RX data register
+                        if (connect == 0b01000111){ //if the first message is G, the system is connected
+                            bleConnected = true; //sets system as connected
+                            beforeConnect = false; //breaks pre-connection loop
+                        }
+                    
+                    }else if(_T2IF){ //if the timer interrupt is set
+                        T2CONbits.TON = 0; //turn off the timer 
+                        counter++;
+                        if (counter == 344){
+                            LATBbits.LATB15 = 1; //de-power the BLE module 
+                        }
+                        beforeConnect = false; //break out of pre-connection loop
+                    }                    
+                }
+            }
+            
+            //Set Timer2 to count up to 5 minutes
+            counter = 0;
+            while(counter < 1145){
+                PR2 = 65535; //System clock is 500kHz/2 = 250kHz => 4us period
+                    //To count to 5 minutes needs 90 seconds/4us = 75000000. The timer
+                    //value only goes up to 65535, so we'll need to run the timer
+                    //75000000/65535 = 31145 times for the time to equal 5 minutes.
+                    //PR2 is the register that when the timer reaches its value, the 
+                    //interrupt flag is set.
+                TMR2 = 0; //Clear the timer
+                _T2IF = 0; //Clear the timer interrupt
+                T2CONbits.TON = 1; //Turn on the timer
+            
+                while(bleConnected){ //if the BLE module connects to the app
+                    int clear = receiveMessage(); //run the receive Message function
+                    if(clear == 1){ //Clear data message received, clear the data
+                        decimalHour = 0;
+                        hourCounter = 0;
+                        buttonTicks = 0;
+                        Day = 0;  // Day is used to show the #day since last reset
+                        //PrevDay = Day; 
+                        int EEPROMaddrs = 0; //first location saved for the day
+                        EEProm_Write_Int(EEPROMaddrs,Day);
+                    
+                    }else if (_T2IF){ 
+                        T2CONbits.TON = 0; //turn off the timer 
+                        counter++;
+                        if(counter == 1145){
+                            LATBbits.LATB15 = 1; //de-power the BLE module
+                        }
+                        bleConnected = false; //Break final connection loop
+                    }
+                }
+            }                        
         }
+         
          pumping = pumping;
-         //PORTAbits.RA4 = 0;
          //If timer at 10 seconds and pumping == 0 goto deepsleep and didn't wake up from deepsleep
-         //tenSeconds is the delay time variable
+        
          //DSWDT set to 9 minutes
          //if(_T1IF && pumping == 0 && (!DSWAKE&0b00001000)) {//_T1IF set when timer reaches 10 seconds
          if(_T1IF && pumping == 0 && (!_DPSLP)) { 

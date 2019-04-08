@@ -116,31 +116,32 @@ void initAdc(void)
 }
 
 void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
-    IEC0BITS.INT0IE = 1; // Enable Interrupt Zero
+    //SRbits.IPL = 0; // Set CPU interrupt to max priority.
+    IEC0BITS.INT0IE = 1; // Enable Interrupt Zero (INT0)
+    //IPC0BITS.INT0IP = 0; // default is highest priority, Sets interrupt priority
+    INTCON2BITS.INT0EP = 0; // 1 = negative edge, 0 = positive edge]
+    TRISBbits.TRISB7 = 0; // Pin 10 A4 input. INT0 vibration sensor output, high upon vibration
+    LATAbits.LATA4 = 1; //Vibration Sensor power
+<<<<<<< HEAD
+=======
+    IEC0bits.INT0IE = 1; // Enable Interrupt Zero
     //IPC0BITS.INT0IP = 0; // ??? Not need ??? Sets interrupt priority
-    INTCON2BITS.INT0EP = 1; // 1 = negative edge, 0 = positive edge]
+    INTCON2bits.INT0EP = 1; // 1 = negative edge, 0 = positive edge]
+=======
+>>>>>>> 6723f617e01f7d67b5593fe03871bc83624e5390
     
     //Read from ports, Write to Latches
+    // Use shadow register
     //int bob = PORTA;
     //bob = bob & 0b11111011;
     //bob = bob | 0b00010000;
     //PORTA = bob;
-    LATAbits.LATA4 = 1; //LED
     
-    // leave it on for now?
     LATAbits.LATA2 = 0; //WPS
-    //LATA = LATA & 0b11111011;
-    //LATA = LATA | 0b00010000;
     LATBbits.LATB15 = 0; //Test Pin
-    /*
-    PORTAbits.RA4 = 1; //Turn on LED to help with debugging
-    PORTAbits.RA2 = 0; //Turn off WPS
-     */
+   
     //LATB = LATB & 0b11101111;
-    LATBbits.LATB4 = 0;
-    //PORTBbits.RB4 = 0; //Turn off Battery Voltage Sensor
-    //TRISAbits.TRISA4 = 0; // Pin 10 A4 input.
-    //PORTAbits.RA4 = 1; //Vibration Sensor
+    LATBbits.LATB4 = 0; //Turn off Battery Voltage Sensor
 
     PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
     PMD2 = PMD2 | 0xFFFF;       //bulk turn off Input Capture and Output compare
@@ -445,9 +446,23 @@ void sendMessage(char message[750]) {
     }
 }
 
-bool receiveMessage(void){
-    //NEED CODE HERE TO RECEIVE MESSAGE
-    return true;
+int receiveMessage(void){
+    char message;
+    
+    while (U1STAbits.URXDA == 0){
+        //do nothing
+    }
+    
+    message = U1RXREG; //Read the RX data register
+    
+    if(message == 0b01000111){ //if message is equal to "G"
+        ReportHoursOfPumping(); //Message Received asks for data.
+        
+    }else if (message == 0b01000011){ //if message is equal to "C"
+        return 1; //Message Received clears data, return command to reset data.
+    }
+    
+    return 0;
     
 }
 
@@ -470,7 +485,7 @@ void ReportHoursOfPumping(){
     int report_mil;
     char strMessage[750] = "GETDATA: "; //initializes the Message string with the format code fore the app.
     
-    CheckBattery();
+    CheckBattery(); //Run CheckBattery() function only when transmitting data.)
     
     if(LowBatteryDetected == 0){
         sendMessage("GETBATT: Battery is OK");
@@ -493,7 +508,7 @@ void ReportHoursOfPumping(){
         char timeStr[15];
         char hourStr[15];
         char decimalStr[15];
-        char dayStr[15];
+        //char dayStr[15];
         /*sprintf(dayStr, "%d", Dayptr);        
         sprintf(hourStr, "%d", report_hours);
         

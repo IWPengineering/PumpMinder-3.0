@@ -102,7 +102,7 @@ int GetRTCChour(void);
 int GetRTCCminute(void);
 int GetRTCCsecond(void);
 void sendMessage(char message[750]);
-bool receiveMessage(void);
+int receiveMessage(void);
 void initAdc(void);
 int readAdc(int channel) ;
 void deepSleep();
