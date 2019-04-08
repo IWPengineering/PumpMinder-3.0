@@ -183,18 +183,26 @@ void initialization(void) {
     TRISAbits.TRISA4 = 0; // Make low battery indicator (pin 10 A4 an output)
     PORTAbits.RA4 = 0;    // Turn off the low battery indicator
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> 6723f617e01f7d67b5593fe03871bc83624e5390
+=======
+
+>>>>>>> origin/Shane-Deep-Sleep
     //TRISAbits.TRISA4 = 1; // Pin 10 A4 input. (Tristate for Normal Operation).
     
     //Bluetooth Module Power Pin RB15
     TRISBbits.TRISB15 = 0; //Make BLE-Power pin an output
     PORTBbits.RB15 = 1; //Turn off BLE-Power PMOS switch (PMOS is active low).
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> 6723f617e01f7d67b5593fe03871bc83624e5390
+=======
+
+>>>>>>> origin/Shane-Deep-Sleep
     //PORTAbits.RA4 = 1; // Turn on LED
     //TRISAbits.TRISA4 = 1; // Pin 10 A4 input.
 
@@ -310,6 +318,7 @@ int readWaterSensor2(void) // RB8 is one water sensor
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
    
     PORTAbits.RA2 = 0; //Turn off WPS
@@ -334,6 +343,8 @@ void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other 
 
 =======
 >>>>>>> 6723f617e01f7d67b5593fe03871bc83624e5390
+=======
+>>>>>>> origin/Shane-Deep-Sleep
 void __attribute__((__interrupt__, __auto_psv__)) _DefaultInterrupt() 
 { 
     // We should never be here

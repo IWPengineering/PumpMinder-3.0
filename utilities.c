@@ -123,12 +123,15 @@ void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other 
     TRISBbits.TRISB7 = 0; // Pin 10 A4 input. INT0 vibration sensor output, high upon vibration
     LATAbits.LATA4 = 1; //Vibration Sensor power
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     IEC0bits.INT0IE = 1; // Enable Interrupt Zero
     //IPC0BITS.INT0IP = 0; // ??? Not need ??? Sets interrupt priority
     INTCON2bits.INT0EP = 1; // 1 = negative edge, 0 = positive edge]
 =======
 >>>>>>> 6723f617e01f7d67b5593fe03871bc83624e5390
+=======
+>>>>>>> origin/Shane-Deep-Sleep
     
     //Read from ports, Write to Latches
     // Use shadow register
