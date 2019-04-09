@@ -117,9 +117,9 @@ void initAdc(void)
 
 void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
     //SRbits.IPL = 0; // Set CPU interrupt to max priority.
-    IEC0BITS.INT0IE = 1; // Enable Interrupt Zero (INT0)
+    IEC0bits.INT0IE = 1; // Enable Interrupt Zero (INT0)
     //IPC0BITS.INT0IP = 0; // default is highest priority, Sets interrupt priority
-    INTCON2BITS.INT0EP = 0; // 1 = negative edge, 0 = positive edge]
+    INTCON2bits.INT0EP = 0; // 1 = negative edge, 0 = positive edge]
     TRISBbits.TRISB7 = 0; // Pin 10 A4 input. INT0 vibration sensor output, high upon vibration
     LATAbits.LATA4 = 1; //Vibration Sensor power
     IEC0bits.INT0IE = 1; // Enable Interrupt Zero
@@ -495,8 +495,8 @@ void ReportHoursOfPumping(){
         report_mil = report_decimalHour - (report_cent*10);
         
         char timeStr[15];
-        char hourStr[15];
-        char decimalStr[15];        
+        //char hourStr[15];
+        //char decimalStr[15];        
         
         //The message string should have the final format of GETDATA:X.XXX,X.XXX,X.XXX, etc.
         sprintf(timeStr, "%d.%d%d%d", report_hours, report_tenth, report_cent, report_mil);
