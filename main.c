@@ -304,11 +304,6 @@ int readWaterSensor2(void) // RB8 is one water sensor
 }
 
 
-
-
-
-
-
 void __attribute__((__interrupt__, __auto_psv__)) _DefaultInterrupt() 
 { 
     // We should never be here
@@ -326,8 +321,6 @@ void __attribute__((interrupt, auto_psv)) _CNInterrupt(void) { //button interrup
     // Always reset the interrupt flag
     IFS1bits.CNIF = 0;
 }
-
-
 
 #define delayTime                   500 // main loop duration (including SLEEP) in milliseconds
 //#define msHr                        (uint32_t)3600000

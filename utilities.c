@@ -127,22 +127,15 @@ void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other 
     INTCON2bits.INT0EP = 1; // 1 = negative edge, 0 = positive edge]
     
     //Read from ports, Write to Latches
-    // Use shadow register
-    //int bob = PORTA;
-    //bob = bob & 0b11111011;
-    //bob = bob | 0b00010000;
-    //PORTA = bob;
-    
+    // Use shadow register    
     LATAbits.LATA2 = 0; //WPS
     LATBbits.LATB15 = 0; //Test Pin
    
-    //LATB = LATB & 0b11101111;
     LATBbits.LATB4 = 0; //Turn off Battery Voltage Sensor
 
     PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
     PMD2 = PMD2 | 0xFFFF;       //bulk turn off Input Capture and Output compare
   
-    
     //asm("BSET DSCON, #DSEN;"); //Enable Deep Sleep
     asm("BSET DSCON, #15;");
     asm("NOP;");
