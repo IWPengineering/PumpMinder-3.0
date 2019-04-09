@@ -122,16 +122,9 @@ void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other 
     INTCON2BITS.INT0EP = 0; // 1 = negative edge, 0 = positive edge]
     TRISBbits.TRISB7 = 0; // Pin 10 A4 input. INT0 vibration sensor output, high upon vibration
     LATAbits.LATA4 = 1; //Vibration Sensor power
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
     IEC0bits.INT0IE = 1; // Enable Interrupt Zero
     //IPC0BITS.INT0IP = 0; // ??? Not need ??? Sets interrupt priority
     INTCON2bits.INT0EP = 1; // 1 = negative edge, 0 = positive edge]
-=======
->>>>>>> 6723f617e01f7d67b5593fe03871bc83624e5390
-=======
->>>>>>> origin/Shane-Deep-Sleep
     
     //Read from ports, Write to Latches
     // Use shadow register
@@ -510,40 +503,21 @@ void ReportHoursOfPumping(){
         
         char timeStr[15];
         char hourStr[15];
-        char decimalStr[15];
-        //char dayStr[15];
-        /*sprintf(dayStr, "%d", Dayptr);        
-        sprintf(hourStr, "%d", report_hours);
-        
-        sendMessage("Version 4.0\r\n");    
-        sendMessage("Day ");
-        sendMessage(dayStr);
-        sendMessage(" : ");
-        sendMessage(hourStr);
-        sendMessage(".");
-        
-        sprintf(decimalStr, "%d", report_tenth);
-        sendMessage(decimalStr);
-        sprintf(decimalStr, "%d", report_cent);
-        sendMessage(decimalStr);
-        sprintf(decimalStr, "%d", report_mil);
-        sendMessage(decimalStr);
-        sendMessage("\r\n"); */  
-        
+        char decimalStr[15];        
         
         //The message string should have the final format of GETDATA:X.XXX,X.XXX,X.XXX, etc.
         sprintf(timeStr, "%d.%d%d%d", report_hours, report_tenth, report_cent, report_mil);
         strcat(strMessage, timeStr);
         //-----------------------------------------------------------------------------  
-        sprintf(hourStr, "%d", report_hours);
-        strcat(strMessage, hourStr);    
-        strcat(strMessage, ".");
-        sprintf(decimalStr, "%d", report_tenth);
-        strcat(strMessage, decimalStr);
-        sprintf(decimalStr, "%d", report_cent);
-        strcat(strMessage, decimalStr);
-        sprintf(decimalStr, "%d", report_mil);
-        strcat(strMessage, decimalStr);
+        //sprintf(hourStr, "%d", report_hours);
+        //strcat(strMessage, hourStr);    
+        //strcat(strMessage, ".");
+        //sprintf(decimalStr, "%d", report_tenth);
+        //strcat(strMessage, decimalStr);
+        //sprintf(decimalStr, "%d", report_cent);
+        //strcat(strMessage, decimalStr);
+        //sprintf(decimalStr, "%d", report_mil);
+        //strcat(strMessage, decimalStr);
          if(Dayptr < Day){
             strcat(strMessage, ",");
          }
