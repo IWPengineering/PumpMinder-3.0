@@ -317,34 +317,6 @@ int readWaterSensor2(void) // RB8 is one water sensor
 
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
-   
-    PORTAbits.RA2 = 0; //Turn off WPS
-    PORTAbits.RA4 = 0; //Turn off low battery LED
-    PORTBbits.RB4 = 0; //Turn off Battery Voltage Sensor
-    //TRISAbits.TRISA4 = 0; // Pin 10 A4 output (Power to Vibration Sensor).
-    //TRISBbits.TRISB7 = 1; // Pin 11 R7 is an input (Interrupt to Wake up from deep sleep).
-    //PORTAbits.RA4 = 1; //Vibration Sensor
-
-    PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
-    PMD2 = PMD2 | 0xFFFF;		//bulk turn off Input Capture and Output compare
-  
-    
-    //asm("BSET DSCON, #DSEN;"); //Enable Deep Sleep
-    asm("BSET DSCON, #15;");
-    asm("NOP;");
-    asm("PWRSAV #0");
-    //asm("PWRSAV #SLEEP_MODE;"); //Put the device into Deep Sleep mode
-}
-
-
-
-=======
->>>>>>> 6723f617e01f7d67b5593fe03871bc83624e5390
-=======
->>>>>>> origin/Shane-Deep-Sleep
 void __attribute__((__interrupt__, __auto_psv__)) _DefaultInterrupt() 
 { 
     // We should never be here
@@ -362,8 +334,6 @@ void __attribute__((interrupt, auto_psv)) _CNInterrupt(void) { //button interrup
     // Always reset the interrupt flag
     IFS1bits.CNIF = 0;
 }
-
-
 
 #define delayTime                   500 // main loop duration (including SLEEP) in milliseconds
 //#define msHr                        (uint32_t)3600000
