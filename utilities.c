@@ -122,34 +122,20 @@ void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other 
     INTCON2BITS.INT0EP = 0; // 1 = negative edge, 0 = positive edge]
     TRISBbits.TRISB7 = 0; // Pin 10 A4 input. INT0 vibration sensor output, high upon vibration
     LATAbits.LATA4 = 1; //Vibration Sensor power
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
     IEC0bits.INT0IE = 1; // Enable Interrupt Zero
     //IPC0BITS.INT0IP = 0; // ??? Not need ??? Sets interrupt priority
     INTCON2bits.INT0EP = 1; // 1 = negative edge, 0 = positive edge]
-=======
->>>>>>> 6723f617e01f7d67b5593fe03871bc83624e5390
-=======
->>>>>>> origin/Shane-Deep-Sleep
     
     //Read from ports, Write to Latches
-    // Use shadow register
-    //int bob = PORTA;
-    //bob = bob & 0b11111011;
-    //bob = bob | 0b00010000;
-    //PORTA = bob;
-    
+    // Use shadow register    
     LATAbits.LATA2 = 0; //WPS
     LATBbits.LATB15 = 0; //Test Pin
    
-    //LATB = LATB & 0b11101111;
     LATBbits.LATB4 = 0; //Turn off Battery Voltage Sensor
 
     PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
     PMD2 = PMD2 | 0xFFFF;       //bulk turn off Input Capture and Output compare
   
-    
     //asm("BSET DSCON, #DSEN;"); //Enable Deep Sleep
     asm("BSET DSCON, #15;");
     asm("NOP;");
