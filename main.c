@@ -529,19 +529,18 @@ int main(void)
             
             //Start timer/counter to count up to 1.5 minutes
             int counter = 0;
+            PR2 = 65535; //System clock is 500kHz/2 = 250kHz => 4us period
+                //To count to 1.5 minutes needs 90 seconds/4us = 22500000. The timer
+                //value only goes up to 65535, so we'll need to run the timer
+                //22500000/65535 = 344 times for the time to equal 1.5 minutes.
+                //PR2 is the register that when the timer reaches its value, the 
+                //interrupt flag is set.
+            TMR2 = 0; //Clear the timer
+            _T2IF = 0; //Clear the timer interrupt
+            T2CONbits.TON = 1; //Turn on the timer
             
-            while(beforeConnect){
-                while (counter < 344){
-                    PR2 = 65535; //System clock is 500kHz/2 = 250kHz => 4us period
-                    //To count to 1.5 minutes needs 90 seconds/4us = 22500000. The timer
-                    //value only goes up to 65535, so we'll need to run the timer
-                    //22500000/65535 = 344 times for the time to equal 1.5 minutes.
-                    //PR2 is the register that when the timer reaches its value, the 
-                    //interrupt flag is set.
-                    TMR2 = 0; //Clear the timer
-                    _T2IF = 0; //Clear the timer interrupt
-                    T2CONbits.TON = 1; //Turn on the timer
-                           
+            while(beforeConnect){              
+                if (counter < 344){        
                     if(U1STAbits.URXDA == 1){ //If the Receive UART interrupt is set, enter the loop
                         char connect = U1RXREG; //read the RX data register
                         if (connect == 0b01000111){ //if the first message is G, the system is connected
@@ -550,11 +549,13 @@ int main(void)
                         }
                     
                     }else if(_T2IF){ //if the timer interrupt is set
-                        T2CONbits.TON = 0; //turn off the timer 
+                        TMR2 = 0; //clear the timer
+                        _T2IF = 0; //clear the timer interrupt
                         counter++;
                     }
-                    if (counter == 344){
-                        LATBbits.LATB15 = 1; //de-power the BLE module 
+                    if (counter >= 344){
+                        LATBbits.LATB15 = 1; //de-power the BLE module
+                        T2CONbits.TON = 0;
                         beforeConnect = false; //break out of pre-connection loop
                         }
                 }
@@ -562,19 +563,16 @@ int main(void)
             
             //Set Timer2 to count up to 5 minutes
             counter = 0;
-            while(bleConnected){ //if the BLE module connects to the app
-                while(counter < 1145){
-                    PR2 = 65535; //System clock is 500kHz/2 = 250kHz => 4us period
-                    //To count to 5 minutes needs 90 seconds/4us = 75000000. The timer
-                    //value only goes up to 65535, so we'll need to run the timer
-                    //75000000/65535 = 31145 times for the time to equal 5 minutes.
-                    //PR2 is the register that when the timer reaches its value, the 
-                    //interrupt flag is set.
-                    TMR2 = 0; //Clear the timer
-                    _T2IF = 0; //Clear the timer interrupt
-                    T2CONbits.TON = 1; //Turn on the timer
+            TMR2 = 0;
+            _T2IF = 0;
+            T2CONbits.TON = 1;
             
+            while(bleConnected){ //if the BLE module connects to the app
+                
+                if(counter < 1145){
+                    
                     int clear = receiveMessage(); //run the receive Message function
+                    
                     if(clear == 1){ //Clear data message received, clear the data
                         decimalHour = 0;
                         hourCounter = 0;
@@ -585,11 +583,13 @@ int main(void)
                         EEProm_Write_Int(EEPROMaddrs,Day);
                     
                     }else if (_T2IF){ 
-                        T2CONbits.TON = 0; //turn off the timer 
+                        TMR2 = 0; //clear the timer
+                        _T2IF = 0; //clear the timer interrupt 
                         counter++;
                     }
-                    if(counter == 1145){
+                    if(counter >= 1145){
                         LATBbits.LATB15 = 1; //de-power the BLE module
+                        T2CONbits.TON = 0; //turn off the timer
                         bleConnected = false; //Break final connection loop
                     }
                 }
