@@ -562,7 +562,7 @@ int main(void)
                         LATBbits.LATB15 = 1; //de-power the BLE module
                         T2CONbits.TON = 0;
                         beforeConnect = false; //break out of pre-connection loop
-                        }
+                    }
                 }
             }
             

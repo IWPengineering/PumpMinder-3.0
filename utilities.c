@@ -438,11 +438,9 @@ void sendMessage(char message[750]) {
 int receiveMessage(void){
     char message;
     
-    while (U1STAbits.URXDA == 0){
-        //do nothing
+    if (U1STAbits.URXDA == 1){
+        message = U1RXREG; //Read the RX data register
     }
-    
-    message = U1RXREG; //Read the RX data register
     
     if(message == 0b01000111){ //if message is equal to "G"
         ReportHoursOfPumping(); //Message Received asks for data.
