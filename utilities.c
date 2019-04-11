@@ -438,12 +438,12 @@ void sendMessage(char message[750]) {
 int receiveMessage(void){
     char message;
     
-    if (U1STAbits.URXDA == 1){
+    if (U1STAbits.URXDA == 1){ //Something is available to read 
         message = U1RXREG; //Read the RX data register
     }
     
     if(message == 0b01000111){ //if message is equal to "G"
-        ReportHoursOfPumping(); //Message Received asks for data.
+        return 2;
         
     }else if (message == 0b01000011){ //if message is equal to "C"
         return 1; //Message Received clears data, return command to reset data.
@@ -470,14 +470,14 @@ void ReportHoursOfPumping(){
     int report_tenth;
     int report_cent;
     int report_mil;
-    char strMessage[750] = "GETDATA: "; //initializes the Message string with the format code fore the app.
+    char strMessage[750] = "GETDATA: "; //initializes the Message string with the format code for the app.
     
-    CheckBattery(); //Run CheckBattery() function only when transmitting data.)
+    CheckBattery(); //Run CheckBattery() function only when transmitting data.
     
     if(LowBatteryDetected == 0){
-        sendMessage("GETBATT: Battery is OK");
+        sendMessage("GETBATT: Battery is OK\0");
     }else{
-        sendMessage("GETBATT: Change Batteries");
+        sendMessage("GETBATT: Change Batteries\0");
     }
     
     int Dayptr = 0;
@@ -499,21 +499,14 @@ void ReportHoursOfPumping(){
         //The message string should have the final format of GETDATA:X.XXX,X.XXX,X.XXX, etc.
         sprintf(timeStr, "%d.%d%d%d", report_hours, report_tenth, report_cent, report_mil);
         strcat(strMessage, timeStr);
-        //-----------------------------------------------------------------------------  
-        //sprintf(hourStr, "%d", report_hours);
-        //strcat(strMessage, hourStr);    
-        //strcat(strMessage, ".");
-        //sprintf(decimalStr, "%d", report_tenth);
-        //strcat(strMessage, decimalStr);
-        //sprintf(decimalStr, "%d", report_cent);
-        //strcat(strMessage, decimalStr);
-        //sprintf(decimalStr, "%d", report_mil);
-        //strcat(strMessage, decimalStr);
          if(Dayptr < Day){
             strcat(strMessage, ",");
+         }else if (Dayptr >= Day){
+             strcat(strMessage, "\0");
          }
         Dayptr++;
     } 
+    int x = 0;
     sendMessage(strMessage);
 }
 /*********************************************************************

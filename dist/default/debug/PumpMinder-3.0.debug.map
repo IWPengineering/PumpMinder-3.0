@@ -6,7 +6,7 @@ Tool Name:
 Command:
   -p24F16KA101 \
   -o \
-  dist/default/production/PumpMinder-3.0.production.elf \
+  dist/default/debug/PumpMinder-3.0.debug.elf \
   -Lc:/program files (x86)/microchip/xc16/v1.26/bin/bin/.. \
   -Lc:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib \
   -Lc:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../support/PIC24E/gld \
@@ -15,10 +15,18 @@ Command:
   -Lc:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../support/dsPIC30F/gld \
   -Lc:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../support/dsPIC33E/gld \
   -Lc:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../support/dsPIC33F/gld \
-  build/default/production/main.o \
-  build/default/production/utilities.o \
+  build/default/debug/main.o \
+  build/default/debug/utilities.o \
+  -TC:\\Users\\Matthew\\AppData\\Local\\Temp\\tmp0000293c.00 \
+  -TC:\\Users\\Matthew\\AppData\\Local\\Temp\\tmp0000293c.01 \
+  -TC:\\Users\\Matthew\\AppData\\Local\\Temp\\tmp0000293c.02 \
+  -TC:\\Users\\Matthew\\AppData\\Local\\Temp\\tmp0000293c.03 \
+  -TC:\\Users\\Matthew\\AppData\\Local\\Temp\\tmp0000293c.04 \
   --defsym=__MPLAB_BUILD=1 \
-  -Tp24F16KA101.gld.00 \
+  --defsym=__MPLAB_DEBUG=1 \
+  --defsym=__DEBUG=1 \
+  --defsym=__MPLAB_DEBUGGER_PK3=1 \
+  -Tp24F16KA101.gld.05 \
   --stack=16 \
   --check-sections \
   --data-init \
@@ -30,10 +38,10 @@ Command:
   --stackguard=16 \
   --no-force-link \
   --smart-io \
-  -Map=dist/default/production/PumpMinder-3.0.production.map \
+  -Map=dist/default/debug/PumpMinder-3.0.debug.map \
   --report-mem \
   --memorysummary \
-  dist/default/production/memoryfile.xml \
+  dist/default/debug/memoryfile.xml \
   -start-group \
   --library=pic30-elf \
   --library=m-elf \
@@ -49,15 +57,15 @@ c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libpic30-elf.a(crt
 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libpic30-elf.a(data_init_standard.o)
                               c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libpic30-elf.a(crt0_standard.o) (__data_init_standard)
 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(addsf3.eo)
-                              build/default/production/utilities.o (___addsf3)
+                              build/default/debug/utilities.o (___addsf3)
 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(divsf3.eo)
-                              build/default/production/utilities.o (___divsf3)
+                              build/default/debug/utilities.o (___divsf3)
 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(divsi3.eo)
-                              build/default/production/main.o (___divsi3)
+                              build/default/debug/main.o (___divsi3)
 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(feqltle.eo)
-                              build/default/production/utilities.o (___ltsf2)
+                              build/default/debug/utilities.o (___ltsf2)
 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(floatsisf.eo)
-                              build/default/production/utilities.o (___floatsisf)
+                              build/default/debug/utilities.o (___floatsisf)
 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(fpack.eo)
                               c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(addsf3.eo) (__fpack)
 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(funpack2.eo)
@@ -75,13 +83,13 @@ c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(floatun
 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(funpack.eo)
                               c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(funpack2.eo) (__funpack)
 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(memcpy.eo)
-                              build/default/production/utilities.o (_memcpy)
+                              build/default/debug/utilities.o (_memcpy)
 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(strcat.eo)
-                              build/default/production/utilities.o (_strcat)
+                              build/default/debug/utilities.o (_strcat)
 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(strlen.eo)
-                              build/default/production/utilities.o (_strlen)
+                              build/default/debug/utilities.o (_strlen)
 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(sprintf_cdnopuxX.XXeo)
-                              build/default/production/utilities.o (__sprintf_cdnopuxX)
+                              build/default/debug/utilities.o (__sprintf_cdnopuxX)
 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(doprnt_cdnopuxX.XXeo)
                               c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(sprintf_cdnopuxX.XXeo) (__vfprintf_cdnopuxX)
 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(fputc.eo)
@@ -134,11 +142,11 @@ section                    address   length (PC units)   length (bytes) (dec)
 -------                    -------   -----------------   --------------------
 .text                        0x200               0xeb4          0x160e  (5646)
 .const                      0x10b4                0x80            0xc0  (192)
-.text                       0x1134               0xc08          0x120c  (4620)
-.dinit                      0x1d3c                0xca           0x12f  (303)
-.shared.dinit               0x1e06                 0x2             0x3  (3)
+.text                       0x1134               0xc2c          0x1242  (4674)
+.dinit                      0x1d60                0xca           0x12f  (303)
+.shared.dinit               0x1e2a                 0x2             0x3  (3)
 
-                 Total program memory used (bytes):         0x2a0c  (10764) 66%
+                 Total program memory used (bytes):         0x2a42  (10818) 67%
 
 
 Ivt Memory  [Origin = 0x4, Length = 0xfc]
@@ -162,12 +170,17 @@ Data Memory  [Origin = 0x800, Length = 0x600]
 
 section                    address      alignment gaps    total length  (dec)
 -------                    -------      --------------    -------------------
-.nbss                        0x800                   0            0x40  (64)
-.data                        0x840                   0            0xf0  (240)
-.bss                         0x930                   0             0x6  (6)
-.data                        0x936                   0             0x2  (2)
+reserve_data_0x800           0x800                0x20            0x20  (32)
+reserve_data_0x820           0x820                 0x2             0x2  (2)
+reserve_data_0x822           0x822                 0x2             0x2  (2)
+reserve_data_0x824           0x824                 0x2             0x2  (2)
+reserve_data_0x826           0x826                0x2a            0x2a  (42)
+.nbss                        0x850                   0            0x40  (64)
+.data                        0x890                   0            0xf0  (240)
+.bss                         0x980                   0             0x6  (6)
+.data                        0x986                   0             0x2  (2)
 
-                 Total data memory used (bytes):          0x138  (312) 20%
+                 Total data memory used (bytes):          0x188  (392) 25%
 
 
 Dynamic Memory Usage
@@ -175,72 +188,72 @@ Dynamic Memory Usage
 region                     address                      maximum length  (dec)
 ------                     -------                      ---------------------
 heap                             0                                   0  (0)
-stack                        0x938                               0x4c8  (1224)
+stack                        0x988                               0x478  (1144)
 
-                 Maximum dynamic memory (bytes):          0x4c8  (1224)
+                 Maximum dynamic memory (bytes):          0x478  (1144)
 
 
 External Symbols in Data Memory (by address):
 
-                    0x0800                  _MessageBeingTransmitted
-                    0x0802                  _EEFloatData
-                    0x0806                  _Day
-                    0x0808                  _PrevDay
-                    0x080a                  _CurrentDay
-                    0x080c                  _CurrentHour
-                    0x080e                  _PrevHour
-                    0x0810                  _debugVar
-                    0x0812                  _LowBatteryDetected
-                    0x0814                  _FlashBatteryCounter
-                    0x0816                  _debugString
-                    0x0826                  _CurrentMin
-                    0x0828                  _PrevMin
-                    0x082a                  _CurrentSec
-                    0x082c                  _PrevSec
-                    0x082e                  _pumping
-                    0x0830                  _hourInit
-                    0x0832                  _hourEnd
-                    0x0834                  _minuteInit
-                    0x0836                  _minuteEnd
-                    0x0838                  _secondInit
-                    0x083a                  _secondEnd
-                    0x090a                  __iob
-                    0x092e                  __Files
-                    0x0930                  __outdone
-                    0x0931                  __sibuf
-                    0x0933                  __sobuf
-                    0x0936                  ___C30_UART
+                    0x0850                  _MessageBeingTransmitted
+                    0x0852                  _EEFloatData
+                    0x0856                  _Day
+                    0x0858                  _PrevDay
+                    0x085a                  _CurrentDay
+                    0x085c                  _CurrentHour
+                    0x085e                  _PrevHour
+                    0x0860                  _debugVar
+                    0x0862                  _LowBatteryDetected
+                    0x0864                  _FlashBatteryCounter
+                    0x0866                  _debugString
+                    0x0876                  _CurrentMin
+                    0x0878                  _PrevMin
+                    0x087a                  _CurrentSec
+                    0x087c                  _PrevSec
+                    0x087e                  _pumping
+                    0x0880                  _hourInit
+                    0x0882                  _hourEnd
+                    0x0884                  _minuteInit
+                    0x0886                  _minuteEnd
+                    0x0888                  _secondInit
+                    0x088a                  _secondEnd
+                    0x095a                  __iob
+                    0x097e                  __Files
+                    0x0980                  __outdone
+                    0x0981                  __sibuf
+                    0x0983                  __sobuf
+                    0x0986                  ___C30_UART
 
 External Symbols in Data Memory (by name):
 
-                    0x080a                  _CurrentDay
-                    0x080c                  _CurrentHour
-                    0x0826                  _CurrentMin
-                    0x082a                  _CurrentSec
-                    0x0806                  _Day
-                    0x0802                  _EEFloatData
-                    0x0814                  _FlashBatteryCounter
-                    0x0812                  _LowBatteryDetected
-                    0x0800                  _MessageBeingTransmitted
-                    0x0808                  _PrevDay
-                    0x080e                  _PrevHour
-                    0x0828                  _PrevMin
-                    0x082c                  _PrevSec
-                    0x092e                  __Files
-                    0x0936                  ___C30_UART
-                    0x090a                  __iob
-                    0x0930                  __outdone
-                    0x0931                  __sibuf
-                    0x0933                  __sobuf
-                    0x0816                  _debugString
-                    0x0810                  _debugVar
-                    0x0832                  _hourEnd
-                    0x0830                  _hourInit
-                    0x0836                  _minuteEnd
-                    0x0834                  _minuteInit
-                    0x082e                  _pumping
-                    0x083a                  _secondEnd
-                    0x0838                  _secondInit
+                    0x085a                  _CurrentDay
+                    0x085c                  _CurrentHour
+                    0x0876                  _CurrentMin
+                    0x087a                  _CurrentSec
+                    0x0856                  _Day
+                    0x0852                  _EEFloatData
+                    0x0864                  _FlashBatteryCounter
+                    0x0862                  _LowBatteryDetected
+                    0x0850                  _MessageBeingTransmitted
+                    0x0858                  _PrevDay
+                    0x085e                  _PrevHour
+                    0x0878                  _PrevMin
+                    0x087c                  _PrevSec
+                    0x097e                  __Files
+                    0x0986                  ___C30_UART
+                    0x095a                  __iob
+                    0x0980                  __outdone
+                    0x0981                  __sibuf
+                    0x0983                  __sobuf
+                    0x0866                  _debugString
+                    0x0860                  _debugVar
+                    0x0882                  _hourEnd
+                    0x0880                  _hourInit
+                    0x0886                  _minuteEnd
+                    0x0884                  _minuteInit
+                    0x087e                  _pumping
+                    0x088a                  _secondEnd
+                    0x0888                  _secondInit
 
 External Symbols in Data EEPROM (by address):
 
@@ -308,25 +321,25 @@ External Symbols in Program Memory (by address):
                   0x001420                  _stringLength
                   0x00143e                  _sendMessage
                   0x001478                  _receiveMessage
-                  0x00148e                  _ReportHoursOfPumping
-                  0x00156e                  _EEProm_Write_Int
-                  0x0015b2                  _EEProm_Read_Int
-                  0x0015d6                  _EEProm_Read_Float
-                  0x001626                  _EEProm_Write_Float
-                  0x0016b2                  _ClearEEProm
-                  0x00173c                  _delayMs
-                  0x00176a                  __RTCCInterrupt
-                  0x00177e                  _initSleep
-                  0x0017bc                  _sleepForPeriod
-                  0x00182a                  _resetCheckRemedy
-                  0x001892                  _ConfigTimerT1NoInt
-                  0x0018b4                  _ConfigTimerT2NoInt
-                  0x0018c6                  _UART_init
-                  0x0018d8                  _initialization
-                  0x001942                  _readWaterSensor2
-                  0x0019c0                  __DefaultInterrupt
-                  0x0019d2                  __CNInterrupt
-                  0x0019fc                  _main
+                  0x0014a4                  _ReportHoursOfPumping
+                  0x001588                  _EEProm_Write_Int
+                  0x0015cc                  _EEProm_Read_Int
+                  0x0015f0                  _EEProm_Read_Float
+                  0x001640                  _EEProm_Write_Float
+                  0x0016cc                  _ClearEEProm
+                  0x001756                  _delayMs
+                  0x001784                  __RTCCInterrupt
+                  0x001798                  _initSleep
+                  0x0017d6                  _sleepForPeriod
+                  0x001844                  _resetCheckRemedy
+                  0x0018ac                  _ConfigTimerT1NoInt
+                  0x0018ce                  _ConfigTimerT2NoInt
+                  0x0018e0                  _UART_init
+                  0x0018f2                  _initialization
+                  0x00195e                  _readWaterSensor2
+                  0x0019dc                  __DefaultInterrupt
+                  0x0019ee                  __CNInterrupt
+                  0x001a18                  _main
                   0xf80000                  __FBS.sec
                   0xf80004                  __FGS.sec
 
@@ -334,26 +347,26 @@ External Symbols in Program Memory (by name):
 
                   0x001240                  _BcdToDec
                   0x0011d8                  _CheckBattery
-                  0x0016b2                  _ClearEEProm
-                  0x001892                  _ConfigTimerT1NoInt
-                  0x0018b4                  _ConfigTimerT2NoInt
+                  0x0016cc                  _ClearEEProm
+                  0x0018ac                  _ConfigTimerT1NoInt
+                  0x0018ce                  _ConfigTimerT2NoInt
                   0x00126e                  _DecToBcd
-                  0x0015d6                  _EEProm_Read_Float
-                  0x0015b2                  _EEProm_Read_Int
-                  0x001626                  _EEProm_Write_Float
-                  0x00156e                  _EEProm_Write_Int
+                  0x0015f0                  _EEProm_Read_Float
+                  0x0015cc                  _EEProm_Read_Int
+                  0x001640                  _EEProm_Write_Float
+                  0x001588                  _EEProm_Write_Int
                   0x00137a                  _GetRTCCday
                   0x0013a4                  _GetRTCChour
                   0x0013ca                  _GetRTCCminute
                   0x001348                  _GetRTCCmonth
                   0x0013fa                  _GetRTCCsecond
-                  0x00148e                  _ReportHoursOfPumping
-                  0x0018c6                  _UART_init
-                  0x0019d2                  __CNInterrupt
-                  0x0019c0                  __DefaultInterrupt
+                  0x0014a4                  _ReportHoursOfPumping
+                  0x0018e0                  _UART_init
+                  0x0019ee                  __CNInterrupt
+                  0x0019dc                  __DefaultInterrupt
                   0xf80000                  __FBS.sec
                   0xf80004                  __FGS.sec
-                  0x00176a                  __RTCCInterrupt
+                  0x001784                  __RTCCInterrupt
                   0x000306                  ___addsf3
                   0x000f62                  ___divdi3
                   0x0003c0                  ___divsf3
@@ -389,23 +402,23 @@ External Symbols in Program Memory (by name):
                   0x000614                  __sprintf_cdnopuxX
                   0x000652                  __vfprintf_cdnopuxX
                   0x00117e                  _deepSleep
-                  0x00173c                  _delayMs
+                  0x001756                  _delayMs
                   0x00129c                  _getLowerBCDAsDecimal
                   0x0012ba                  _getUpperBCDAsDecimal
                   0x001134                  _initAdc
-                  0x00177e                  _initSleep
-                  0x0018d8                  _initialization
-                  0x0019fc                  _main
+                  0x001798                  _initSleep
+                  0x0018f2                  _initialization
+                  0x001a18                  _main
                   0x0005e6                  _memcpy
                   0x0010b4                  _pulseWidthThreshold
                   0x0011a8                  _readAdc
                   0x001228                  _readBatteryPin
-                  0x001942                  _readWaterSensor2
+                  0x00195e                  _readWaterSensor2
                   0x001478                  _receiveMessage
-                  0x00182a                  _resetCheckRemedy
+                  0x001844                  _resetCheckRemedy
                   0x00143e                  _sendMessage
                   0x0012da                  _setRTCC
-                  0x0017bc                  _sleepForPeriod
+                  0x0017d6                  _sleepForPeriod
                   0x0005f4                  _strcat
                   0x001420                  _stringLength
                   0x000608                  _strlen
@@ -432,9 +445,37 @@ FDS              0xf80010           0x000002
 
 Linker script and memory map
 
-LOAD build/default/production/main.o
-LOAD build/default/production/utilities.o
+LOAD build/default/debug/main.o
+LOAD build/default/debug/utilities.o
+
+reserve_data_0x800
+                    0x0800         0x20
+                    0x0820                  . = 0x20
+ *fill*             0x0800         0x2000
+
+reserve_data_0x820
+                    0x0820          0x2
+                    0x0822                  . = 0x2
+ *fill*             0x0820          0x200
+
+reserve_data_0x822
+                    0x0822          0x2
+                    0x0824                  . = 0x2
+ *fill*             0x0822          0x200
+
+reserve_data_0x824
+                    0x0824          0x2
+                    0x0826                  . = 0x2
+ *fill*             0x0824          0x200
+
+reserve_data_0x826
+                    0x0826         0x2a
+                    0x0850                  . = 0x2a
+ *fill*             0x0826         0x2a00
                     0x0001                  __MPLAB_BUILD = 0x1
+                    0x0001                  __MPLAB_DEBUG = 0x1
+                    0x0001                  __DEBUG = 0x1
+                    0x0001                  __MPLAB_DEBUGGER_PK3 = 0x1
 LOAD pPIC24Fxxx
 LOAD c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libfx-elf.a
                     0xf80000                  __FBS = 0xf80000
@@ -599,31 +640,31 @@ __FDS
 .comment
  *(.comment)
 
-.debug_info       0x000000       0x464a
+.debug_info       0x000000       0x4692
  *(.debug_info)
- .debug_info      0x000000       0x1e12 build/default/production/main.o
- .debug_info      0x001e12       0x2838 build/default/production/utilities.o
+ .debug_info      0x000000       0x1e29 build/default/debug/main.o
+ .debug_info      0x001e29       0x2869 build/default/debug/utilities.o
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev     0x000000        0x447
+.debug_abbrev     0x000000        0x42e
  *(.debug_abbrev)
- .debug_abbrev    0x000000        0x1d1 build/default/production/main.o
- .debug_abbrev    0x0001d1        0x276 build/default/production/utilities.o
+ .debug_abbrev    0x000000        0x1b8 build/default/debug/main.o
+ .debug_abbrev    0x0001b8        0x276 build/default/debug/utilities.o
 
-.debug_line       0x000000        0x42c
+.debug_line       0x000000        0x431
  *(.debug_line)
- .debug_line      0x000000        0x1f2 build/default/production/main.o
- .debug_line      0x0001f2        0x23a build/default/production/utilities.o
+ .debug_line      0x000000        0x1f5 build/default/debug/main.o
+ .debug_line      0x0001f5        0x23c build/default/debug/utilities.o
 
 .debug_frame      0x000000        0x45c
  *(.debug_frame)
- .debug_frame     0x000000        0x102 build/default/production/main.o
- .debug_frame     0x000102        0x35a build/default/production/utilities.o
+ .debug_frame     0x000000        0x102 build/default/debug/main.o
+ .debug_frame     0x000102        0x35a build/default/debug/utilities.o
 
 .debug_str        0x000000        0x289
  *(.debug_str)
- .debug_str       0x000000        0x151 build/default/production/main.o
- .debug_str       0x000151        0x138 build/default/production/utilities.o
+ .debug_str       0x000000        0x151 build/default/debug/main.o
+ .debug_str       0x000151        0x138 build/default/debug/utilities.o
 
 .debug_loc
  *(.debug_loc)
@@ -635,9 +676,9 @@ __FDS
                   0x000000        0x426
  *(.debug_pubnames)
  .debug_pubnames
-                  0x000000         0xbe build/default/production/main.o
+                  0x000000         0xbe build/default/debug/main.o
  .debug_pubnames
-                  0x0000be        0x368 build/default/production/utilities.o
+                  0x0000be        0x368 build/default/debug/utilities.o
 
 .debug_ranges
  *(.debug_ranges)
@@ -645,9 +686,9 @@ __FDS
 .debug_aranges    0x000000         0x30
  *(.debug_aranges)
  .debug_aranges
-                  0x000000         0x18 build/default/production/main.o
+                  0x000000         0x18 build/default/debug/main.o
  .debug_aranges
-                  0x000018         0x18 build/default/production/utilities.o
+                  0x000018         0x18 build/default/debug/utilities.o
                     0x0000                  WREG0 = 0x0
                     0x0000                  _WREG0 = 0x0
                     0x0002                  WREG1 = 0x2
@@ -1053,7 +1094,7 @@ LOAD c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libpic30-elf.
 LOAD c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a
 LOAD c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a
 END GROUP
-OUTPUT(dist/default/production/PumpMinder-3.0.production.elf elf32-pic30)
+OUTPUT(dist/default/debug/PumpMinder-3.0.debug.elf elf32-pic30)
 LOAD FGS
 LOAD FBS
 LOAD data_init
@@ -1062,16 +1103,16 @@ LOAD shared_data_init
 .debug_pubtypes
                   0x000030        0x532
  .debug_pubtypes
-                  0x000030        0x254 build/default/production/main.o
+                  0x000030        0x254 build/default/debug/main.o
  .debug_pubtypes
-                  0x000284        0x2de build/default/production/utilities.o
+                  0x000284        0x2de build/default/debug/utilities.o
 
 __c30_signature
                   0x000562         0xba
  __c30_signature
-                  0x000562          0x6 build/default/production/main.o
+                  0x000562          0x6 build/default/debug/main.o
  __c30_signature
-                  0x000568          0x6 build/default/production/utilities.o
+                  0x000568          0x6 build/default/debug/utilities.o
  __c30_signature
                   0x00056e          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libpic30-elf.a(crt0_standard.o)
  __c30_signature
@@ -1131,86 +1172,86 @@ __c30_signature
  __c30_signature
                   0x000616          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libm-elf.a(umuldi3.eo)
 
-.nbss               0x0800         0x40
- .nbss              0x0800         0x3c build/default/production/utilities.o
-                    0x0800                  _MessageBeingTransmitted
-                    0x0802                  _EEFloatData
-                    0x0806                  _Day
-                    0x0808                  _PrevDay
-                    0x080a                  _CurrentDay
-                    0x080c                  _CurrentHour
-                    0x080e                  _PrevHour
-                    0x0810                  _debugVar
-                    0x0812                  _LowBatteryDetected
-                    0x0814                  _FlashBatteryCounter
-                    0x0816                  _debugString
-                    0x0826                  _CurrentMin
-                    0x0828                  _PrevMin
-                    0x082a                  _CurrentSec
-                    0x082c                  _PrevSec
-                    0x082e                  _pumping
-                    0x0830                  _hourInit
-                    0x0832                  _hourEnd
-                    0x0834                  _minuteInit
-                    0x0836                  _minuteEnd
-                    0x0838                  _secondInit
-                    0x083a                  _secondEnd
- .nbss              0x083c          0x4 build/default/production/main.o
+.nbss               0x0850         0x40
+ .nbss              0x0850         0x3c build/default/debug/utilities.o
+                    0x0850                  _MessageBeingTransmitted
+                    0x0852                  _EEFloatData
+                    0x0856                  _Day
+                    0x0858                  _PrevDay
+                    0x085a                  _CurrentDay
+                    0x085c                  _CurrentHour
+                    0x085e                  _PrevHour
+                    0x0860                  _debugVar
+                    0x0862                  _LowBatteryDetected
+                    0x0864                  _FlashBatteryCounter
+                    0x0866                  _debugString
+                    0x0876                  _CurrentMin
+                    0x0878                  _PrevMin
+                    0x087a                  _CurrentSec
+                    0x087c                  _PrevSec
+                    0x087e                  _pumping
+                    0x0880                  _hourInit
+                    0x0882                  _hourEnd
+                    0x0884                  _minuteInit
+                    0x0886                  _minuteEnd
+                    0x0888                  _secondInit
+                    0x088a                  _secondEnd
+ .nbss              0x088c          0x4 build/default/debug/main.o
 
-.data               0x0840         0xf0
- .data              0x0840         0xca c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(doprnt_cdnopuxX.XXeo)
- .data              0x090a         0x26 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(_iob.eo)
-                    0x090a                  __iob
-                    0x092e                  __Files
+.data               0x0890         0xf0
+ .data              0x0890         0xca c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(doprnt_cdnopuxX.XXeo)
+ .data              0x095a         0x26 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(_iob.eo)
+                    0x095a                  __iob
+                    0x097e                  __Files
 
-.bss                0x0930          0x6
- .bss               0x0930          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(_iob.eo)
-                    0x0930                  __outdone
-                    0x0931                  __sibuf
-                    0x0933                  __sobuf
+.bss                0x0980          0x6
+ .bss               0x0980          0x6 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libc-elf.a(_iob.eo)
+                    0x0980                  __outdone
+                    0x0981                  __sibuf
+                    0x0983                  __sobuf
 
-.data               0x0936          0x2
- .data              0x0936          0x2 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libpic30-elf.a(c30_uart.eo)
-                    0x0936                  ___C30_UART
+.data               0x0986          0x2
+ .data              0x0986          0x2 c:/program files (x86)/microchip/xc16/v1.26/bin/bin/../../lib\libpic30-elf.a(c30_uart.eo)
+                    0x0986                  ___C30_UART
 
 .config_DSWDTEN
                   0xf80010          0x2
  .config_DSWDTEN
-                  0xf80010          0x2 build/default/production/main.o
+                  0xf80010          0x2 build/default/debug/main.o
 
 .config_BKBUG     0xf8000e          0x2
- .config_BKBUG    0xf8000e          0x2 build/default/production/main.o
+ .config_BKBUG    0xf8000e          0x2 build/default/debug/main.o
 
 .config_MCLRE     0xf8000c          0x2
- .config_MCLRE    0xf8000c          0x2 build/default/production/main.o
+ .config_MCLRE    0xf8000c          0x2 build/default/debug/main.o
 
 .config_FWDTEN    0xf8000a          0x2
  .config_FWDTEN
-                  0xf8000a          0x2 build/default/production/main.o
+                  0xf8000a          0x2 build/default/debug/main.o
 
 .config_FCKSM     0xf80008          0x2
- .config_FCKSM    0xf80008          0x2 build/default/production/main.o
+ .config_FCKSM    0xf80008          0x2 build/default/debug/main.o
 
 .config_IESO      0xf80006          0x2
- .config_IESO     0xf80006          0x2 build/default/production/main.o
+ .config_IESO     0xf80006          0x2 build/default/debug/main.o
 
 .ivt._CNInterrupt
                   0x00003a          0x2
  .ivt._CNInterrupt
-                  0x00003a          0x2 build/default/production/main.o
+                  0x00003a          0x2 build/default/debug/main.o
 
 .ivt._RTCCInterrupt
                   0x000090          0x2
  .ivt._RTCCInterrupt
-                  0x000090          0x2 build/default/production/utilities.o
+                  0x000090          0x2 build/default/debug/utilities.o
 
 .const              0x90b4         0x80 load address 0x0010b4  
- .const             0x90b4         0x40 build/default/production/main.o
+ .const             0x90b4         0x40 build/default/debug/main.o
                     0x90b4                  _pulseWidthThreshold
- .const             0x90f4         0x40 build/default/production/utilities.o
+ .const             0x90f4         0x40 build/default/debug/utilities.o
 
-.text             0x001134        0xc08
- .text            0x001134        0x75e build/default/production/utilities.o
+.text             0x001134        0xc2c
+ .text            0x001134        0x778 build/default/debug/utilities.o
                   0x001134                  _initAdc
                   0x00117e                  _deepSleep
                   0x0011a8                  _readAdc
@@ -1229,33 +1270,33 @@ __c30_signature
                   0x001420                  _stringLength
                   0x00143e                  _sendMessage
                   0x001478                  _receiveMessage
-                  0x00148e                  _ReportHoursOfPumping
-                  0x00156e                  _EEProm_Write_Int
-                  0x0015b2                  _EEProm_Read_Int
-                  0x0015d6                  _EEProm_Read_Float
-                  0x001626                  _EEProm_Write_Float
-                  0x0016b2                  _ClearEEProm
-                  0x00173c                  _delayMs
-                  0x00176a                  __RTCCInterrupt
-                  0x00177e                  _initSleep
-                  0x0017bc                  _sleepForPeriod
-                  0x00182a                  _resetCheckRemedy
- .text            0x001892        0x4aa build/default/production/main.o
-                  0x001892                  _ConfigTimerT1NoInt
-                  0x0018b4                  _ConfigTimerT2NoInt
-                  0x0018c6                  _UART_init
-                  0x0018d8                  _initialization
-                  0x001942                  _readWaterSensor2
-                  0x0019c0                  __DefaultInterrupt
-                  0x0019d2                  __CNInterrupt
-                  0x0019fc                  _main
+                  0x0014a4                  _ReportHoursOfPumping
+                  0x001588                  _EEProm_Write_Int
+                  0x0015cc                  _EEProm_Read_Int
+                  0x0015f0                  _EEProm_Read_Float
+                  0x001640                  _EEProm_Write_Float
+                  0x0016cc                  _ClearEEProm
+                  0x001756                  _delayMs
+                  0x001784                  __RTCCInterrupt
+                  0x001798                  _initSleep
+                  0x0017d6                  _sleepForPeriod
+                  0x001844                  _resetCheckRemedy
+ .text            0x0018ac        0x4b4 build/default/debug/main.o
+                  0x0018ac                  _ConfigTimerT1NoInt
+                  0x0018ce                  _ConfigTimerT2NoInt
+                  0x0018e0                  _UART_init
+                  0x0018f2                  _initialization
+                  0x00195e                  _readWaterSensor2
+                  0x0019dc                  __DefaultInterrupt
+                  0x0019ee                  __CNInterrupt
+                  0x001a18                  _main
 
-.dinit            0x001d3c         0xca
- .dinit           0x001d3c         0xca data_init
+.dinit            0x001d60         0xca
+ .dinit           0x001d60         0xca data_init
 
-.shared.dinit     0x001e06          0x2
- .shared.dinit    0x001e06          0x2 shared_data_init
+.shared.dinit     0x001e2a          0x2
+ .shared.dinit    0x001e2a          0x2 shared_data_init
 
 .eedata             0xfe00          0x2 load address 0x7ffe00  
- .eedata            0xfe00          0x2 build/default/production/utilities.o
+ .eedata            0xfe00          0x2 build/default/debug/utilities.o
                     0xfe00                  _eeData

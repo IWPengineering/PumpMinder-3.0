@@ -213,6 +213,7 @@ void initialization(void) {
     ConfigTimerT2NoInt();    // used by readWaterSensor to time the WPS_OUT pulse
     
     
+    _U1RXIF = 0;
     //LATAbits.LATA2 = 0;
     LATAbits.LATA2 = 1;
     //Delay for 5ms for the WPS turn on time
@@ -527,58 +528,64 @@ int main(void)
             //PORTBbits.RB15 = 0; //Enable the BLE-Power PMOS power switch
             LATBbits.LATB15 = 0; //Enable the BLE-Power PMOs switch
             bool bleConnected = false;
-            bool beforeConnect = true;
+            bool blePowered = true;
             
             //Start timer/counter to count up to 1.5 minutes
-            int counter = 0;
-            PR2 = 65535; //System clock is 500kHz/2 = 250kHz => 4us period
-                //To count to 1.5 minutes needs 90 seconds/4us = 22500000. The timer
-                //value only goes up to 65535, so we'll need to run the timer
-                //22500000/65535 = 344 times for the time to equal 1.5 minutes.
-                //PR2 is the register that when the timer reaches its value, the 
-                //interrupt flag is set.
+            int bleWaitCounter = 0;
+            PR2 = 65535; 
             TMR2 = 0; //Clear the timer
             _T2IF = 0; //Clear the timer interrupt
             T2CONbits.TON = 1; //Turn on the timer
             
-            while(beforeConnect){   
+            while(blePowered && !bleConnected){ //While BLE is powered and not connected   
                 
-                if (counter < 344){  
+                if (bleWaitCounter < 344){ //System clock is 500kHz/2 = 250kHz => 4us period
+                //To count to 1.5 minutes needs 90 seconds/4us = 22500000. The timer
+                //value only goes up to 65535, so we'll need to run the timer
+                //22500000/65535 = 344 times for the time to equal 1.5 minutes.
+                //PR2 is the register that when the timer reaches its value, the 
+                //interrupt flag is set. 
                     
-                    if(U1STAbits.URXDA == 1){ //If the Receive UART interrupt is set, enter the loop
+                    if(_U1RXIF){ //If the Receive UART interrupt is set, enter the loop
+                        _U1RXIF = 0;
+                        int x = 0;
                         char connect = U1RXREG; //read the RX data register
                         
                         if (connect == 0b01000111){ //if the first message is G, the system is connected
                             bleConnected = true; //sets system as connected
-                            beforeConnect = false; //breaks pre-connection loop
                         }
-
-                    }else if(_T2IF){ //if the timer interrupt is set
+                    }
+                    if(_T2IF){ //if the timer interrupt is set
                         TMR2 = 0; //clear the timer
                         _T2IF = 0; //clear the timer interrupt
-                        counter++;
+                        bleWaitCounter++;
                     }
-                    if (counter >= 344){
-                        LATBbits.LATB15 = 1; //de-power the BLE module
-                        T2CONbits.TON = 0;
-                        beforeConnect = false; //break out of pre-connection loop
-                    }
+                }else{
+                    LATBbits.LATB15 = 1; //de-power the BLE module
+                    T2CONbits.TON = 0; //turn off the timer
+                    blePowered = false; //break out of pre-connection loop
+                    bleWaitCounter = 0; //reset the BLE Time counter to zero
                 }
             }
             
-            //Set Timer2 to count up to 5 minutes
-            counter = 0;
+            //Set Timer2 to count up to 2 minutes
             TMR2 = 0;
             _T2IF = 0;
             T2CONbits.TON = 1;
             
             while(bleConnected){ //if the BLE module connects to the app
                 
-                if(counter < 1145){
+                if(bleWaitCounter < 458){//System clock is 500kHz/2 = 250kHz => 4us period
+                //To count to 2 minutes needs 120 seconds/4us = 30000000. The timer
+                //value only goes up to 65535, so we'll need to run the timer
+                //30000000/65535 = 458 times for the time to equal 2 minutes.
+                //The counter will be reset anytime a request for data is made.    
+                //PR2 is the register that when the timer reaches its value, the 
+                //interrupt flag is set.
                     
-                    int clear = receiveMessage(); //run the receive Message function
+                    int msgCommand = receiveMessage(); //run the receive Message function
                     
-                    if(clear == 1){ //Clear data message received, clear the data
+                    if(msgCommand == 1){ //Clear data message received, clear the data
                         decimalHour = 0;
                         hourCounter = 0;
                         buttonTicks = 0;
@@ -586,19 +593,23 @@ int main(void)
                         //PrevDay = Day; 
                         int EEPROMaddrs = 0; //first location saved for the day
                         EEProm_Write_Int(EEPROMaddrs,Day);
-                    
-                    }else if (_T2IF){ 
+                    }
+                    if (msgCommand == 2){ //Message Received asks for data.
+                        ReportHoursOfPumping(); // Report Battery data and time data
+                        bleWaitCounter = 0; //You received a message, reset BLE Time Counter to zero. 
+                    }
+                    if (_T2IF){ 
                         TMR2 = 0; //clear the timer
                         _T2IF = 0; //clear the timer interrupt 
-                        counter++;
+                        bleWaitCounter++;
                     }
-                    if(counter >= 1145){
-                        LATBbits.LATB15 = 1; //de-power the BLE module
-                        T2CONbits.TON = 0; //turn off the timer
-                        bleConnected = false; //Break final connection loop
-                    }
+                }else{
+                    LATBbits.LATB15 = 1; //de-power the BLE module
+                    T2CONbits.TON = 0; //turn off the timer
+                    bleConnected = false; //Break final connection loop
                 }
-            }                        
+            }
+            T2CONbits.TON = 0;
         }
          
          pumping = pumping;
