@@ -115,7 +115,7 @@ void ConfigTimerT2NoInt(){
 
 void UART_init(void) {
     // UART config
-
+    
     U1STA = 0;
     //U1MODE = 0x8000; //enable UART for 8 bit data//no parity, 1 stop bit
     
@@ -158,6 +158,7 @@ void initialization(void) {
     
     // Configure Serial Communication Pins. 
     // this is the default TRISBbits.TRISB2=1; //U1Rx 
+    TRISBbits.TRISB2 = 1; //U1RX = Input
     TRISBbits.TRISB7 = 0; // U1Tx = Output
     // THIS IS SHAWN'S CODE TRISB = 0b1101110111111111; //RB2 and RB7 outputs [looks like RB13 and RB9??] (why are both RX and TX outputs?)
     
@@ -168,26 +169,27 @@ void initialization(void) {
 
     //H2O sensor config
     // WPS_ON/OFF pin 7 RA2 (WPS input is RA1 - pin 3)
-    LATAbits.LATA2 = 1;
+    //LATAbits.LATA2 = 1;
     TRISAbits.TRISA2 = 0; //makes water presence sensor enable pin an output.
     LATAbits.LATA2 = 1; //turn on the water presence sensor.
+    
     // Need to wait for the 555 to turn on.
-    TRISBbits.TRISB15 = 0; //Test pin
-    LATBbits.LATB15 = 1; //Test pin
+    //TRISBbits.TRISB15 = 0; //Test pin
+    //LATBbits.LATB15 = 1; //Test pin
     
     // Battery Voltage Check (enable = B4, battery voltage A3)
     TRISBbits.TRISB4 = 0; // make battery voltage check enable an output
     PORTBbits.RB4 = 0;    // Disable the battery voltage check
     
-    // Low battery Indicator--Will be used for Vibration Sensor
-    TRISAbits.TRISA4 = 0; // Make low battery indicator (pin 10 A4 an output)
-    PORTAbits.RA4 = 0;    // Turn off the low battery indicator
+    // Vibration Sensor Power Pin (Tristate when Awake, Output when asleep)
+    TRISAbits.TRISA4 = 1; // Put VIBSEN to an input in tristate
+    //PORTAbits.RA4 = 0;    // Turn off the low battery indicator
 
     //TRISAbits.TRISA4 = 1; // Pin 10 A4 input. (Tristate for Normal Operation).
     
     //Bluetooth Module Power Pin RB15
     TRISBbits.TRISB15 = 0; //Make BLE-Power pin an output
-    PORTBbits.RB15 = 1; //Turn off BLE-Power PMOS switch (PMOS is active low).
+    LATBbits.LATB15 = 1; //Turn off BLE-Power PMOS switch (PMOS is active low).
 
     //PORTAbits.RA4 = 1; // Turn on LED
     //TRISAbits.TRISA4 = 1; // Pin 10 A4 input.
@@ -220,7 +222,7 @@ void initialization(void) {
     //PR1 = 20; //5 ms = 3906 * .005
     PR1 = 40; //10ms
     while(!_T1IF) {
-        // Waiting for 5ms
+        // Waiting for 10ms
     }
     
     //void setRTCC(char sec, char min, char hr, char wkday, char date, char month, char year)
@@ -539,15 +541,18 @@ int main(void)
             _T2IF = 0; //Clear the timer interrupt
             T2CONbits.TON = 1; //Turn on the timer
             
-            while(beforeConnect){              
-                if (counter < 344){        
+            while(beforeConnect){   
+                
+                if (counter < 344){  
+                    
                     if(U1STAbits.URXDA == 1){ //If the Receive UART interrupt is set, enter the loop
                         char connect = U1RXREG; //read the RX data register
+                        
                         if (connect == 0b01000111){ //if the first message is G, the system is connected
                             bleConnected = true; //sets system as connected
                             beforeConnect = false; //breaks pre-connection loop
                         }
-                    
+
                     }else if(_T2IF){ //if the timer interrupt is set
                         TMR2 = 0; //clear the timer
                         _T2IF = 0; //clear the timer interrupt
@@ -601,7 +606,7 @@ int main(void)
         
          //DSWDT set to 9 minutes
          //if(_T1IF && pumping == 0 && (!DSWAKE&0b00001000)) {//_T1IF set when timer reaches 10 seconds
-         if(_T1IF && pumping == 0 && (!_DPSLP)) { 
+         /*if(_T1IF && pumping == 0 && (!_DPSLP)) { 
             sendMessage("\r\n Entering Deep Sleep Did not wake up from Deep Sleep\r\n");
             deepSleep();
          } 
@@ -616,7 +621,7 @@ int main(void)
             sendMessage("\r\n Entering Deep Sleep recently woke up from Deep Sleep\r\n");
              // _DPSLP same bit from DSWAKE?
             deepSleep();
-         }
+         }*/
     }
 
     return -1;
