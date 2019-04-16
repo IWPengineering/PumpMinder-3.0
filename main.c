@@ -392,24 +392,6 @@ int main(void)
         //sprintf(debugString, "%d", CurrentHour);
         //sendMessage(debugString);
         //sendMessage("\r\n");
-        if(CurrentHour != PrevHour){
-            // CurrentDay = GetRTCCday();
-            CheckBattery(); // Once the battery is found to be low, the LED will flash on and off
-            PrevHour = CurrentHour;
-        }
-         
-        //TODO Take Out
-        // Flash Low Battery LED if battery is Low
-        if(LowBatteryDetected){
-            FlashBatteryCounter++;
-            if((!PORTAbits.RA4)&&(FlashBatteryCounter > 3)){
-                PORTAbits.RA4 = 1; // Turn Low Battery LED On for 1 sec
-                FlashBatteryCounter = 0; // reset counter
-            }
-            else{
-                PORTAbits.RA4 = 0;  // Turn Low Battery LED Off
-            }   
-        }
          
         CurrentDay = GetRTCCday();
         if(CurrentDay != PrevDay){//Save daily water hours to EEPROM
@@ -593,6 +575,7 @@ int main(void)
                         //PrevDay = Day; 
                         int EEPROMaddrs = 0; //first location saved for the day
                         EEProm_Write_Int(EEPROMaddrs,Day);
+                        sendMessage("CLRDATA: Data Cleared Successfully");
                     }
                     if (msgCommand == 2){ //Message Received asks for data.
                         ReportHoursOfPumping(); // Report Battery data and time data

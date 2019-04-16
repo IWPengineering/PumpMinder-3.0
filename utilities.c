@@ -438,7 +438,7 @@ void sendMessage(char message[750]) {
 int receiveMessage(void){
     char message;
     
-    if (U1STAbits.URXDA == 1){ //Something is available to read 
+    if (_U1RXIF){ //Something is available to read 
         message = U1RXREG; //Read the RX data register
     }
     
@@ -457,7 +457,7 @@ int receiveMessage(void){
  * Function:  ReportHoursOfPumping(void)
  * Input:  none
  * Output: none
- * Overvies: Sends the value of hourCounter and tickCounter most recently saved to EEPROM
+ * Overview: Sends the value of hourCounter and tickCounter most recently saved to EEPROM
  *           which should be the amount so far today to the RJ45 connection
  *           the current values are sent first.  Then the values of previous days
  *           stored in EEPROM are sent until the day reaches zero
@@ -475,9 +475,9 @@ void ReportHoursOfPumping(){
     CheckBattery(); //Run CheckBattery() function only when transmitting data.
     
     if(LowBatteryDetected == 0){
-        sendMessage("GETBATT: Battery is OK\0");
+        sendMessage("GETBATT: Battery is OK\r\n");
     }else{
-        sendMessage("GETBATT: Change Batteries\0");
+        sendMessage("GETBATT: Change Batteries\r\n");
     }
     
     int Dayptr = 0;
@@ -502,7 +502,7 @@ void ReportHoursOfPumping(){
          if(Dayptr < Day){
             strcat(strMessage, ",");
          }else if (Dayptr >= Day){
-             strcat(strMessage, "\0");
+             strcat(strMessage, "\r\n");
          }
         Dayptr++;
     } 
@@ -849,5 +849,11 @@ void resetCheckRemedy(void)
     {
         // Power-up reset has occurred
         _POR = 0;
+    }
+    
+    if(_U1RXIF)
+    {
+        // There is data to read in the U1RXREG
+        _U1RXIF = 0;
     }
 }
