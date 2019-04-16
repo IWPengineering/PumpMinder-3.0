@@ -530,7 +530,7 @@ int main(void)
                     
                     if(_U1RXIF){ //If the Receive UART interrupt is set, enter the loop
                         _U1RXIF = 0;
-                        int x = 0;
+                       
                         char connect = U1RXREG; //read the RX data register
                         
                         if (connect == 0b01000111){ //if the first message is G, the system is connected
@@ -575,7 +575,7 @@ int main(void)
                         //PrevDay = Day; 
                         int EEPROMaddrs = 0; //first location saved for the day
                         EEProm_Write_Int(EEPROMaddrs,Day);
-                        sendMessage("CLRDATA: Data Cleared Successfully");
+                        sendMessage("CLRDATA: Data Cleared Successfully\r\n");
                     }
                     if (msgCommand == 2){ //Message Received asks for data.
                         ReportHoursOfPumping(); // Report Battery data and time data

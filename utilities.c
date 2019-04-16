@@ -439,6 +439,7 @@ int receiveMessage(void){
     char message;
     
     if (_U1RXIF){ //Something is available to read 
+        _U1RXIF = 0;
         message = U1RXREG; //Read the RX data register
     }
     
@@ -506,7 +507,6 @@ void ReportHoursOfPumping(){
          }
         Dayptr++;
     } 
-    int x = 0;
     sendMessage(strMessage);
 }
 /*********************************************************************
