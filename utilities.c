@@ -117,19 +117,19 @@ void initAdc(void)
 
 void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
     //SRbits.IPL = 0; // Set CPU interrupt to max priority.
-    IEC0bits.INT0IE = 1; // Enable Interrupt Zero (INT0)
+    //Use this line // IEC0bits.INT0IE = 1; // Enable Interrupt Zero (INT0)
     //IPC0BITS.INT0IP = 0; // default is highest priority, Sets interrupt priority
-    INTCON2bits.INT0EP = 0; // 1 = negative edge, 0 = positive edge]
+    //Use this line // INTCON2bits.INT0EP = 0; // 1 = negative edge, 0 = positive edge]
     TRISBbits.TRISB7 = 0; // Pin 10 A4 input. INT0 vibration sensor output, high upon vibration
     LATAbits.LATA4 = 1; //Vibration Sensor power
-    IEC0bits.INT0IE = 1; // Enable Interrupt Zero
+    //Use this line // IEC0bits.INT0IE = 1; // Enable Interrupt Zero
     //IPC0BITS.INT0IP = 0; // ??? Not need ??? Sets interrupt priority
-    INTCON2bits.INT0EP = 1; // 1 = negative edge, 0 = positive edge]
+    //Use this line // INTCON2bits.INT0EP = 1; // 1 = negative edge, 0 = positive edge]
     
     //Read from ports, Write to Latches
     // Use shadow register    
     LATAbits.LATA2 = 0; //WPS
-    LATBbits.LATB15 = 0; //Test Pin
+    LATBbits.LATB14 = 0; //Test Pin
    
     LATBbits.LATB4 = 0; //Turn off Battery Voltage Sensor
 

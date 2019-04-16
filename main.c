@@ -66,8 +66,8 @@
 #pragma config ICS = PGx1              // ICD Pin Placement Select bits (PGC1/PGD1 are used for programming and debugging the device)
 
 // FDS
-#pragma config DSWDTPS = DSWDTPSF       // Deep Sleep Watchdog Timer Postscale Select bits (1:2,147,483,648 (25.7 Days))
-//#pragma config DSWDTPS = DSWDTPS6         // Deep Sleep Watchdog Timer
+//#pragma config DSWDTPS = DSWDTPSF       // Deep Sleep Watchdog Timer Postscale Select bits (1:2,147,483,648 (25.7 Days))
+#pragma config DSWDTPS = DSWDTPS6         // Deep Sleep Watchdog Timer
 #pragma config DSWDTOSC = LPRC          // DSWDT Reference Clock Select bit (DSWDT uses LPRC as reference clock)
 //#pragma config RTCOSC = SOSC            // RTCC Reference Clock Select bit (RTCC uses SOSC as reference clock)
 #pragma config RTCOSC = LPRC            // RTCC Reference Clock Select bit (RTCC uses LPRC as reference clock)
@@ -172,8 +172,8 @@ void initialization(void) {
     TRISAbits.TRISA2 = 0; //makes water presence sensor enable pin an output.
     LATAbits.LATA2 = 1; //turn on the water presence sensor.
     // Need to wait for the 555 to turn on.
-    TRISBbits.TRISB15 = 0; //Test pin
-    LATBbits.LATB15 = 1; //Test pin
+    TRISBbits.TRISB14 = 0; //Test pin
+    LATBbits.LATB14 = 1; //Test pin
     
     // Battery Voltage Check (enable = B4, battery voltage A3)
     TRISBbits.TRISB4 = 0; // make battery voltage check enable an output
