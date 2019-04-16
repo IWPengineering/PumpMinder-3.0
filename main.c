@@ -387,33 +387,35 @@ int main(void)
 //        _T1IF = 0; //clear T1 interrupt flag
 //        TMR1 = 0; // clear timer T1
 
-         // Update the hour and day
-         CurrentHour = GetRTCChour();
-         //sprintf(debugString, "%d", CurrentHour);
-         //sendMessage(debugString);
-         //sendMessage("\r\n");
-         if(CurrentHour != PrevHour){
-             // CurrentDay = GetRTCCday();
-             CheckBattery(); // Once the battery is found to be low, the LED will flash on and off
-             PrevHour = CurrentHour;
-         }
-         // Flash Low Battery LED if battery is Low
-         if(LowBatteryDetected){
-             FlashBatteryCounter++;
-             if((!PORTAbits.RA4)&&(FlashBatteryCounter > 3)){
-                 PORTAbits.RA4 = 1; // Turn Low Battery LED On for 1 sec
-                 FlashBatteryCounter = 0; // reset counter
-             }
-             else{
-                 PORTAbits.RA4 = 0;  // Turn Low Battery LED Off
-             }   
-         }
+        // Update the hour and day
+        CurrentHour = GetRTCChour();
+        //sprintf(debugString, "%d", CurrentHour);
+        //sendMessage(debugString);
+        //sendMessage("\r\n");
+        if(CurrentHour != PrevHour){
+            // CurrentDay = GetRTCCday();
+            CheckBattery(); // Once the battery is found to be low, the LED will flash on and off
+            PrevHour = CurrentHour;
+        }
          
-         CurrentDay = GetRTCCday();
-         if(CurrentDay != PrevDay){//Save daily water hours to EEPROM
-             // If we are in the middle of pumping we will just ignore any pumping
-             // that took place right before the day rolled over to the next
-             pumping = 0;
+        //TODO Take Out
+        // Flash Low Battery LED if battery is Low
+        if(LowBatteryDetected){
+            FlashBatteryCounter++;
+            if((!PORTAbits.RA4)&&(FlashBatteryCounter > 3)){
+                PORTAbits.RA4 = 1; // Turn Low Battery LED On for 1 sec
+                FlashBatteryCounter = 0; // reset counter
+            }
+            else{
+                PORTAbits.RA4 = 0;  // Turn Low Battery LED Off
+            }   
+        }
+         
+        CurrentDay = GetRTCCday();
+        if(CurrentDay != PrevDay){//Save daily water hours to EEPROM
+            // If we are in the middle of pumping we will just ignore any pumping
+            // that took place right before the day rolled over to the next
+            pumping = 0;
             int EEPROMaddrs = 0; //first location is used for the number of days since system was RESET
             EEProm_Write_Int(EEPROMaddrs,Day);
             EEPROMaddrs = 1+(Day*2); //first location for new day's data
@@ -424,11 +426,11 @@ int main(void)
             decimalHour = 0; //reset for new day
             Day++;
             PrevDay = CurrentDay;  
-         }
+        }
 
          
-         //Start of checking for water 
-          if (readWaterSensor2()){
+        //Start of checking for water 
+        if (readWaterSensor2()){
             if (pumping == 0){ //Is this the start of a pumping event?
                 _T1IF = 0;
                 TMR1 = 0; //We are pumping timer needs to be reset
@@ -448,11 +450,9 @@ int main(void)
                 secondInit = BcdToDec(secBCD);  //Gets the current second
                 char minuteBCD = (binaryMinuteSec >> 8) & 0b0000000011111111; 
                 minuteInit = BcdToDec(minuteBCD); // Gets the current minute
-               
             }
            
-        }
-         else if ((pumping == 1) && !readWaterSensor2()){ // We just stopped pumping
+        }else if ((pumping == 1) && !readWaterSensor2()){ // We just stopped pumping
             T1CONbits.TON = 1;
              
              hourEnd = GetRTCChour();
