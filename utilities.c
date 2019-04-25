@@ -160,11 +160,14 @@ void sleepyTime(){
     // Enabled something wrong? Doesn't sleep with the interrupts enabled must always be waking up?
     // Sleeps fine when using WDT and waking up cyclically 
     /****************************************************/
+    IFS0 = 0; // Clear interrupt flags.
     SRbits.IPL = 0; // Set CPU interrupt to max priority.
     IEC0bits.INT0IE = 1; // Enable Interrupt Zero (INT0)
     IPC0bits.INT0IP = 0; // default is highest priority, Sets interrupt priority
     INTCON2bits.INT0EP = 0; // 1 = negative edge, 0 = positive edge (expecting this)
-    TRISBbits.TRISB7 = 1; // INT0 vibration sensor output, high upon vibration
+    TRISBbits.TRISB7 = 1; // INT0 input is sensor output, high upon vibration
+    CNPD2bits.CN23PDE = 1; // Internal pull-down resistor enabled for INT0
+    CNPU2bits.CN23PUE = 0; // Internal pull-up resistor disabled for INT0
     TRISAbits.TRISA4 = 0; //Pin 10 A4 output
     LATAbits.LATA4 = 1; //Pin 10 A4 high/powered
     /*****************************************************/

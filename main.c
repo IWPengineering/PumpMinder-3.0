@@ -172,7 +172,7 @@ void initialization(void) {
     //H2O sensor config
     // WPS_ON/OFF pin 7 RA2 (WPS input is RA1 - pin 3)
     TRISAbits.TRISA2 = 0; //makes water presence sensor enable pin an output.
-    //LATAbits.LATA2 = 1; //turn on the water presence sensor.
+    LATAbits.LATA2 = 1; //turn on the water presence sensor.
     // Need to wait for the 555 to turn on.
     TRISBbits.TRISB14 = 0; //Test pin
     //LATBbits.LATB14 = 1; //Test pin
@@ -312,14 +312,13 @@ void __attribute__((__interrupt__, __auto_psv__)) _DefaultInterrupt()
 }
 
 void __attribute__((interrupt, auto_psv)) _CNInterrupt(void) { //button interrupt
+   
     if (IFS1bits.CNIF && PORTAbits.RA6){
         //sendMessage("Interrupt Has Happened");
      // If the button is pushed and we're in the right ISR
-        
         buttonFlag = 1;
     }
     
-
     // Always reset the interrupt flag
     IFS1bits.CNIF = 0;
 }
@@ -604,27 +603,7 @@ int main(void)
          //if(_T1IF && pumping == 0 && (!DSWAKE&0b00001000)) {//_T1IF set when timer reaches 10 seconds
          if(_T1IF && pumping == 0 && (!_SLEEP)) { 
             sendMessage("\r\n Entering Sleep Did not wake up from Sleep\r\n");
-            //LATAbits.LATA2 = 0; //WPS
-            /**************************
-            int Abits;
-            int Bbits;
-            TRISBbits.TRISB7 = 0;
-            Abits = LATA;
-            Abits = Abits | 0b10000; //Vibration sensor power
-            Abits = Abits & 0b011; //WPS off
-            LATA = Abits;
-            Bbits = LATB;
-            Bbits = Bbits & 0b011111111101111; //Test pin and battery voltage sensor off.
-            LATB = Bbits;            
-            PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
-            PMD2 = PMD2 | 0xFFFF;
-            RCONbits.SWDTEN = 1; //Enable WDT
-            asm("PWRSAV #0");
-            **************************/
-            //while(1) {
-                
-            //}
-            //deepSleep();
+
             sleepyTime();
          } 
          //else if(pumping == 0 && (DSWAKE&0b00001000)) { //else woke up from deep sleep go back to sleep if pumping == 0
