@@ -116,7 +116,7 @@ void ConfigTimerT2NoInt(){
 
 void UART_init(void) {
     // UART config
-
+    
     U1STA = 0;
     //U1MODE = 0x8000; //enable UART for 8 bit data//no parity, 1 stop bit
     
@@ -162,6 +162,7 @@ void initialization(void) {
     
     // Configure Serial Communication Pins. 
     // this is the default TRISBbits.TRISB2=1; //U1Rx 
+    TRISBbits.TRISB2 = 1; //U1RX = Input
     TRISBbits.TRISB7 = 0; // U1Tx = Output
     // THIS IS SHAWN'S CODE TRISB = 0b1101110111111111; //RB2 and RB7 outputs [looks like RB13 and RB9??] (why are both RX and TX outputs?)
     
@@ -171,20 +172,39 @@ void initialization(void) {
 
     //H2O sensor config
     // WPS_ON/OFF pin 7 RA2 (WPS input is RA1 - pin 3)
+
+    //LATAbits.LATA2 = 1;
+    TRISAbits.TRISA2 = 0; //makes water presence sensor enable pin an output.
+    LATAbits.LATA2 = 1; //turn on the water presence sensor.
+    
+    // Need to wait for the 555 to turn on.
+    //TRISBbits.TRISB15 = 0; //Test pin
+    //LATBbits.LATB15 = 1; //Test pin
+
     TRISAbits.TRISA2 = 0; //makes water presence sensor enable pin an output.
     //LATAbits.LATA2 = 1; //turn on the water presence sensor.
     // Need to wait for the 555 to turn on.
     TRISBbits.TRISB14 = 0; //Test pin
     //LATBbits.LATB14 = 1; //Test pin
-    
+  
     // Battery Voltage Check (enable = B4, battery voltage A3)
     TRISBbits.TRISB4 = 0; // make battery voltage check enable an output
     //PORTBbits.RB4 = 0;    // Disable the battery voltage check
     
+    // Vibration Sensor Power Pin (Tristate when Awake, Output when asleep)
+    TRISAbits.TRISA4 = 1; // Put VIBSEN to an input in tristate
+    //PORTAbits.RA4 = 0;    // Turn off the low battery indicator
+
     //TRISAbits.TRISA4 = 1; // Pin 10 A4 input. (Tristate for Normal Operation).
     
     //Bluetooth Module Power Pin RB15
     TRISBbits.TRISB15 = 0; //Make BLE-Power pin an output
+
+    LATBbits.LATB15 = 1; //Turn off BLE-Power PMOS switch (PMOS is active low).
+
+    //PORTAbits.RA4 = 1; // Turn on LED
+    //TRISAbits.TRISA4 = 1; // Pin 10 A4 input.
+
     //PORTBbits.RB15 = 1; //Turn off BLE-Power PMOS switch (PMOS is active low).
 
     TRISAbits.TRISA4 = 1; // Pin 10 A4 input.
@@ -216,6 +236,10 @@ void initialization(void) {
     ConfigTimerT1NoInt();    // used to control total time for each outer loop
     ConfigTimerT2NoInt();    // used by readWaterSensor to time the WPS_OUT pulse
     
+    
+    _U1RXIF = 0;
+    //LATAbits.LATA2 = 0;
+
     LATAbits.LATA2 = 1;
     //Delay for 5ms for the WPS turn on time
     _T1IF = 0;
@@ -224,7 +248,7 @@ void initialization(void) {
     //PR1 = 20; //5 ms = 3906 * .005
     PR1 = 40; //10ms
     while(!_T1IF) {
-        // Waiting for 5ms
+        // Waiting for 10ms
     }
     
     //void setRTCC(char sec, char min, char hr, char wkday, char date, char month, char year)
@@ -385,33 +409,17 @@ int main(void)
 //        _T1IF = 0; //clear T1 interrupt flag
 //        TMR1 = 0; // clear timer T1
 
-         // Update the hour and day
-         CurrentHour = GetRTCChour();
-         //sprintf(debugString, "%d", CurrentHour);
-         //sendMessage(debugString);
-         //sendMessage("\r\n");
-         if(CurrentHour != PrevHour){
-             // CurrentDay = GetRTCCday();
-             CheckBattery(); // Once the battery is found to be low, the LED will flash on and off
-             PrevHour = CurrentHour;
-         }
-         // Flash Low Battery LED if battery is Low
-         if(LowBatteryDetected){
-             FlashBatteryCounter++;
-             if((!PORTAbits.RA4)&&(FlashBatteryCounter > 3)){
-                 PORTAbits.RA4 = 1; // Turn Low Battery LED On for 1 sec
-                 FlashBatteryCounter = 0; // reset counter
-             }
-             else{
-                 PORTAbits.RA4 = 0;  // Turn Low Battery LED Off
-             }   
-         }
+        // Update the hour and day
+        CurrentHour = GetRTCChour();
+        //sprintf(debugString, "%d", CurrentHour);
+        //sendMessage(debugString);
+        //sendMessage("\r\n");
          
-         CurrentDay = GetRTCCday();
-         if(CurrentDay != PrevDay){//Save daily water hours to EEPROM
-             // If we are in the middle of pumping we will just ignore any pumping
-             // that took place right before the day rolled over to the next
-             pumping = 0;
+        CurrentDay = GetRTCCday();
+        if(CurrentDay != PrevDay){//Save daily water hours to EEPROM
+            // If we are in the middle of pumping we will just ignore any pumping
+            // that took place right before the day rolled over to the next
+            pumping = 0;
             int EEPROMaddrs = 0; //first location is used for the number of days since system was RESET
             EEProm_Write_Int(EEPROMaddrs,Day);
             EEPROMaddrs = 1+(Day*2); //first location for new day's data
@@ -422,11 +430,11 @@ int main(void)
             decimalHour = 0; //reset for new day
             Day++;
             PrevDay = CurrentDay;  
-         }
+        }
 
          
-         //Start of checking for water 
-          if (readWaterSensor2()){
+        //Start of checking for water 
+        if (readWaterSensor2()){
             if (pumping == 0){ //Is this the start of a pumping event?
                 _T1IF = 0;
                 TMR1 = 0; //We are pumping timer needs to be reset
@@ -448,11 +456,9 @@ int main(void)
                 secondInit = BcdToDec(secBCD);  //Gets the current second
                 char minuteBCD = (binaryMinuteSec >> 8) & 0b0000000011111111; 
                 minuteInit = BcdToDec(minuteBCD); // Gets the current minute
-               
             }
            
-        }
-         else if ((pumping == 1) && !readWaterSensor2()){ // We just stopped pumping
+        }else if ((pumping == 1) && !readWaterSensor2()){ // We just stopped pumping
             T1CONbits.TON = 1;
              
              hourEnd = GetRTCChour();
@@ -528,55 +534,64 @@ int main(void)
             //PORTBbits.RB15 = 0; //Enable the BLE-Power PMOS power switch
             LATBbits.LATB15 = 0; //Enable the BLE-Power PMOs switch
             bool bleConnected = false;
-            bool beforeConnect = true;
+            bool blePowered = true;
             
             //Start timer/counter to count up to 1.5 minutes
-            int counter = 0;
-            PR2 = 65535; //System clock is 500kHz/2 = 250kHz => 4us period
-                //To count to 1.5 minutes needs 90 seconds/4us = 22500000. The timer
-                //value only goes up to 65535, so we'll need to run the timer
-                //22500000/65535 = 344 times for the time to equal 1.5 minutes.
-                //PR2 is the register that when the timer reaches its value, the 
-                //interrupt flag is set.
+            int bleWaitCounter = 0;
+            PR2 = 65535; 
             TMR2 = 0; //Clear the timer
             _T2IF = 0; //Clear the timer interrupt
             T2CONbits.TON = 1; //Turn on the timer
             
-            while(beforeConnect){              
-                if (counter < 344){        
-                    if(U1STAbits.URXDA == 1){ //If the Receive UART interrupt is set, enter the loop
+            while(blePowered && !bleConnected){ //While BLE is powered and not connected   
+                
+                if (bleWaitCounter < 344){ //System clock is 500kHz/2 = 250kHz => 4us period
+                //To count to 1.5 minutes needs 90 seconds/4us = 22500000. The timer
+                //value only goes up to 65535, so we'll need to run the timer
+                //22500000/65535 = 344 times for the time to equal 1.5 minutes.
+                //PR2 is the register that when the timer reaches its value, the 
+                //interrupt flag is set. 
+                    
+                    if(_U1RXIF){ //If the Receive UART interrupt is set, enter the loop
+                        _U1RXIF = 0;
+                       
                         char connect = U1RXREG; //read the RX data register
+                        
                         if (connect == 0b01000111){ //if the first message is G, the system is connected
                             bleConnected = true; //sets system as connected
-                            beforeConnect = false; //breaks pre-connection loop
                         }
-                    
-                    }else if(_T2IF){ //if the timer interrupt is set
+                    }
+                    if(_T2IF){ //if the timer interrupt is set
                         TMR2 = 0; //clear the timer
                         _T2IF = 0; //clear the timer interrupt
-                        counter++;
+                        bleWaitCounter++;
                     }
-                    if (counter >= 344){
-                        LATBbits.LATB15 = 1; //de-power the BLE module
-                        T2CONbits.TON = 0;
-                        beforeConnect = false; //break out of pre-connection loop
-                        }
+                }else{
+                    LATBbits.LATB15 = 1; //de-power the BLE module
+                    T2CONbits.TON = 0; //turn off the timer
+                    blePowered = false; //break out of pre-connection loop
+                    bleWaitCounter = 0; //reset the BLE Time counter to zero
                 }
             }
             
-            //Set Timer2 to count up to 5 minutes
-            counter = 0;
+            //Set Timer2 to count up to 2 minutes
             TMR2 = 0;
             _T2IF = 0;
             T2CONbits.TON = 1;
             
             while(bleConnected){ //if the BLE module connects to the app
                 
-                if(counter < 1145){
+                if(bleWaitCounter < 458){//System clock is 500kHz/2 = 250kHz => 4us period
+                //To count to 2 minutes needs 120 seconds/4us = 30000000. The timer
+                //value only goes up to 65535, so we'll need to run the timer
+                //30000000/65535 = 458 times for the time to equal 2 minutes.
+                //The counter will be reset anytime a request for data is made.    
+                //PR2 is the register that when the timer reaches its value, the 
+                //interrupt flag is set.
                     
-                    int clear = receiveMessage(); //run the receive Message function
+                    int msgCommand = receiveMessage(); //run the receive Message function
                     
-                    if(clear == 1){ //Clear data message received, clear the data
+                    if(msgCommand == 1){ //Clear data message received, clear the data
                         decimalHour = 0;
                         hourCounter = 0;
                         buttonTicks = 0;
@@ -584,19 +599,24 @@ int main(void)
                         //PrevDay = Day; 
                         int EEPROMaddrs = 0; //first location saved for the day
                         EEProm_Write_Int(EEPROMaddrs,Day);
-                    
-                    }else if (_T2IF){ 
+                        sendMessage("CLRDATA: Data Cleared Successfully\r\n");
+                    }
+                    if (msgCommand == 2){ //Message Received asks for data.
+                        ReportHoursOfPumping(); // Report Battery data and time data
+                        bleWaitCounter = 0; //You received a message, reset BLE Time Counter to zero. 
+                    }
+                    if (_T2IF){ 
                         TMR2 = 0; //clear the timer
                         _T2IF = 0; //clear the timer interrupt 
-                        counter++;
+                        bleWaitCounter++;
                     }
-                    if(counter >= 1145){
-                        LATBbits.LATB15 = 1; //de-power the BLE module
-                        T2CONbits.TON = 0; //turn off the timer
-                        bleConnected = false; //Break final connection loop
-                    }
+                }else{
+                    LATBbits.LATB15 = 1; //de-power the BLE module
+                    T2CONbits.TON = 0; //turn off the timer
+                    bleConnected = false; //Break final connection loop
                 }
-            }                        
+            }
+            T2CONbits.TON = 0;
         }
          
          pumping = pumping;
@@ -604,6 +624,11 @@ int main(void)
         
          //DSWDT set to 9 minutes
          //if(_T1IF && pumping == 0 && (!DSWAKE&0b00001000)) {//_T1IF set when timer reaches 10 seconds
+
+         /*if(_T1IF && pumping == 0 && (!_DPSLP)) { 
+            sendMessage("\r\n Entering Deep Sleep Did not wake up from Deep Sleep\r\n");
+            deepSleep();
+
          if(_T1IF && pumping == 0 && (!_SLEEP)) { 
             sendMessage("\r\n Entering Sleep Did not wake up from Sleep\r\n");
             //LATAbits.LATA2 = 0; //WPS
@@ -628,6 +653,7 @@ int main(void)
             //}
             //deepSleep();
             sleepyTime();
+
          } 
          //else if(pumping == 0 && (DSWAKE&0b00001000)) { //else woke up from deep sleep go back to sleep if pumping == 0
          else if(pumping == 0 && (_SLEEP))   {
@@ -640,10 +666,15 @@ int main(void)
             
             sendMessage("\r\n Entering Sleep recently woke up from Sleep\r\n");
              // _DPSLP same bit from DSWAKE?
+
+            deepSleep();
+         }*/
+
             //LATAbits.LATA2 = 0; //WPS
             sleepyTime();
             //deepSleep();
          }
+
     }
 
     return -1;
