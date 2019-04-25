@@ -181,13 +181,11 @@ void initialization(void) {
     TRISBbits.TRISB4 = 0; // make battery voltage check enable an output
     //PORTBbits.RB4 = 0;    // Disable the battery voltage check
     
-    //TRISAbits.TRISA4 = 1; // Pin 10 A4 input. (Tristate for Normal Operation).
+    TRISAbits.TRISA4 = 1; // Pin 10 A4 input. (Tristate for Normal Operation).
     
     //Bluetooth Module Power Pin RB15
     TRISBbits.TRISB15 = 0; //Make BLE-Power pin an output
     //PORTBbits.RB15 = 1; //Turn off BLE-Power PMOS switch (PMOS is active low).
-
-    TRISAbits.TRISA4 = 1; // Pin 10 A4 input.
     
     shadowbitsA = LATA;
     shadowbitsA = shadowbitsA | 0b100;

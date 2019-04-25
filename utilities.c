@@ -164,7 +164,9 @@ void sleepyTime(){
     IEC0bits.INT0IE = 1; // Enable Interrupt Zero (INT0)
     IPC0bits.INT0IP = 0; // default is highest priority, Sets interrupt priority
     INTCON2bits.INT0EP = 0; // 1 = negative edge, 0 = positive edge (expecting this)
-    TRISBbits.TRISB7 = 0; // Pin 10 A4 input. INT0 vibration sensor output, high upon vibration
+    TRISBbits.TRISB7 = 1; // INT0 vibration sensor output, high upon vibration
+    TRISAbits.TRISA4 = 0; //Pin 10 A4 output
+    LATAbits.LATA4 = 1; //Pin 10 A4 high/powered
     /*****************************************************/
     //Read from ports, Write to Latches
     // Use shadow register    
