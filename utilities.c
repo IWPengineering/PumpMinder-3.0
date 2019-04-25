@@ -116,23 +116,32 @@ void initAdc(void)
 }
 
 void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
-    //SRbits.IPL = 0; // Set CPU interrupt to max priority.
-    //Use this line // IEC0bits.INT0IE = 1; // Enable Interrupt Zero (INT0)
-    //IPC0BITS.INT0IP = 0; // default is highest priority, Sets interrupt priority
-    //Use this line // INTCON2bits.INT0EP = 0; // 1 = negative edge, 0 = positive edge]
+    int Abits;
+    int Bbits;
+    
+    /*
+    SRbits.IPL = 0; // Set CPU interrupt to max priority.
+    IEC0bits.INT0IE = 1; // Enable Interrupt Zero (INT0)
+    IPC0bits.INT0IP = 0; // default is highest priority, Sets interrupt priority
+    INTCON2bits.INT0EP = 0; // 1 = negative edge, 0 = positive edge]
     TRISBbits.TRISB7 = 0; // Pin 10 A4 input. INT0 vibration sensor output, high upon vibration
-    LATAbits.LATA4 = 1; //Vibration Sensor power
-    //Use this line // IEC0bits.INT0IE = 1; // Enable Interrupt Zero
-    //IPC0BITS.INT0IP = 0; // ??? Not need ??? Sets interrupt priority
-    //Use this line // INTCON2bits.INT0EP = 1; // 1 = negative edge, 0 = positive edge]
+    */
     
     //Read from ports, Write to Latches
     // Use shadow register    
-    LATAbits.LATA2 = 0; //WPS
-    LATBbits.LATB14 = 0; //Test Pin
-   
-    LATBbits.LATB4 = 0; //Turn off Battery Voltage Sensor
-
+    //LATAbits.LATA4 = 1; //Vibration Sensor power
+    //LATAbits.LATA2 = 0; //WPS
+    Abits = LATA;
+    Abits = Abits | 0b10000; //Vibration sensor power
+    Abits = Abits & 0b011; //WPS off
+    LATA = Abits;
+            
+    //LATBbits.LATB14 = 0; //Test Pin
+    //LATBbits.LATB4 = 0; //Turn off Battery Voltage Sensor
+    Bbits = LATB;
+    Bbits = Bbits & 0b011111111101111; //Test pin and battery voltage sensor off.
+    LATB = Bbits;
+            
     PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
     PMD2 = PMD2 | 0xFFFF;       //bulk turn off Input Capture and Output compare
   
@@ -141,6 +150,42 @@ void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other 
     asm("NOP;");
     asm("PWRSAV #0");
     //asm("PWRSAV #SLEEP_MODE;"); //Put the device into Deep Sleep mode
+}
+
+ //Put PIC into Sleep mode and turn off WPS and any other unnecessary power draws
+void sleepyTime(){
+    int Abits;
+    int Bbits;
+    
+    // Enabled something wrong? Doesn't sleep with the interrupts enabled must always be waking up?
+    // Sleeps fine when using WDT and waking up cyclically 
+    /****************************************************/
+    SRbits.IPL = 0; // Set CPU interrupt to max priority.
+    IEC0bits.INT0IE = 1; // Enable Interrupt Zero (INT0)
+    IPC0bits.INT0IP = 0; // default is highest priority, Sets interrupt priority
+    INTCON2bits.INT0EP = 0; // 1 = negative edge, 0 = positive edge (expecting this)
+    TRISBbits.TRISB7 = 0; // Pin 10 A4 input. INT0 vibration sensor output, high upon vibration
+    /*****************************************************/
+    //Read from ports, Write to Latches
+    // Use shadow register    
+    //LATAbits.LATA4 = 1; //Vibration Sensor power
+    //LATAbits.LATA2 = 0; //WPS
+    Abits = LATA;
+    Abits = Abits | 0b10000; //Vibration sensor power
+    Abits = Abits & 0b011; //WPS off
+    LATA = Abits;
+    //LATBbits.LATB14 = 0; //Test Pin
+    //LATBbits.LATB4 = 0; //Turn off Battery Voltage Sensor
+    Bbits = LATB;
+    Bbits = Bbits & 0b011111111101111; //Test pin and battery voltage sensor off.
+    LATB = Bbits;
+            
+    PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
+    PMD2 = PMD2 | 0xFFFF;       //bulk turn off Input Capture and Output compare
+    
+    //RCONbits.SWDTEN = 1; // Enable WDT
+    
+    asm("PWRSAV #0");
 }
 
 
@@ -805,12 +850,12 @@ void resetCheckRemedy(void)
         _IOPUWR = 0;
     }
 
-    //Using this flag in main code for deep sleep cycling
-//    if(_DPSLP)
-//    {
-//        // Woke up from Deep Sleep Mode
-//        _DPSLP = 0;
-//    }
+   
+    if(_DPSLP)
+    {
+        // Woke up from Deep Sleep Mode
+        _DPSLP = 0;
+    }
     
     /*if(RCONbits.CM)
     {
@@ -835,12 +880,12 @@ void resetCheckRemedy(void)
         // Watchdog timeout reset has occurred
         _WDTO = 0;
     }
-    
-    if(_SLEEP)
-    {
-        // Woke up from sleep mode
-        _SLEEP = 0;
-    }
+    // Using flag in main.c resets there.
+//    if(_SLEEP)
+//    {
+//        // Woke up from sleep mode
+//        _SLEEP = 0;
+//    }
     
     if(_IDLE)
     {
