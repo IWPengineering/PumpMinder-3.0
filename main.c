@@ -49,8 +49,9 @@
 #pragma config FCKSM = CSDCMD           // Clock Switching and Monitor Selection (Both Clock Switching and Fail-safe Clock Monitor are disabled)
 
 // FWDT
-#pragma config WDTPS = PS32768          // Watchdog Timer Postscale Select bits (1:32,768)
+//#pragma config WDTPS = PS32768          // Watchdog Timer Postscale Select bits (1:32,768)
 #pragma config FWPSA = PR128            // WDT Prescaler (WDT prescaler ratio of 1:128)
+#pragma config WDTPS = PS16   //50% Duty Cycle
 #pragma config WINDIS = OFF             // Windowed Watchdog Timer Disable bit (Standard WDT selected; windowed WDT disabled)
 //#pragma config FWDTEN = ON              // Watchdog Timer Enable bit (WDT enabled)
 #pragma config FWDTEN = OFF             // Watchdog Timer Enable bit (WDT disabled (control is placed on the SWDTEN bit))
@@ -66,8 +67,8 @@
 #pragma config ICS = PGx1              // ICD Pin Placement Select bits (PGC1/PGD1 are used for programming and debugging the device)
 
 // FDS
-#pragma config DSWDTPS = DSWDTPSF       // Deep Sleep Watchdog Timer Postscale Select bits (1:2,147,483,648 (25.7 Days))
-//#pragma config DSWDTPS = DSWDTPS6         // Deep Sleep Watchdog Timer
+//#pragma config DSWDTPS = DSWDTPSF       // Deep Sleep Watchdog Timer Postscale Select bits (1:2,147,483,648 (25.7 Days))
+#pragma config DSWDTPS = DSWDTPS6         // Deep Sleep Watchdog Timer
 #pragma config DSWDTOSC = LPRC          // DSWDT Reference Clock Select bit (DSWDT uses LPRC as reference clock)
 //#pragma config RTCOSC = SOSC            // RTCC Reference Clock Select bit (RTCC uses SOSC as reference clock)
 #pragma config RTCOSC = LPRC            // RTCC Reference Clock Select bit (RTCC uses LPRC as reference clock)
@@ -151,6 +152,9 @@ void UART_init(void) {
  * TestDate: 06-03-14
  ********************************************************************/
 void initialization(void) {
+    int shadowbitsA;
+    int shadowbitsB;
+    
     //IO port control
     AD1PCFG = 0xFFFF; //Turn off analog function on all pins
     TRISA = 0xFFFF; // Make PORTA all inputs (NOTE:  Port A outputs configured later)
@@ -162,13 +166,13 @@ void initialization(void) {
     TRISBbits.TRISB7 = 0; // U1Tx = Output
     // THIS IS SHAWN'S CODE TRISB = 0b1101110111111111; //RB2 and RB7 outputs [looks like RB13 and RB9??] (why are both RX and TX outputs?)
     
- 
     //T1CONbits.TCS = 0; // Source is Internal Clock Fosc/2 so 250khz
     //T1CONbits.TCKPS = 0b01; // Prescalar to 1:8 (now TC1 clock is 31.25khz)
     //T1CONbits.TON = 1; // Enable the timer (timer 1 is used for the water sensor)
 
     //H2O sensor config
     // WPS_ON/OFF pin 7 RA2 (WPS input is RA1 - pin 3)
+
     //LATAbits.LATA2 = 1;
     TRISAbits.TRISA2 = 0; //makes water presence sensor enable pin an output.
     LATAbits.LATA2 = 1; //turn on the water presence sensor.
@@ -176,10 +180,16 @@ void initialization(void) {
     // Need to wait for the 555 to turn on.
     //TRISBbits.TRISB15 = 0; //Test pin
     //LATBbits.LATB15 = 1; //Test pin
-    
+
+    TRISAbits.TRISA2 = 0; //makes water presence sensor enable pin an output.
+    //LATAbits.LATA2 = 1; //turn on the water presence sensor.
+    // Need to wait for the 555 to turn on.
+    TRISBbits.TRISB14 = 0; //Test pin
+    //LATBbits.LATB14 = 1; //Test pin
+  
     // Battery Voltage Check (enable = B4, battery voltage A3)
     TRISBbits.TRISB4 = 0; // make battery voltage check enable an output
-    PORTBbits.RB4 = 0;    // Disable the battery voltage check
+    //PORTBbits.RB4 = 0;    // Disable the battery voltage check
     
     // Vibration Sensor Power Pin (Tristate when Awake, Output when asleep)
     TRISAbits.TRISA4 = 1; // Put VIBSEN to an input in tristate
@@ -189,11 +199,25 @@ void initialization(void) {
     
     //Bluetooth Module Power Pin RB15
     TRISBbits.TRISB15 = 0; //Make BLE-Power pin an output
+
     LATBbits.LATB15 = 1; //Turn off BLE-Power PMOS switch (PMOS is active low).
 
     //PORTAbits.RA4 = 1; // Turn on LED
     //TRISAbits.TRISA4 = 1; // Pin 10 A4 input.
 
+    //PORTBbits.RB15 = 1; //Turn off BLE-Power PMOS switch (PMOS is active low).
+
+    TRISAbits.TRISA4 = 1; // Pin 10 A4 input.
+    
+    shadowbitsA = LATA;
+    shadowbitsA = shadowbitsA | 0b100;
+    LATA = shadowbitsA;
+    
+    shadowbitsB = LATB;
+    shadowbitsB = shadowbitsB | 0b1100000000000000;
+    shadowbitsB = shadowbitsB & 0b1111111111101111;        
+    LATB = shadowbitsB;
+  
     
     // Debug/Setting Pins
     // Button pin (RA6) is already an input
@@ -215,6 +239,7 @@ void initialization(void) {
     
     _U1RXIF = 0;
     //LATAbits.LATA2 = 0;
+
     LATAbits.LATA2 = 1;
     //Delay for 5ms for the WPS turn on time
     _T1IF = 0;
@@ -356,11 +381,8 @@ int main(void)
     TMR1 = 0; // clear timer 
     T1CONbits.TON = 1;  //turn on Timer1 
     //PR1 = delayTime * 31.25;  // Timer 1 clock = 31.25khz so 31.25 clocks/1ms
-    PR1 = 39000; //Timer 1 clock set to about ten seconds
-    //PR1 = 7800;
-    //* Test code for deepSleep
-    //* RB12 is jumper pins when shorted enters deep sleep
-
+    //PR1 = 39000; //Timer 1 clock set to about ten seconds
+    PR1 = 7800; //2 seconds
     
     /**
      * DSWAKE register with bits set for reason of DeepSleep wakeup
@@ -416,15 +438,17 @@ int main(void)
             if (pumping == 0){ //Is this the start of a pumping event?
                 _T1IF = 0;
                 TMR1 = 0; //We are pumping timer needs to be reset
-                T1CONbits.TON = 0;
+                T1CONbits.TON = 0; // Timer is off until pumping stops
                 
                 pumping = 1; //sets flag saying that pumping is in progress
+                _SLEEP = 0; // Reset this flag here so the code waits ten seconds after pumping stops before sleeping.
+                                    // Code would otherwise sleep immediately after finishing pumping had it just woken up from sleep.
                 hourInit = GetRTCChour(); //Gets the current hour
                 // We want to read minute and second at the same time so we don't 
                 // have a problem like the time is 1:59 when we read seconds so we 
                 // end up getting seconds =  59 and min = 2;
                 
-                //Set the pointer to 0b01 so that reading starts at at minutes - seconds
+                //Set the pointer to 0b01 so that reading starts at minutes - seconds
                 _RTCPTR = 0b00; // decrements with read or write
                 _RTCWREN = 0; //don't want to write, just want to read
                 long binaryMinuteSec = RTCVAL; // write minute & second to variable
@@ -600,22 +624,57 @@ int main(void)
         
          //DSWDT set to 9 minutes
          //if(_T1IF && pumping == 0 && (!DSWAKE&0b00001000)) {//_T1IF set when timer reaches 10 seconds
+
          /*if(_T1IF && pumping == 0 && (!_DPSLP)) { 
             sendMessage("\r\n Entering Deep Sleep Did not wake up from Deep Sleep\r\n");
             deepSleep();
+
+         if(_T1IF && pumping == 0 && (!_SLEEP)) { 
+            sendMessage("\r\n Entering Sleep Did not wake up from Sleep\r\n");
+            //LATAbits.LATA2 = 0; //WPS
+            /**************************
+            int Abits;
+            int Bbits;
+            TRISBbits.TRISB7 = 0;
+            Abits = LATA;
+            Abits = Abits | 0b10000; //Vibration sensor power
+            Abits = Abits & 0b011; //WPS off
+            LATA = Abits;
+            Bbits = LATB;
+            Bbits = Bbits & 0b011111111101111; //Test pin and battery voltage sensor off.
+            LATB = Bbits;            
+            PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
+            PMD2 = PMD2 | 0xFFFF;
+            RCONbits.SWDTEN = 1; //Enable WDT
+            asm("PWRSAV #0");
+            **************************/
+            //while(1) {
+                
+            //}
+            //deepSleep();
+            sleepyTime();
+
          } 
          //else if(pumping == 0 && (DSWAKE&0b00001000)) { //else woke up from deep sleep go back to sleep if pumping == 0
-         else if(pumping == 0 && (_DPSLP))   {
+         else if(pumping == 0 && (_SLEEP))   {
             _RELEASE = 0;
-            DSWAKE = DSWAKE & 0b11110111; //Clear wake up from deepsleep flag
+            _SLEEP = 0;
+            //DSWAKE = DSWAKE & 0b11110111; //Clear wake up from deepsleep flag
             asm("NOP;");
             asm("NOP;");
             asm("NOP;");
             
-            sendMessage("\r\n Entering Deep Sleep recently woke up from Deep Sleep\r\n");
+            sendMessage("\r\n Entering Sleep recently woke up from Sleep\r\n");
              // _DPSLP same bit from DSWAKE?
+
             deepSleep();
          }*/
+
+            //LATAbits.LATA2 = 0; //WPS
+            sleepyTime();
+            //deepSleep();
+         }
+
     }
 
     return -1;

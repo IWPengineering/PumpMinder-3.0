@@ -106,6 +106,7 @@ int receiveMessage(void);
 void initAdc(void);
 int readAdc(int channel) ;
 void deepSleep();
+void sleepyTime();
 
 void CheckBattery(void);
 int readBatteryPin(void); //returns the AD reading on the pin 8 VWATCH
