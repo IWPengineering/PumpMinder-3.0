@@ -255,7 +255,7 @@ void CheckBattery(void){
     }
     else{
         LowBatteryDetected = 0;
-        PORTAbits.RA4 = 0;  // turn off LED
+        //PORTAbits.RA4 = 0;  // turn off LED
     }
     
     // For DEBUG let's report reading
@@ -490,14 +490,13 @@ void sendMessage(char message[750]) {
 int receiveMessage(void){
     char message;
     
-    while (U1STAbits.URXDA == 0){
-        //do nothing
+    if (_U1RXIF){ //Something is available to read 
+        _U1RXIF = 0;
+        message = U1RXREG; //Read the RX data register
     }
     
-    message = U1RXREG; //Read the RX data register
-    
     if(message == 0b01000111){ //if message is equal to "G"
-        ReportHoursOfPumping(); //Message Received asks for data.
+        return 2;
         
     }else if (message == 0b01000011){ //if message is equal to "C"
         return 1; //Message Received clears data, return command to reset data.
@@ -529,9 +528,9 @@ void ReportHoursOfPumping(){
     CheckBattery(); //Run CheckBattery() function only when transmitting data.)
     
     if(LowBatteryDetected == 0){
-        sendMessage("GETBATT: Battery is OK");
+        sendMessage("GETBATT: Battery is OK\r\n");
     }else{
-        sendMessage("GETBATT: Change Batteries");
+        sendMessage("GETBATT: Change Batteries\r\n");
     }
     
     int Dayptr = 0;
@@ -546,26 +545,16 @@ void ReportHoursOfPumping(){
         report_cent = report_decimalHour/10;
         report_mil = report_decimalHour - (report_cent*10);
         
-        char timeStr[15];
-        //char hourStr[15];
-        //char decimalStr[15];        
+        char timeStr[15];        
         
         //The message string should have the final format of GETDATA:X.XXX,X.XXX,X.XXX, etc.
         sprintf(timeStr, "%d.%d%d%d", report_hours, report_tenth, report_cent, report_mil);
         strcat(strMessage, timeStr);
-        //-----------------------------------------------------------------------------  
-        //sprintf(hourStr, "%d", report_hours);
-        //strcat(strMessage, hourStr);    
-        //strcat(strMessage, ".");
-        //sprintf(decimalStr, "%d", report_tenth);
-        //strcat(strMessage, decimalStr);
-        //sprintf(decimalStr, "%d", report_cent);
-        //strcat(strMessage, decimalStr);
-        //sprintf(decimalStr, "%d", report_mil);
-        //strcat(strMessage, decimalStr);
-         if(Dayptr < Day){
+        if(Dayptr < Day){
             strcat(strMessage, ",");
-         }
+        }else if (Dayptr >= Day){
+            strcat(strMessage, "\r\n");
+        }
         Dayptr++;
     } 
     sendMessage(strMessage);
@@ -910,5 +899,11 @@ void resetCheckRemedy(void)
     {
         // Power-up reset has occurred
         _POR = 0;
+    }
+    
+    if(_U1RXIF)
+    {
+        // There is data to read in the U1RXREG
+        _U1RXIF = 0;
     }
 }
