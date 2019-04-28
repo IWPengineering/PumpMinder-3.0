@@ -115,6 +115,9 @@ void initAdc(void)
     AD1CHSbits.CH0SA = 5; //AN5 is where VWATCH is connected
 }
 
+/* Unused Function
+ * Deep sleep caused issues on wake up
+ */
 void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other unnecessary power draws
     int Abits;
     int Bbits;
@@ -145,11 +148,10 @@ void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other 
     PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
     PMD2 = PMD2 | 0xFFFF;       //bulk turn off Input Capture and Output compare
   
-    //asm("BSET DSCON, #DSEN;"); //Enable Deep Sleep
-    asm("BSET DSCON, #15;");
+    asm("BSET DSCON, #15;"); //Enable Deep Sleep
     asm("NOP;");
-    asm("PWRSAV #0");
-    //asm("PWRSAV #SLEEP_MODE;"); //Put the device into Deep Sleep mode
+    asm("PWRSAV #0"); //Put the device into Deep Sleep mode
+
 }
 
  //Put PIC into Sleep mode and turn off WPS and any other unnecessary power draws
@@ -159,7 +161,7 @@ void sleepyTime(){
     
     // Enabled something wrong? Doesn't sleep with the interrupts enabled must always be waking up?
     // Sleeps fine when using WDT and waking up cyclically 
-    /****************************************************/
+    /****************************************************
     IFS0 = 0; // Clear interrupt flags.
     SRbits.IPL = 0; // Set CPU interrupt to max priority.
     IEC0bits.INT0IE = 1; // Enable Interrupt Zero (INT0)
@@ -170,7 +172,7 @@ void sleepyTime(){
     CNPU2bits.CN23PUE = 0; // Internal pull-up resistor disabled for INT0
     TRISAbits.TRISA4 = 0; //Pin 10 A4 output
     LATAbits.LATA4 = 1; //Pin 10 A4 high/powered
-    /*****************************************************/
+    *****************************************************/
     //Read from ports, Write to Latches
     // Use shadow register    
     //LATAbits.LATA4 = 1; //Vibration Sensor power
@@ -188,7 +190,7 @@ void sleepyTime(){
     PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
     PMD2 = PMD2 | 0xFFFF;       //bulk turn off Input Capture and Output compare
     
-    //RCONbits.SWDTEN = 1; // Enable WDT
+    RCONbits.SWDTEN = 1; // Enable WDT
     
     asm("PWRSAV #0");
 }
