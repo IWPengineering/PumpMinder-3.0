@@ -625,11 +625,11 @@ int main(void)
          //DSWDT set to 9 minutes
          //if(_T1IF && pumping == 0 && (!DSWAKE&0b00001000)) {//_T1IF set when timer reaches 10 seconds
 
-         /*if(_T1IF && pumping == 0 && (!_DPSLP)) { 
+         if(_T1IF && pumping == 0 && (!_DPSLP)) { 
             sendMessage("\r\n Entering Deep Sleep Did not wake up from Deep Sleep\r\n");
             deepSleep();
 
-         if(_T1IF && pumping == 0 && (!_SLEEP)) { 
+         /*if(_T1IF && pumping == 0 && (!_SLEEP)) { 
             sendMessage("\r\n Entering Sleep Did not wake up from Sleep\r\n");
             //LATAbits.LATA2 = 0; //WPS
             /**************************
@@ -668,12 +668,11 @@ int main(void)
              // _DPSLP same bit from DSWAKE?
 
             deepSleep();
-         }*/
+         }
 
             //LATAbits.LATA2 = 0; //WPS
             sleepyTime();
             //deepSleep();
-         }
 
     }
 
