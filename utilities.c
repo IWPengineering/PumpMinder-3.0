@@ -239,6 +239,7 @@ void CheckBattery(void){
     // char BatStr[15]; // for DEBUG
      
     PORTBbits.RB4 = 1;  // Enable the battery voltage check
+    LATBbits.LATB4 = 1; // Enable the battery voltage check
     delayMs(10); //Give things time to settle out
     
     batteryLevel = readBatteryPin();
