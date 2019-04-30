@@ -165,7 +165,8 @@ void sleepyTime(){
     IFS0 = 0; // Clear interrupt flags.
     SRbits.IPL = 0; // Set CPU interrupt to max priority.
     IEC0bits.INT0IE = 1; // Enable Interrupt Zero (INT0)
-    IPC0bits.INT0IP = 7; // default is highest priority (7?), Sets interrupt priority
+    //IPC0bits.INT0IP = 7; // default is highest priority (7?), Sets interrupt priority
+    IPC0bits.INT0IP = 1; // low priority as to not interrupt a CPU interrupt?
     INTCON2bits.INT0EP = 0; // 1 = negative edge, 0 = positive edge (expecting this)
     TRISBbits.TRISB7 = 1; // INT0 input is sensor output, high upon vibration
     CNPD2bits.CN23PDE = 1; // Internal pull-down resistor enabled for INT0
