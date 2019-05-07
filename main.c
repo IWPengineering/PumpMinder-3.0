@@ -49,11 +49,11 @@
 #pragma config FCKSM = CSDCMD           // Clock Switching and Monitor Selection (Both Clock Switching and Fail-safe Clock Monitor are disabled)
 
 // FWDT
-//#pragma config WDTPS = PS32768          // Watchdog Timer Postscale Select bits (1:32,768)
+//#pragma config WDTPS = PS32768       // Watchdog Timer Postscale Select bits (1:32,768)
 #pragma config FWPSA = PR128            // WDT Prescaler (WDT prescaler ratio of 1:128)
-#pragma config WDTPS = PS16   //50% Duty Cycle
-#pragma config WINDIS = OFF             // Windowed Watchdog Timer Disable bit (Standard WDT selected; windowed WDT disabled)
-//#pragma config FWDTEN = ON              // Watchdog Timer Enable bit (WDT enabled)
+#pragma config WDTPS = PS256            //Should be 1 second See PIC24F Manual Seciton 9
+#pragma config WINDIS = OFF               // Windowed Watchdog Timer Disable bit (Standard WDT selected; windowed WDT disabled)
+//#pragma config FWDTEN = ON             // Watchdog Timer Enable bit (WDT enabled)
 #pragma config FWDTEN = OFF             // Watchdog Timer Enable bit (WDT disabled (control is placed on the SWDTEN bit))
 
 // FPOR
