@@ -158,6 +158,7 @@ void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other 
 void sleepyTime(){
     int Abits;
     int Bbits;
+
     
     // Enabled something wrong? Doesn't sleep with the interrupts enabled must always be waking up?
     // Sleeps fine when using WDT and waking up cyclically 
@@ -178,21 +179,23 @@ void sleepyTime(){
     //LATAbits.LATA4 = 1; //Vibration Sensor power
     //LATAbits.LATA2 = 0; //WPS
     Abits = LATA;
-    Abits = Abits | 0b10000; //Vibration sensor power
-    Abits = Abits & 0b011; //WPS off
+    Abits = Abits | 0b0000000000010000; //Vibration sensor power
+    Abits = Abits & 0b1111111111111011; //WPS off
     LATA = Abits;
     //LATBbits.LATB14 = 0; //Test Pin
     //LATBbits.LATB4 = 0; //Turn off Battery Voltage Sensor
     Bbits = LATB;
-    Bbits = Bbits & 0b011111111101111; //Test pin and battery voltage sensor off.
+    Bbits = Bbits & 0b1011111111101111; //Test pin and battery voltage sensor off.
     LATB = Bbits;
             
     PMD1 = PMD1 | 0xFFFF;       //bulk disable Timers I2C,UARTS,SPI,ADC's
     PMD2 = PMD2 | 0xFFFF;       //bulk turn off Input Capture and Output compare
     
     RCONbits.SWDTEN = 1; // Enable WDT
-    
+   
     asm("PWRSAV #0");
+    //initialization();
+    asm("RESET");
 }
 
 

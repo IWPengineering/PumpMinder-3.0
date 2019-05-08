@@ -188,11 +188,11 @@ void initialization(void) {
     //PORTBbits.RB15 = 1; //Turn off BLE-Power PMOS switch (PMOS is active low).
     
     shadowbitsA = LATA;
-    shadowbitsA = shadowbitsA | 0b100;
+    shadowbitsA = shadowbitsA | 0b0000000000000100;
     LATA = shadowbitsA;
     
     shadowbitsB = LATB;
-    shadowbitsB = shadowbitsB | 0b1100000000000000;
+    shadowbitsB = shadowbitsB | 0b11000000000000000;
     shadowbitsB = shadowbitsB & 0b1111111111101111;        
     LATB = shadowbitsB;
   
@@ -345,17 +345,20 @@ int main(void)
     //If there is no unread data, day should be zero. if there is unread data, the day should be the next day after what has already been saved.
     int EEPROMaddrs = 0;
     Day = EEProm_Read_Int(EEPROMaddrs);
-    if (Day > 0) { // This is the number of days saved but unread. 
+    //if (Day > 0 | EEProm_Read_Int(EEPROMaddrs+1) > 0) { // This is the number of days saved but unread. 
+    /*
+    if (Day > 0 && !_SLEEP) {
+    //if (Day > 0) {
         Day++;
     }
-
+*/
       
     _T1IF = 0; //clear interrupt flag
     TMR1 = 0; // clear timer 
     T1CONbits.TON = 1;  //turn on Timer1 
     //PR1 = delayTime * 31.25;  // Timer 1 clock = 31.25khz so 31.25 clocks/1ms
-    //PR1 = 39000; //Timer 1 clock set to about ten seconds
-    PR1 = 7800; //2 seconds
+    PR1 = 39000; //Timer 1 clock set to about ten seconds
+    //PR1 = 7800; //2 seconds
     
     /**
      * DSWAKE register with bits set for reason of DeepSleep wakeup
@@ -513,7 +516,6 @@ int main(void)
 
         if (buttonFlag){ // If someone pushed the button
             buttonFlag = 0;
-            /////////////////pumping = 0; // clears the pumping flag
             
             // Save the current pumping hours to EEPROM
             int EEPROMaddrs = 1 +(Day*2);
@@ -617,8 +619,13 @@ int main(void)
          //if(_T1IF && pumping == 0 && (!DSWAKE&0b00001000)) {//_T1IF set when timer reaches 10 seconds
          if(_T1IF && pumping == 0 && (!_SLEEP)) { 
             sendMessage("\r\n Entering Sleep Did not wake up from Sleep\r\n");
-
-            sleepyTime();
+            //Save data to EEPROM
+            int EEPROMaddrs = 1 +(Day*2);
+            EEProm_Write_Int(EEPROMaddrs,hourCounter);
+            EEPROMaddrs++;
+            EEProm_Write_Int(EEPROMaddrs,decimalHour);
+            
+            //sleepyTime();
          } 
          //else if(pumping == 0 && (DSWAKE&0b00001000)) { //else woke up from deep sleep go back to sleep if pumping == 0
          else if(pumping == 0 && (_SLEEP))   {
@@ -631,10 +638,16 @@ int main(void)
             
             sendMessage("\r\n Entering Sleep recently woke up from Sleep\r\n");
              // _DPSLP same bit from DSWAKE?
-            //LATAbits.LATA2 = 0; //WPS
-            sleepyTime();
-            //deepSleep();
+            //LATAbits.LATA2 = 0; //
+            //Save data to EEPROM
+            int EEPROMaddrs = 1 +(Day*2);
+            EEProm_Write_Int(EEPROMaddrs,hourCounter);
+            EEPROMaddrs++;
+            EEProm_Write_Int(EEPROMaddrs,decimalHour);
+            
+            //sleepyTime();
          }
+         
     }
 
     return -1;
