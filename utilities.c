@@ -158,7 +158,6 @@ void deepSleep(){ //Put PIC into Deep Sleep mode and turn off WPS and any other 
 void sleepyTime(){
     int Abits;
     int Bbits;
-
     
     // Enabled something wrong? Doesn't sleep with the interrupts enabled must always be waking up?
     // Sleeps fine when using WDT and waking up cyclically 
@@ -193,9 +192,11 @@ void sleepyTime(){
     
     RCONbits.SWDTEN = 1; // Enable WDT
    
-    asm("PWRSAV #0");
-    //initialization();
-    asm("RESET");
+    asm("PWRSAV #0"); //Enter sleep mode
+    
+    RCONbits.SWDTEN = 0; //Disable WDT
+    initialization();
+    //asm("RESET");
 }
 
 
