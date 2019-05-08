@@ -619,13 +619,8 @@ int main(void)
          //if(_T1IF && pumping == 0 && (!DSWAKE&0b00001000)) {//_T1IF set when timer reaches 10 seconds
          if(_T1IF && pumping == 0 && (!_SLEEP)) { 
             sendMessage("\r\n Entering Sleep Did not wake up from Sleep\r\n");
-            //Save data to EEPROM
-            int EEPROMaddrs = 1 +(Day*2);
-            EEProm_Write_Int(EEPROMaddrs,hourCounter);
-            EEPROMaddrs++;
-            EEProm_Write_Int(EEPROMaddrs,decimalHour);
-            
-            //sleepyTime();
+
+            sleepyTime();
          } 
          //else if(pumping == 0 && (DSWAKE&0b00001000)) { //else woke up from deep sleep go back to sleep if pumping == 0
          else if(pumping == 0 && (_SLEEP))   {
@@ -638,14 +633,9 @@ int main(void)
             
             sendMessage("\r\n Entering Sleep recently woke up from Sleep\r\n");
              // _DPSLP same bit from DSWAKE?
-            //LATAbits.LATA2 = 0; //
-            //Save data to EEPROM
-            int EEPROMaddrs = 1 +(Day*2);
-            EEProm_Write_Int(EEPROMaddrs,hourCounter);
-            EEPROMaddrs++;
-            EEProm_Write_Int(EEPROMaddrs,decimalHour);
+            //LATAbits.LATA2 = 0; 
             
-            //sleepyTime();
+            sleepyTime();
          }
          
     }

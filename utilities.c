@@ -196,7 +196,6 @@ void sleepyTime(){
     
     RCONbits.SWDTEN = 0; //Disable WDT
     initialization();
-    //asm("RESET");
 }
 
 
