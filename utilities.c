@@ -195,6 +195,8 @@ void sleepyTime(){
     asm("PWRSAV #0"); //Enter sleep mode
     
     RCONbits.SWDTEN = 0; //Disable WDT
+    PMD1 = 0;       //bulk enable Timers I2C,UARTS,SPI,ADC's
+    PMD2 = 0;       //bulk turn on Input Capture and Output compare
     initialization();
 }
 

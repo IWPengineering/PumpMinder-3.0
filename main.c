@@ -175,16 +175,19 @@ void initialization(void) {
     LATAbits.LATA2 = 1; //turn on the water presence sensor.
     // Need to wait for the 555 to turn on.
     TRISBbits.TRISB14 = 0; //Test pin
-    //LATBbits.LATB14 = 1; //Test pin
+    LATBbits.LATB14 = 0; //Test pin
+    
     
     // Battery Voltage Check (enable = B4, battery voltage A3)
     TRISBbits.TRISB4 = 0; // make battery voltage check enable an output
+    LATBbits.LATB4 = 0;
     //PORTBbits.RB4 = 0;    // Disable the battery voltage check
     
     TRISAbits.TRISA4 = 1; // Pin 10 A4 input. (Tristate for Normal Operation).
     
     //Bluetooth Module Power Pin RB15
     TRISBbits.TRISB15 = 0; //Make BLE-Power pin an output
+    LATBbits.LATB15 = 1;
     //PORTBbits.RB15 = 1; //Turn off BLE-Power PMOS switch (PMOS is active low).
     
     shadowbitsA = LATA;
@@ -192,20 +195,21 @@ void initialization(void) {
     LATA = shadowbitsA;
     
     shadowbitsB = LATB;
-    shadowbitsB = shadowbitsB | 0b11000000000000000;
-    shadowbitsB = shadowbitsB & 0b1111111111101111;        
+    shadowbitsB = shadowbitsB | 0b10000000000000000;
+    shadowbitsB = shadowbitsB & 0b1011111111101111;        
     LATB = shadowbitsB;
   
     
     // Debug/Setting Pins
     // Button pin (RA6) is already an input
     // STATE pin (RB12) is already an input 
+    IFS1bits.CNIF = 0; //Interrupt flag clear
     CNEN1bits.CN8IE = 1; // enable interrupt for pin 15 RB12*/
     IEC1bits.CNIE = 1; // enable change notification interrupt
     
     // Unused Pins
     // RB13, 14, 15 are already inputs
-
+    
     initAdc();    // Initialize the A/D converter
     UART_init();  // Initialize the UART for communication via RJ45
   // I think this assumes use of RTCC to sleep.  We will use Timer 1  initSleep();  // Initialize SLEEP mode
@@ -214,15 +218,13 @@ void initialization(void) {
     ConfigTimerT1NoInt();    // used to control total time for each outer loop
     ConfigTimerT2NoInt();    // used by readWaterSensor to time the WPS_OUT pulse
     
-    LATAbits.LATA2 = 1;
-    //Delay for 5ms for the WPS turn on time
+    //Delay for 10ms for the WPS turn on time
     _T1IF = 0;
     TMR1 = 0;
     T1CONbits.TON = 1;
-    //PR1 = 20; //5 ms = 3906 * .005
     PR1 = 40; //10ms
     while(!_T1IF) {
-        // Waiting for 5ms
+        // Waiting for 10ms
     }
     
     //void setRTCC(char sec, char min, char hr, char wkday, char date, char month, char year)
@@ -235,7 +237,6 @@ void initialization(void) {
     CheckBattery();
     
     pumping = 0; //Assume not pumping on turn on
-  
 }
 
 /*********************************************************************
@@ -345,13 +346,11 @@ int main(void)
     //If there is no unread data, day should be zero. if there is unread data, the day should be the next day after what has already been saved.
     int EEPROMaddrs = 0;
     Day = EEProm_Read_Int(EEPROMaddrs);
-    //if (Day > 0 | EEProm_Read_Int(EEPROMaddrs+1) > 0) { // This is the number of days saved but unread. 
-    /*
-    if (Day > 0 && !_SLEEP) {
-    //if (Day > 0) {
+ 
+    if (Day > 0) {
         Day++;
     }
-*/
+
       
     _T1IF = 0; //clear interrupt flag
     TMR1 = 0; // clear timer 
@@ -617,13 +616,13 @@ int main(void)
         
          //DSWDT set to 9 minutes
          //if(_T1IF && pumping == 0 && (!DSWAKE&0b00001000)) {//_T1IF set when timer reaches 10 seconds
-         if(_T1IF && pumping == 0 && (!_SLEEP)) { 
+         if((_T1IF) && (pumping == 0) && (!_SLEEP)) { 
             sendMessage("\r\n Entering Sleep Did not wake up from Sleep\r\n");
 
             sleepyTime();
          } 
          //else if(pumping == 0 && (DSWAKE&0b00001000)) { //else woke up from deep sleep go back to sleep if pumping == 0
-         else if(pumping == 0 && (_SLEEP))   {
+         else if((pumping == 0) && (_SLEEP))   {
             _RELEASE = 0;
             _SLEEP = 0;
             //DSWAKE = DSWAKE & 0b11110111; //Clear wake up from deepsleep flag
